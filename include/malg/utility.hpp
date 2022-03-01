@@ -106,15 +106,6 @@ inline auto ones(unsigned size)
     return Vector<data_type>(size, 1);
 }
 
-template <typename T>
-inline auto sign(const Vector<T> &v)
-{
-    Vector<int> result(v.size(), 1);
-    for (unsigned i = 0; i < v.size(); ++i)
-        result[i] = v[i] > 0 ? +1 : -1;
-    return result;
-}
-
 /// @brief Extracts the diagonal elements from the matrix.
 /// @param matrix the matrix.
 /// @return the diagonal elements.
@@ -152,29 +143,6 @@ inline auto sum(const Vector<T> &v)
     for (unsigned i = 0; i < v.size(); ++i)
         s += v[i];
     return s;
-}
-
-/// @brief Transforms each element of a to its absolute value.
-/// @param a the input matrix.
-/// @return the same matrix but its absolute values.
-template <typename T>
-inline auto abs(const MatrixBase<T> &a)
-{
-    Matrix<std::remove_const_t<T>> result(a.rows(), a.cols(), 0.);
-    for (unsigned i = 0; i < a.size(); ++i)
-        result[i] = std::abs(a[i]);
-    return result;
-}
-
-/// @brief Transforms each element of v to its absolute value.
-/// @param v the input vector.
-/// @return the same vector but its absolute values.
-template <typename T>
-inline auto abs(Vector<T> v)
-{
-    for (unsigned i = 0; i < v.size(); ++i)
-        v[i] = std::abs(v[i]);
-    return v;
 }
 
 /// @brief Returns the minimum value inside the vector, and its position.

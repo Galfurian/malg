@@ -267,7 +267,7 @@ inline auto qr_decomposition(const Matrix<T> &A)
         u[0]   = 1;
         // Finding Householder projection.
         return utility::eye(a.size(), a.size(), data_type_t(1.)) -
-               (utility::to_matrix(u, false) * utility::to_matrix(u, true)) * (2. / malg::inner_product(u, u));
+               (utility::to_matrix(u, false) * utility::to_matrix(u, true)) * (2. / malg::element_wise_product(u, u));
     };
 
     // Initialize matrix R.

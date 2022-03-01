@@ -729,30 +729,6 @@ inline auto operator/=(const malg::Vector<T1> &a, const T2 &b)
 namespace malg
 {
 
-/// @brief Extracts the real part of the values of a.
-/// @param a the matrix.
-/// @return the real part of the values of a.
-template <typename T>
-auto real(const malg::MatrixBase<std::complex<T>> &a)
-{
-    malg::Matrix<T> m(a.rows(), a.cols(), T(0.));
-    for (unsigned i = 0; i < a.size(); ++i)
-        m[i] = a[i].real();
-    return m;
-}
-
-/// @brief Extracts the imaginary part of the values of a.
-/// @param a the matrix.
-/// @return imaginary part of the values of a.
-template <typename T>
-auto imag(const malg::MatrixBase<std::complex<T>> &a)
-{
-    malg::Matrix<T> m(a.rows(), a.cols(), T(0.));
-    for (unsigned i = 0; i < a.size(); ++i)
-        m[i] = a[i].imag();
-    return m;
-}
-
 template <typename T1, typename T2>
 inline auto dot(const malg::MatrixBase<T1> &a, const malg::Vector<T2> &b)
 {
@@ -767,14 +743,159 @@ inline auto dot(const malg::MatrixBase<T1> &a, const malg::Vector<T2> &b)
     return result;
 }
 
-template <typename T1, typename T2>
-inline auto inner_product(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
+template <typename T, typename TF>
+inline auto element_wise_function(const malg::Vector<T> &a, TF fun)
 {
-    if constexpr (malg::is_complex_v<T1> || malg::is_complex_v<T2>) {
-        return std::inner_product(a.begin(), a.end(), b.begin(), std::complex<double>(0., 0.));
-    } else {
-        return std::inner_product(a.begin(), a.end(), b.begin(), 0);
-    }
+    using data_type_t = std::remove_const_t<T>;
+    // Create the resulting vector.
+    malg::Vector<data_type_t> result(a.size());
+    // Perform the computation.
+    for (unsigned i = 0; i < a.size(); ++i)
+        result[i] = fun(a[i]);
+    return result;
+}
+
+template <typename T, typename TF>
+inline auto element_wise_function(const malg::Matrix<T> &a, TF fun)
+{
+    using data_type_t = std::remove_const_t<T>;
+    // Create the resulting vector.
+    malg::Matrix<data_type_t> result(a.rows(), a.cols());
+    // Perform the computation.
+    for (unsigned i = 0; i < a.size(); ++i)
+        result[i] = fun(a[i]);
+    return result;
+}
+
+template <typename T1, typename T2, typename TF>
+inline auto element_wise_binary_function(const malg::Vector<T1> &a, const malg::Vector<T2> &b, TF fun)
+{
+    assert(a.size() == b.size());
+    // Select the right type.
+    using T = malg::extract_common_type_t<T1, T2>;
+    // Create the resulting vector.
+    malg::Vector<T> result(a.size());
+    // Perform the computation.
+    for (unsigned i = 0; i < a.size(); ++i)
+        result[i] = fun(a[i], b[i]);
+    return result;
+}
+
+template <typename T1, typename T2, typename TF>
+inline auto element_wise_binary_function(const malg::Matrix<T1> &a, const malg::Matrix<T2> &b, TF fun)
+{
+    assert(a.rows() == b.rows());
+    assert(a.cols() == b.cols());
+    // Select the right type.
+    using T = malg::extract_common_type_t<T1, T2>;
+    // Create the resulting matrix.
+    malg::Matrix<T> result(a.rows(), a.cols());
+    // Perform the computation.
+    for (unsigned i = 0; i < a.size(); ++i)
+        result[i] = fun(a[i], b[i]);
+    return result;
+}
+
+template <typename T1, typename T2>
+inline auto element_wise_product(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
+{
+    return element_wise_binary_function(a, b, [](const T1 lhs, const T2 rhs) { return lhs * rhs; });
+}
+
+template <typename T1, typename T2>
+inline auto element_wise_product(const malg::Matrix<T1> &a, const malg::Matrix<T2> &b)
+{
+    return element_wise_binary_function(a, b, [](const T1 lhs, const T2 rhs) { return lhs * rhs; });
+}
+
+template <typename T1, typename T2>
+inline auto element_wise_div(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
+{
+    return element_wise_binary_function(a, b, [](const T1 lhs, const T2 rhs) { return lhs / rhs; });
+}
+
+template <typename T1, typename T2>
+inline auto element_wise_div(const malg::Matrix<T1> &a, const malg::Matrix<T2> &b)
+{
+    return element_wise_binary_function(a, b, [](const T1 lhs, const T2 rhs) { return lhs / rhs; });
+}
+
+/// @brief Extracts the real part of the values of a.
+/// @param a the matrix.
+/// @return the real part of the values of a.
+template <typename T>
+auto real(const malg::MatrixBase<std::complex<T>> &a)
+{
+    return element_wise_function(a, [](const std::complex<T> &value) { return value.real(); });
+}
+
+/// @brief Extracts the real part of the values of a.
+/// @param a the matrix.
+/// @return the real part of the values of a.
+template <typename T>
+auto real(const malg::Vector<std::complex<T>> &a)
+{
+    return element_wise_function(a, [](const std::complex<T> &value) { return value.real(); });
+}
+
+/// @brief Extracts the imaginary part of the values of a.
+/// @param a the matrix.
+/// @return imaginary part of the values of a.
+template <typename T>
+auto imag(const malg::MatrixBase<std::complex<T>> &a)
+{
+    return element_wise_function(a, [](const std::complex<T> &value) { return value.imag(); });
+}
+
+/// @brief Extracts the imaginary part of the values of a.
+/// @param a the matrix.
+/// @return imaginary part of the values of a.
+template <typename T>
+auto imag(const malg::Vector<std::complex<T>> &a)
+{
+    return element_wise_function(a, [](const std::complex<T> &value) { return value.imag(); });
+}
+
+/// @brief Transforms each element of a to its absolute value.
+/// @param a the input matrix.
+/// @return the same matrix but its absolute values.
+template <typename T>
+auto abs(const malg::MatrixBase<T> &a)
+{
+    return element_wise_function(a, [](const T &value) { return std::abs(value); });
+}
+
+/// @brief Transforms each element of a to its absolute value.
+/// @param a the input vector.
+/// @return the same vector but its absolute values.
+template <typename T>
+auto abs(const malg::Vector<T> &a)
+{
+    return element_wise_function(a, [](const T &value) { return std::abs(value); });
+}
+
+/// @brief Returns a matrix containing the sign of the values in the input matrix.
+/// @param a the input matrix.
+/// @return a matrix containing -1 and +1 based on the signs of the values of a.
+template <typename T>
+auto sign(const malg::MatrixBase<T> &a)
+{
+    if constexpr (malg::is_complex_v<T>)
+        return element_wise_function(a, [](const T &value) { return T(std::real(value) > 0 ? +1 : -1, std::imag(value) > 0 ? +1 : -1); });
+    else
+        return element_wise_function(a, [](const T &value) { return value > 0 ? +1 : -1; });
+}
+
+/// @brief Returns a matrix containing the sign of the values in the input matrix.
+/// @param a the input matrix.
+/// @return a matrix containing -1 and +1 based on the signs of the values of a.
+template <typename T>
+auto sign(const malg::Vector<T> &a)
+{
+    if constexpr (malg::is_complex_v<T>)
+        return element_wise_function(a, [](const T &value) { return T(std::real(value) > 0 ? +1 : -1, std::imag(value) > 0 ? +1 : -1); });
+    else
+        return element_wise_function(a, [](const T &value) { return value > 0 ? +1 : -1; });
 }
 
 template <typename T1, typename T2>

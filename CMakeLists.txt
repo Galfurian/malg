@@ -11,7 +11,7 @@
 cmake_minimum_required(VERSION 3.1...3.18)
 
 # Set the project name.
-project(malg)
+project(malg CXX)
 
 # Set the default build type to Debug.
 if(NOT CMAKE_BUILD_TYPE)
@@ -41,13 +41,11 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # -----------------------------------------------------------------------------
-# Add the C++ Executable.
+# LIBRARY
 # -----------------------------------------------------------------------------
+# Add the C++ library.
 add_library(${PROJECT_NAME} INTERFACE)
-
-# -----------------------------------------------------------------------------
-# Inlcude header directories and set the library.
-# -----------------------------------------------------------------------------
+# Inlcude header directories.
 target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include)
 
 # -----------------------------------------------------------------------------

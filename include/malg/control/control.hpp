@@ -66,12 +66,16 @@ public:
 template <typename T>
 inline auto c2d(const StateSpace<T> &sys, T sample_time)
 {
+    // Create the discrete time state-space model.
     DiscreteStateSpace<T> dsys;
-    dsys.A           = linalg::expm(sys.A * sample_time),
-    dsys.B           = linalg::inverse(sys.A) * (dsys.A - utility::identity<T>(sys.A.rows())) * sys.B;
-    dsys.C           = sys.C;
-    dsys.D           = sys.D;
+    // Compute the discretized matrices.
+    dsys.A = linalg::expm(sys.A * sample_time);
+    dsys.B = linalg::inverse(sys.A) * (dsys.A - utility::identity<T>(sys.A.rows())) * sys.B;
+    dsys.C = sys.C;
+    dsys.D = sys.D;
+    // Set the sampling period.
     dsys.sample_time = sample_time;
+    // Check the dimensions.
     assert(dsys.A.rows() == dsys.A.cols());
     assert(dsys.B.rows() == dsys.A.rows());
     assert(dsys.C.cols() == dsys.A.rows());
@@ -191,13 +195,13 @@ inline auto poly(const MatrixBase<T> &A)
     auto n = A.rows();
     Vector<T> c(n + 1);
     Matrix<T> B = A;
-    auto last_c = trace(B);
+    auto last_c = utility::trace(B);
     c[0]        = 1;
     c[1]        = -last_c;
     auto I      = utility::identity<T>(B.rows());
     for (unsigned m = 2; m < (n + 1); ++m) {
         B      = A * (B - (I * last_c));
-        last_c = trace(B) / m;
+        last_c = utility::trace(B) / m;
         c[m]   = -last_c;
     }
     return c;

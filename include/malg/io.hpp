@@ -8,6 +8,7 @@
 #include "malg/vector.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <iomanip>
 
@@ -56,6 +57,74 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::MatrixBase<T> &rh
         if (r < (rhs.rows() - 1))
             lhs << "\n";
     }
+    return lhs;
+}
+
+template <typename T>
+inline std::ofstream &operator<<(std::ofstream &lhs, const malg::Vector<T> &rhs)
+{
+    // Get the longhest value.
+    unsigned i, length = __get_longhest_value(rhs, lhs.precision());
+    // Print the vector size.
+    lhs << rhs.size() << "\n";
+    // Print the vector.
+    for (i = 0; i < rhs.size(); ++i) {
+        lhs << std::setw(length) << rhs[i];
+        if (i < (rhs.size() - 1))
+            lhs << " ";
+    }
+    lhs << "\n";
+    return lhs;
+}
+
+template <typename T>
+inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &rhs)
+{
+    // Get the longhest value.
+    unsigned r, c, length = __get_longhest_value(rhs, lhs.precision());
+    // Print the matrix size.
+    lhs << rhs.rows() << " " << rhs.cols() << "\n";
+    // Print the matrix.
+    for (r = 0; r < rhs.rows(); ++r) {
+        for (c = 0; c < rhs.cols(); ++c) {
+            lhs << std::setw(length) << rhs(r, c);
+            if (c < (rhs.cols() - 1))
+                lhs << " ";
+        }
+        if (r < (rhs.rows() - 1))
+            lhs << "\n";
+    }
+    lhs << "\n";
+    return lhs;
+}
+
+template <typename T>
+inline std::ifstream &operator>>(std::ifstream &lhs, malg::Vector<T> &rhs)
+{
+    unsigned size, i;
+    // Read the size.
+    lhs >> size;
+    // Prepare the vector.
+    rhs.resize(size);
+    // Read the vector.
+    for (i = 0; i < rhs.size(); ++i)
+        lhs >> rhs[i];
+    return lhs;
+}
+
+template <typename T>
+inline std::ifstream &operator>>(std::ifstream &lhs, malg::Matrix<T> &rhs)
+{
+    unsigned rows, cols, r, c;
+    // Read the size.
+    lhs >> rows;
+    lhs >> cols;
+    // Prepare the matrix.
+    rhs.resize(rows, cols);
+    // Read the matrix.
+    for (r = 0; r < rhs.rows(); ++r)
+        for (c = 0; c < rhs.cols(); ++c)
+            lhs >> rhs(r, c);
     return lhs;
 }
 

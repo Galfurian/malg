@@ -137,88 +137,6 @@ inline auto diag(const Vector<T> &v)
 /// @param matrix the matrix.
 /// @return the diagonal elements.
 template <typename T>
-inline auto sum(const Vector<T> &v)
-{
-    std::remove_const_t<T> s = 0;
-    for (unsigned i = 0; i < v.size(); ++i)
-        s += v[i];
-    return s;
-}
-
-/// @brief Returns the minimum value inside the vector, and its position.
-/// @param v the input vector.
-/// @return a pair containing the value and its position inside the vector.
-template <typename T>
-inline auto min(const Vector<T> &v)
-{
-    using data_type_t = std::remove_const_t<T>;
-    if (v.empty())
-        return std::make_pair(data_type_t(0.), unsigned(0));
-    unsigned min_val_pos = 0;
-    for (unsigned i = 1; i < v.size(); ++i)
-        if (v[i] < v[min_val_pos])
-            min_val_pos = i;
-    return std::make_pair(v[min_val_pos], min_val_pos);
-}
-
-/// @brief Returns a vector with the minimum value for each column of the input matrix.
-/// @param a the input matrix.
-/// @return the minimum values of the columns of a.
-template <typename T>
-inline auto min(const Matrix<T> &a)
-{
-    using data_type_t = std::remove_const_t<T>;
-    if (a.empty())
-        return Vector<data_type_t>();
-    Vector<data_type_t> values(a.cols(), data_type_t(0.));
-    for (unsigned c = 0, r, min_val_pos; c < a.cols(); ++c) {
-        for (min_val_pos = 0, r = 1; r < a.rows(); ++r)
-            if (a(r, c) < a(min_val_pos, c))
-                min_val_pos = r;
-        values[c] = a(min_val_pos, c);
-    }
-    return values;
-}
-
-/// @brief Returns the maximum value inside the vector, and its position.
-/// @param v the input vector.
-/// @return a pair containing the value and its position inside the vector.
-template <typename T>
-inline auto max(const Vector<T> &v)
-{
-    using data_type_t = std::remove_const_t<T>;
-    if (v.empty())
-        return std::make_pair(data_type_t(0.), unsigned(0));
-    unsigned max_val_pos = 0;
-    for (unsigned i = 1; i < v.size(); ++i)
-        if (v[i] > v[max_val_pos])
-            max_val_pos = i;
-    return std::make_pair(v[max_val_pos], max_val_pos);
-}
-
-/// @brief Returns a vector with the maximum value for each column of the input matrix.
-/// @param a the input matrix.
-/// @return the maximum values of the columns of a.
-template <typename T>
-inline auto max(const Matrix<T> &a)
-{
-    using data_type_t = std::remove_const_t<T>;
-    if (a.empty())
-        return Vector<data_type_t>();
-    Vector<data_type_t> values(a.cols(), data_type_t(0.));
-    for (unsigned c = 0, r, max_val_pos; c < a.cols(); ++c) {
-        for (max_val_pos = 0, r = 1; r < a.rows(); ++r)
-            if (a(r, c) > a(max_val_pos, c))
-                max_val_pos = r;
-        values[c] = a(max_val_pos, c);
-    }
-    return values;
-}
-
-/// @brief Extracts the diagonal elements from the matrix.
-/// @param matrix the matrix.
-/// @return the diagonal elements.
-template <typename T>
 inline auto to_matrix(const Vector<T> &v, bool row_matrix)
 {
     using data_type = std::remove_const_t<T>;
@@ -667,22 +585,6 @@ inline T accumulate(T *first, T *last, T init)
         ++first;
     }
     return init;
-}
-
-/// @brief Compute the trace of A, i.e., the sum of the elements along the main diagonal.
-/// @param A the input matrix.
-/// @return the sum of the diagonal elements.
-template <typename T>
-inline auto trace(const MatrixBase<T> &A)
-{
-#if 0
-    return sum(diag(A));
-#else
-    std::remove_const_t<T> result = 0;
-    for (unsigned i = 0; i < A.rows(); ++i)
-        result += A(i, i);
-    return result;
-#endif
 }
 
 /// @brief Find the basis for representing numbers on the computer.

@@ -35,7 +35,7 @@ public:
     /// @param rows
     /// @param cols
     /// @param initial
-    Matrix(unsigned rows, unsigned cols, const T &initial)
+    Matrix(unsigned rows, unsigned cols, const T &initial = T(0))
         : MatrixBase<T>(rows, cols),
           _data(rows * cols, initial)
     {

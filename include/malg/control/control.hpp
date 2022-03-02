@@ -195,13 +195,13 @@ inline auto poly(const MatrixBase<T> &A)
     auto n = A.rows();
     Vector<T> c(n + 1);
     Matrix<T> B = A;
-    auto last_c = utility::trace(B);
+    auto last_c = trace(B);
     c[0]        = 1;
     c[1]        = -last_c;
     auto I      = utility::identity<T>(B.rows());
     for (unsigned m = 2; m < (n + 1); ++m) {
         B      = A * (B - (I * last_c));
-        last_c = utility::trace(B) / m;
+        last_c = trace(B) / m;
         c[m]   = -last_c;
     }
     return c;

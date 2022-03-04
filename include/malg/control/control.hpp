@@ -88,9 +88,14 @@ inline auto c2d(const StateSpace<T> &sys, T sample_time)
 /// @param u the current input.
 /// @return a tuple containing the next state, and the output.
 template <typename T>
-inline auto simulate_step(const DiscreteStateSpace<T> &sys, const Vector<T> &x, const Vector<T> &u)
+inline auto simulate_step(
+    const DiscreteStateSpace<T> &sys,
+    const Vector<T> &x,
+    const Vector<T> &u)
 {
-    return std::make_pair(dot(sys.A, x) + dot(sys.B, u), dot(sys.C, x) + dot(sys.D, u));
+    return std::make_pair(
+        dot(sys.A, x) + dot(sys.B, u),
+        dot(sys.C, x) + dot(sys.D, u));
 }
 
 template <typename T>
@@ -168,10 +173,38 @@ inline auto obsv(const MatrixBase<T> &A, const MatrixBase<T> &C)
     return result;
 }
 
-/// @brief Pole placement using Ackermann method.
-/// @param A State matrix of the system.
-/// @param B Input matrix of the system.
-/// @return Gains such that A - B K has given eigenvalues.
+/// @brief Computes the coefficients of the polynomial whose roots are the elements of a.
+/// @param a the input vector.
+/// @return coefficients of the polynomial.
+template <typename T>
+inline auto poly(const Vector<T> &a)
+{
+    Vector<T> c(a.size() + 1);
+    c[0] = 1;
+    for (unsigned j = 0; j < a.size(); ++j)
+        for (unsigned i = j + 1; i >= 1; --i)
+            c[i] -= a[j] * c[i - 1];
+    return c;
+}
+
+template <typename T>
+inline auto polyreduce(const Vector<T> &a)
+{
+    unsigned i, j;
+    for (j = 0; j < a.size(); ++j)
+        if (a[j] != 0)
+            break;
+    if (j == a.size())
+        return Vector<T>({ 0 });
+    Vector<T> c(a.size() - j);
+    for (i = j; i < a.size(); ++i)
+        c[i - j] = a[i];
+    return c;
+}
+
+/// @brief Computes the coefficients of the polynomial.
+/// @param A Could be a row/column vector, or a matrix.
+/// @return coefficients of the polynomial.
 template <typename T>
 inline auto poly(const MatrixBase<T> &A)
 {

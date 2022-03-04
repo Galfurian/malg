@@ -253,7 +253,7 @@ inline std::string to_cpp(const char *name, const malg::MatrixBase<T> &m)
         if (r < (m.rows() - 1))
             ss << ",";
     }
-    ss << "};\n";
+    ss << "}";
     return ss.str();
 }
 

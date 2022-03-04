@@ -33,7 +33,7 @@ struct extract_value<std::complex<T>> : public std::true_type {
 };
 
 template <typename T>
-using extract_value_t = extract_value<T>::type;
+using extract_value_t = typename extract_value<T>::type;
 
 template <
     typename T1,

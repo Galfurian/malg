@@ -6,10 +6,10 @@ int main(int argc, char *argv[])
     unsigned size = 4;
     // Create the state-space model.
     malg::control::StateSpace<double> sys{
-        .A = malg::utility::rand_matrix<double>(size, size, -10, 10),
-        .B = malg::utility::rand_matrix<double>(size, 1, -10, 10),
-        .C = malg::utility::rand_matrix<double>(size, size, -10, 10),
-        .D = malg::utility::zeros<double>(size, 1),
+        malg::utility::rand_matrix<double>(size, size, -10, 10),
+        malg::utility::rand_matrix<double>(size, 1, -10, 10),
+        malg::utility::rand_matrix<double>(size, size, -10, 10),
+        malg::utility::zeros<double>(size, 1),
     };
     // Perform the discretization.
     auto dsys = malg::control::c2d(sys, 1e-03);

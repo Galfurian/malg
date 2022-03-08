@@ -207,7 +207,7 @@ inline auto determinant(const MatrixBase<T> &matrix)
 /// @param matrix the input matrix.
 /// @return the adjoint of the matrix.
 template <typename T>
-inline auto adjoint(const Matrix<T> &matrix)
+inline auto adjoint(const MatrixBase<T> &matrix)
 {
     assert(utility::is_square(matrix) && "Matrix must be square.");
     // Get the size of the matrix.
@@ -234,20 +234,22 @@ inline auto adjoint(const Matrix<T> &matrix)
 /// @param matrix the input matrix.
 /// @return the inverse of the matrix.
 template <typename T>
-inline auto inverse(const Matrix<T> &matrix)
+inline auto inverse(const MatrixBase<T> &matrix)
 {
     assert(utility::is_square(matrix) && "Matrix must be square.");
+    // Select the right type.
+    using data_type_t = std::remove_const_t<malg::extract_common_type_t<T, double>>;
     // Compute the determinant.
-    std::remove_const_t<T> det = linalg::determinant(matrix);
+    data_type_t det = linalg::determinant(matrix);
     // If determinant is zero, the matrix is singular.
     if (det == 0.) {
         std::cerr << "Matrix is singular.\n";
-        return Matrix<std::remove_const_t<T>>();
+        return Matrix<data_type_t>();
     }
     // Find adjoint of the matrix.
     auto adjoint = linalg::adjoint(matrix);
     // Create a matrix for the result.
-    Matrix<std::remove_const_t<T>> inv(matrix.rows(), matrix.cols(), 0);
+    Matrix<data_type_t> inv(matrix.rows(), matrix.cols(), 0);
     // Find Inverse using formula "inv(A) = adj(A)/det(A)".
     for (unsigned r = 0; r < matrix.rows(); ++r)
         for (unsigned c = 0; c < matrix.cols(); ++c)
@@ -259,7 +261,8 @@ inline auto inverse(const Matrix<T> &matrix)
 template <typename T>
 inline auto qr_decomposition(const Matrix<T> &A)
 {
-    using data_type_t = std::remove_const_t<T>;
+    // Select the right type.
+    using data_type_t = std::remove_const_t<malg::extract_common_type_t<T, double>>;
     // This function is required to build the householder.
     static auto make_householder = [](const Vector<data_type_t> &a) {
         // Find prependicular vector to mirror.
@@ -303,7 +306,7 @@ inline auto qr_decomposition(const Matrix<T> &A)
 template <typename DT>
 auto qr_decomposition(const malg::Matrix<DT> &A)
 {
-    using T = extract_value_t<DT>;
+    using T = is_complex_t<DT>;
     // Create the Q matrix.
     auto Q = malg::utility::eye<std::complex<T>>(A.rows(), A.cols(), 1.);
     // Create the R matrix.
@@ -393,6 +396,12 @@ auto solve(const Matrix<T> &A, const Matrix<T> &b)
     // Underdetermined system.
     auto At = linalg::transpose(A);
     return (At * linalg::inverse(A * At)) * b;
+}
+
+template <typename T1, typename T2>
+inline auto div(const MatrixBase<T1> &a, const MatrixBase<T2> &b)
+{
+    return a * linalg::inverse(b);
 }
 
 } // namespace malg::linalg

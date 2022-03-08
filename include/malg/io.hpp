@@ -224,37 +224,63 @@ inline std::string to_matlab(const char *name, const malg::MatrixBase<T> &m)
 }
 
 template <typename T>
-inline std::string to_cpp(const char *name, const malg::Vector<T> &v)
-{
-    std::stringstream ss;
-    ss << "malg::Vector<double> " << name << " = {";
-    for (unsigned i = 0; i < v.size(); ++i) {
-        ss << v[i];
-        if (i < (v.size() - 1))
-            ss << ", ";
-    }
-    ss << "};\n";
-    return ss.str();
-}
+struct to_cpp {
+    std::string name;
+    const malg::Vector<T> *v;
+    const malg::MatrixBase<T> *m;
 
-template <typename T>
-inline std::string to_cpp(const char *name, const malg::MatrixBase<T> &m)
-{
-    std::stringstream ss;
-    ss << "malg::Matrix<double> " << name << " = {";
-    for (unsigned r = 0, c; r < m.rows(); ++r) {
-        ss << "{";
-        for (c = 0; c < m.cols(); ++c) {
-            ss << m(r, c);
-            if (c < (m.cols() - 1))
-                ss << ",";
-        }
-        ss << "}";
-        if (r < (m.rows() - 1))
-            ss << ",";
+    to_cpp(std::string _name, const malg::Vector<T> &_v)
+        : name(_name),
+          v(&_v),
+          m(nullptr)
+    {
+        // Nothing to do.
     }
-    ss << "}";
-    return ss.str();
-}
+
+    to_cpp(std::string _name, const malg::MatrixBase<T> &_m)
+        : name(_name),
+          v(nullptr),
+          m(&_m)
+    {
+        // Nothing to do.
+    }
+};
 
 } // namespace malg
+
+template <typename T>
+inline std::ostream &operator<<(std::ostream &lhs, const malg::to_cpp<T> &rhs)
+{
+    if (rhs.v) {
+        lhs << "malg::Vector<double> " << rhs.name << " = {";
+        for (unsigned i = 0; i < rhs.v->size(); ++i) {
+            if constexpr (malg::is_complex_v<T>) {
+                lhs << rhs.v->operator[](i).real() << std::showpos << rhs.v->operator[](i).imag() << "i" << std::noshowpos;
+            } else {
+                lhs << rhs.v->operator[](i);
+            }
+            if (i < (rhs.v->size() - 1))
+                lhs << ", ";
+        }
+        lhs << "}";
+    } else {
+        lhs << "malg::Matrix<double> " << rhs.name << " = {";
+        for (unsigned r = 0, c; r < rhs.m->rows(); ++r) {
+            lhs << "{";
+            for (c = 0; c < rhs.m->cols(); ++c) {
+                if constexpr (malg::is_complex_v<T>) {
+                    lhs << rhs.m->operator()(r, c).real() << std::showpos << rhs.m->operator()(r, c).imag() << "i" << std::noshowpos;
+                } else {
+                    lhs << rhs.m->operator()(r, c);
+                }
+                if (c < (rhs.m->cols() - 1))
+                    lhs << ",";
+            }
+            lhs << "}";
+            if (r < (rhs.m->rows() - 1))
+                lhs << ",";
+        }
+        lhs << "}";
+    }
+    return lhs;
+}

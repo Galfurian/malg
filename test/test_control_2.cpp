@@ -24,26 +24,17 @@ int main(int argc, char *argv[])
     auto dsys = malg::control::c2d(sys, ts);
 
     // == Simulate ============================================================
-    malg::Matrix<double> u{ { .0 } };          // Input matrix.
-    malg::Matrix<double> x{ { .0 }, { .0 } };  // State matrix.
-    malg::Matrix<double> y{ { .0 } };          // Output matrix.
-
-    std::vector<double> vt, vu, vy;
+    malg::Matrix<double> u{ { .0 } };         // Input matrix.
+    malg::Matrix<double> x{ { .0 }, { .0 } }; // State matrix.
+    malg::Matrix<double> y{ { .0 } };         // Output matrix.
 
     // Simulation
     for (double t = .0, tt = 4; t < tt; t += ts) {
         u(0, 0) = 1.5 * std::sin(2 * M_PI * t);
 
-        y  = dsys.C * x + dsys.D * u;
+        y = dsys.C * x + dsys.D * u;
         x = dsys.A * x + dsys.B * u;
-
-        vt.emplace_back(t);
-        vu.emplace_back(u(0, 0));
-        vy.emplace_back(y(0, 0));
     }
-    matplot::figure();
-    matplot::plot(vt, vu, vt, vy);
-    matplot::show();
 
     return 0;
 }

@@ -1,12 +1,10 @@
 #include "malg/control/control.hpp"
 #include "malg/io.hpp"
 
-#include <matplot/matplot.h>
-
 int main(int argc, char *argv[])
 {
     // Timesteps.
-    std::vector<double> vts = matplot::linspace(0.1, 1, 4);
+    std::vector<double> vts{0.25, 0.50, 0.75};
     // Total simulation time.
     double total_time = 20;
     // Define the state-space model.

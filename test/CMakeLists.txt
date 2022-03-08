@@ -32,9 +32,8 @@ add_executable(test_control_3 test_control_3.cpp)
 target_link_libraries(test_control_3 malg)
 add_test(NAME run_test_control_3 COMMAND test_control_3)
 
-
 add_custom_target(
-    check COMMAND ${CMAKE_CTEST_COMMAND}
+    check_malg COMMAND ${CMAKE_CTEST_COMMAND}
     DEPENDS
     test_rlc
     test_read_write_file

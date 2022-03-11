@@ -656,10 +656,10 @@ inline auto operator*(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output vector.
-    malg::Vector<data_type_t> result(a.size());
+    data_type_t result = data_type_t(0.);
     // Perform the operation.
     for (unsigned i = 0; i < a.size(); ++i)
-        result[i] = a[i] * b[i];
+        result += a[i] * b[i];
     return result;
 }
 
@@ -682,21 +682,11 @@ inline auto operator*(const T1 &a, const malg::Vector<T2> &b)
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output vector.
-    malg::Vector<data_type_t> result(b.size());
+    data_type_t result = data_type_t(0.);
     // Perform the operation.
     for (unsigned i = 0; i < a.size(); ++i)
-        result[i] = a * b[i];
+        result += a * b[i];
     return result;
-}
-
-template <typename T1, typename T2>
-inline auto &operator*=(malg::Vector<T1> &a, const malg::Vector<T2> &b)
-{
-    assert(a.size() == b.size());
-    // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
-        a[i] = a[i] * b[i];
-    return a;
 }
 
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
@@ -706,20 +696,6 @@ inline auto operator*=(const malg::Vector<T1> &a, const T2 &b)
     for (unsigned i = 0; i < a.size(); ++i)
         a[i] = a[i] * b;
     return a;
-}
-
-template <typename T1, typename T2>
-inline auto operator/(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
-{
-    assert(a.size() == b.size());
-    // Select the right type.
-    using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
-    // Declare the output vector.
-    malg::Vector<data_type_t> result(a.size());
-    // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
-        result[i] = a[i] / b[i];
-    return result;
 }
 
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
@@ -733,16 +709,6 @@ inline auto operator/(const malg::Vector<T1> &a, const T2 &b)
     for (unsigned i = 0; i < a.size(); ++i)
         result[i] = a[i] / b;
     return result;
-}
-
-template <typename T1, typename T2>
-inline auto &operator/=(malg::Vector<T1> &a, const malg::Vector<T2> &b)
-{
-    assert(a.size() == b.size());
-    // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
-        a[i] = a[i] / b[i];
-    return a;
 }
 
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>

@@ -5,7 +5,9 @@
 #pragma once
 
 #include <initializer_list>
+#include <cstdlib>
 #include <cassert>
+#include <utility>
 
 namespace malg
 {

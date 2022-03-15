@@ -32,6 +32,10 @@ add_executable(test_control_3 test_control_3.cpp)
 target_link_libraries(test_control_3 malg)
 add_test(NAME run_test_control_3 COMMAND test_control_3)
 
+add_executable(test_complex test_complex.cpp)
+target_link_libraries(test_complex malg)
+add_test(NAME run_test_complex COMMAND test_complex)
+
 add_custom_target(
     check_malg COMMAND ${CMAKE_CTEST_COMMAND}
     DEPENDS
@@ -41,4 +45,5 @@ add_custom_target(
     test_control_1
     test_control_2
     test_control_3
+    test_complex
 )

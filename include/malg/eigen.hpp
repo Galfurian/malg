@@ -22,7 +22,7 @@ namespace malg::eigen
 
 // Wilkinson shift in QR algorithm
 template <typename T>
-inline auto wilkinson_shift(const malg::Matrix<std::complex<T>> &A)
+constexpr inline auto wilkinson_shift(const malg::Matrix<std::complex<T>> &A) noexcept
 {
     std::complex<T> s(0.0);
     unsigned N = A.rows() - 1;
@@ -41,7 +41,7 @@ inline auto wilkinson_shift(const malg::Matrix<std::complex<T>> &A)
 //                             i.e. P-1 A P = H
 // A hessenberg Matrix is upper triangular plus single non-zero diagonal below main diagonal
 template <typename T>
-inline auto hessenberg(const malg::Matrix<std::complex<T>> &A)
+constexpr inline auto hessenberg(const malg::Matrix<std::complex<T>> &A) noexcept
 {
     int N  = A.rows();
     auto P = malg::utility::identity<std::complex<T>>(N);
@@ -84,7 +84,7 @@ inline auto hessenberg(const malg::Matrix<std::complex<T>> &A)
 // Factorises a hessenberg malg::Matrix<std::complex<T>> A as QR, where Q is unitary and R is upper triangular
 // Uses N-1 Givens rotations
 template <typename T>
-auto qr_factorise_givens(const malg::Matrix<std::complex<T>> &A)
+constexpr auto qr_factorise_givens(const malg::Matrix<std::complex<T>> &A) noexcept
 {
     malg::Matrix<std::complex<T>> Q = malg::utility::identity<std::complex<T>>(A.rows());
     malg::Matrix<std::complex<T>> R(A);
@@ -125,7 +125,7 @@ auto qr_factorise_givens(const malg::Matrix<std::complex<T>> &A)
 // Eigenvalues of A should be the diagonal elements of T
 // If A is hermitian T would be diagonal and the eigenvectors would be the columns of P
 template <typename T>
-auto QRHessenberg(const malg::Matrix<std::complex<T>> &A)
+constexpr auto QRHessenberg(const malg::Matrix<std::complex<T>> &A) noexcept
 {
     const int ITERMAX      = 10000;
     const double TOLERANCE = 1e-14;
@@ -161,7 +161,7 @@ auto QRHessenberg(const malg::Matrix<std::complex<T>> &A)
 
         // Calculate residuals
         // 1. Change on iteration.
-        residual = malg::norm(malg::linear_combination(UT, 1.0, Told, -1.0));
+        residual = malg::square_norm(malg::linear_combination(UT, 1.0, Told, -1.0));
         // 2. Below-diagonal elements.
         residual += malg::sub_norm(UT);
         iter++;
@@ -178,7 +178,7 @@ auto QRHessenberg(const malg::Matrix<std::complex<T>> &A)
 // The eigenvalues are necessarily the diagonal elements of T
 // NOTE: if there are repeated eigenvalues, then THERE MAY NOT BE N EIGENVECTORS
 template <typename T>
-auto eigenvectorUpper(const malg::Matrix<std::complex<T>> &M)
+constexpr auto eigenvectorUpper(const malg::Matrix<std::complex<T>> &M) noexcept
 {
     bool fullset = true;
 
@@ -218,7 +218,7 @@ auto eigenvectorUpper(const malg::Matrix<std::complex<T>> &M)
 
         if (ok) {
             // Normalise
-            double length = malg::norm(V);
+            double length = malg::square_norm(V);
             for (int i = 0; i <= L; i++)
                 E(i, L) = V[i] / length;
         } else {

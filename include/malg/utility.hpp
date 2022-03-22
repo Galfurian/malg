@@ -20,7 +20,7 @@ namespace malg::utility
 
 /// @brief Find the basis for representing numbers on the computer.
 /// @return the basis.
-inline auto basis()
+constexpr inline auto basis() noexcept
 {
     double x, eins, b;
     x = eins = b = 1;
@@ -37,7 +37,7 @@ inline auto basis()
 /// @param value value for the diagonal.
 /// @return the generated matrix.
 template <typename T>
-inline auto eye(unsigned rows, unsigned cols, T value = T(1.))
+constexpr inline auto eye(unsigned rows, unsigned cols, T value = T(1.)) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((rows > 0) && "You must provide a number of rows greather than zero");
@@ -53,7 +53,7 @@ inline auto eye(unsigned rows, unsigned cols, T value = T(1.))
 /// @param value value for the diagonal.
 /// @return the identity matrix.
 template <typename T>
-inline auto identity(unsigned N, T value = T(1.))
+constexpr inline auto identity(unsigned N, T value = T(1.)) noexcept
 {
     return eye(N, N, value);
 }
@@ -63,7 +63,7 @@ inline auto identity(unsigned N, T value = T(1.))
 /// @param columns the number of columns.
 /// @return the newly created matrix.
 template <typename T>
-inline auto zeros(unsigned rows, unsigned cols)
+constexpr inline auto zeros(unsigned rows, unsigned cols) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((rows > 0) && "You must provide a number of rows greather than zero");
@@ -75,7 +75,7 @@ inline auto zeros(unsigned rows, unsigned cols)
 /// @param size the size of the vector.
 /// @return the newly created vector.
 template <typename T>
-inline auto zeros(unsigned size)
+constexpr inline auto zeros(unsigned size) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((size > 0) && "You must provide a size greather than zero");
@@ -87,7 +87,7 @@ inline auto zeros(unsigned size)
 /// @param columns the number of columns.
 /// @return the newly created matrix.
 template <typename T>
-inline auto ones(unsigned rows, unsigned cols)
+constexpr inline auto ones(unsigned rows, unsigned cols) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((rows > 0) && "You must provide a number of rows greather than zero");
@@ -99,7 +99,7 @@ inline auto ones(unsigned rows, unsigned cols)
 /// @param size the size of the vector.
 /// @return the newly created vector.
 template <typename T>
-inline auto ones(unsigned size)
+constexpr inline auto ones(unsigned size) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((size > 0) && "You must provide a size greather than zero");
@@ -110,7 +110,7 @@ inline auto ones(unsigned size)
 /// @param matrix the matrix.
 /// @return the diagonal elements.
 template <typename T>
-inline auto diag(const MatrixBase<T> &matrix)
+constexpr inline auto diag(const MatrixBase<T> &matrix) noexcept
 {
     using data_type = std::remove_const_t<T>;
     unsigned size   = std::min(matrix.rows(), matrix.cols());
@@ -124,7 +124,7 @@ inline auto diag(const MatrixBase<T> &matrix)
 /// @param matrix the matrix.
 /// @return the diagonal elements.
 template <typename T>
-inline auto diag(const Vector<T> &v)
+constexpr inline auto diag(const Vector<T> &v) noexcept
 {
     using data_type = std::remove_const_t<T>;
     Matrix<data_type> matrix(v.size(), v.size(), data_type(0.));
@@ -137,7 +137,7 @@ inline auto diag(const Vector<T> &v)
 /// @param matrix the matrix.
 /// @return the diagonal elements.
 template <typename T>
-inline auto to_matrix(const Vector<T> &v, bool row_matrix)
+constexpr inline auto to_matrix(const Vector<T> &v, bool row_matrix) noexcept
 {
     using data_type = std::remove_const_t<T>;
     Matrix<data_type> matrix(row_matrix ? 1u : v.size(), row_matrix ? v.size() : 1u, data_type(0));
@@ -147,7 +147,7 @@ inline auto to_matrix(const Vector<T> &v, bool row_matrix)
 }
 
 template <typename T1, typename T2>
-inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
+constexpr inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B) noexcept
 {
     assert(A.cols() == B.cols());
     // Select the right type.
@@ -164,7 +164,7 @@ inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
 }
 
 template <typename T1, typename T2>
-inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b)
+constexpr inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b) noexcept
 {
     assert(A.cols() == b.size());
     // Select the right type.
@@ -180,7 +180,7 @@ inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b)
 }
 
 template <typename T1, typename T2>
-inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
+constexpr inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B) noexcept
 {
     assert(A.rows() == B.rows());
     // Select the right type.
@@ -197,7 +197,7 @@ inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
 }
 
 template <typename T1, typename T2>
-inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
+constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b) noexcept
 {
     assert(A.rows() == b.size());
     // Select the right type.
@@ -213,11 +213,11 @@ inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
 }
 
 template <typename T>
-inline auto extract(const MatrixBase<T> &matrix,
+constexpr inline auto extract(const MatrixBase<T> &matrix,
                     unsigned start_row    = 0,
                     unsigned end_row      = -1,
                     unsigned start_column = 0,
-                    unsigned end_column   = -1)
+                    unsigned end_column   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_row         = std::min(matrix.rows(), end_row);
@@ -236,10 +236,10 @@ inline auto extract(const MatrixBase<T> &matrix,
 /// @param column the column to extract.
 /// @return the extracted column as a vector.
 template <typename T>
-inline auto extract_column(const MatrixBase<T> &matrix,
+constexpr inline auto extract_column(const MatrixBase<T> &matrix,
                            unsigned column,
                            unsigned start_row = 0,
-                           unsigned end_row   = -1)
+                           unsigned end_row   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_row         = std::min(matrix.rows(), end_row);
@@ -256,10 +256,10 @@ inline auto extract_column(const MatrixBase<T> &matrix,
 /// @param row the row to extract.
 /// @return the extracted row as a vector.
 template <typename T>
-inline auto extract_row(const MatrixBase<T> &matrix,
+constexpr inline auto extract_row(const MatrixBase<T> &matrix,
                         unsigned row,
                         unsigned start_column = 0,
-                        unsigned end_column   = -1)
+                        unsigned end_column   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_column      = std::min(matrix.cols(), end_column);
@@ -276,7 +276,7 @@ inline auto extract_row(const MatrixBase<T> &matrix,
 /// @param i the first row.
 /// @param j the second row.
 template <typename T>
-inline void swap_rows(MatrixBase<T> &matrix, unsigned i, unsigned j, unsigned start_column = 0, unsigned end_column = -1)
+constexpr inline void swap_rows(MatrixBase<T> &matrix, unsigned i, unsigned j, unsigned start_column = 0, unsigned end_column = -1) noexcept
 {
     end_column = std::min(end_column, matrix.cols());
     for (unsigned c = start_column; c < end_column; ++c)
@@ -288,7 +288,7 @@ inline void swap_rows(MatrixBase<T> &matrix, unsigned i, unsigned j, unsigned st
 /// @param i the first column.
 /// @param j the second column.
 template <typename T>
-inline void swap_cols(MatrixBase<T> &matrix, unsigned i, unsigned j, unsigned start_row = 0, unsigned end_row = -1)
+constexpr inline void swap_cols(MatrixBase<T> &matrix, unsigned i, unsigned j, unsigned start_row = 0, unsigned end_row = -1) noexcept
 {
     end_row = std::min(matrix.rows(), end_row);
     for (unsigned r = start_row; r < end_row; ++r)
@@ -296,7 +296,7 @@ inline void swap_cols(MatrixBase<T> &matrix, unsigned i, unsigned j, unsigned st
 }
 
 template <typename T>
-inline auto &remove_row(Matrix<T> &matrix, unsigned row)
+constexpr inline auto &remove_row(Matrix<T> &matrix, unsigned row) noexcept
 {
     assert(row < matrix.rows());
     for (unsigned r = row; r < (matrix.rows() - 1); ++r) {
@@ -309,7 +309,7 @@ inline auto &remove_row(Matrix<T> &matrix, unsigned row)
 }
 
 template <typename T>
-inline auto &remove_column(Matrix<T> &matrix, unsigned column)
+constexpr inline auto &remove_column(Matrix<T> &matrix, unsigned column) noexcept
 {
     assert(column < matrix.cols());
     for (unsigned c = column; c < (matrix.cols() - 1); ++c) {
@@ -326,7 +326,7 @@ inline auto &remove_column(Matrix<T> &matrix, unsigned column)
 /// @return true if the matrix is square.
 /// @return false if the matrix is not square.
 template <typename T>
-inline auto is_square(const MatrixBase<T> &matrix)
+constexpr inline auto is_square(const MatrixBase<T> &matrix) noexcept
 {
     return matrix.rows() == matrix.cols();
 }
@@ -336,7 +336,7 @@ inline auto is_square(const MatrixBase<T> &matrix)
 /// @return true if the matrix is a column vector.
 /// @return false if the matrix is not a column vector.
 template <typename T>
-inline auto is_column_vector(const MatrixBase<T> &matrix)
+constexpr inline auto is_column_vector(const MatrixBase<T> &matrix) noexcept
 {
     return matrix.cols() == 1;
 }
@@ -346,7 +346,7 @@ inline auto is_column_vector(const MatrixBase<T> &matrix)
 /// @return true if the matrix is a row vector.
 /// @return false if the matrix is not a row vector.
 template <typename T>
-inline auto is_row_vector(const MatrixBase<T> &matrix)
+constexpr inline auto is_row_vector(const MatrixBase<T> &matrix) noexcept
 {
     return matrix.rows() == 1;
 }
@@ -356,7 +356,7 @@ inline auto is_row_vector(const MatrixBase<T> &matrix)
 /// @return true if the matrix is symmetric.
 /// @return false if the matrix is not symmetric.
 template <typename T>
-inline auto is_symmetric(const MatrixBase<T> &matrix)
+constexpr inline auto is_symmetric(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
@@ -372,7 +372,7 @@ inline auto is_symmetric(const MatrixBase<T> &matrix)
 /// @return true if the matrix is skew symmetric.
 /// @return false if the matrix is not skew symmetric.
 template <typename T>
-inline auto is_skew_symmetric(const MatrixBase<T> &matrix)
+constexpr inline auto is_skew_symmetric(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
@@ -388,7 +388,7 @@ inline auto is_skew_symmetric(const MatrixBase<T> &matrix)
 /// @return true if the matrix is diagonal.
 /// @return false if the matrix is not diagonal.
 template <typename T>
-inline auto is_diagonal(const MatrixBase<T> &matrix)
+constexpr inline auto is_diagonal(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
@@ -404,7 +404,7 @@ inline auto is_diagonal(const MatrixBase<T> &matrix)
 /// @return true if the matrix contains all zeros.
 /// @return false if the matrix does not contain all zeros.
 template <typename T>
-inline auto is_zero(const MatrixBase<T> &matrix)
+constexpr inline auto is_zero(const MatrixBase<T> &matrix) noexcept
 {
     return std::all_of(matrix.begin(), matrix.end(), [](const T &x) { return x == 0; });
 }
@@ -414,7 +414,7 @@ inline auto is_zero(const MatrixBase<T> &matrix)
 /// @return true if the matrix contains the same value everywhere.
 /// @return false if the matrix does not contain the same value everywhere.
 template <typename T>
-inline auto is_constant(const MatrixBase<T> &matrix)
+constexpr inline auto is_constant(const MatrixBase<T> &matrix) noexcept
 {
     return std::adjacent_find(matrix.begin(), matrix.end(), std::not_equal_to{}) == matrix.end();
 }
@@ -426,7 +426,7 @@ inline auto is_constant(const MatrixBase<T> &matrix)
 /// @return true if the two arrays are equal within the given tolerance.
 /// @return false otherwise.
 template <typename T>
-inline auto all_close(const Vector<T> &a, const Vector<T> &b, double tolerance = 0.0001)
+constexpr inline auto all_close(const Vector<T> &a, const Vector<T> &b, double tolerance = 0.0001) noexcept
 {
     assert(a.size() == b.size());
     for (unsigned i = 0; i < a.size(); ++i)
@@ -442,7 +442,7 @@ inline auto all_close(const Vector<T> &a, const Vector<T> &b, double tolerance =
 /// @return true if the two arrays are equal within the given tolerance.
 /// @return false otherwise.
 template <typename T>
-inline auto all_close(const MatrixBase<T> &a, const MatrixBase<T> &b, double tolerance = 0.0001)
+constexpr inline auto all_close(const MatrixBase<T> &a, const MatrixBase<T> &b, double tolerance = 0.0001) noexcept
 {
     assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
     for (unsigned i = 0; i < a.size(); ++i)
@@ -456,7 +456,7 @@ inline auto all_close(const MatrixBase<T> &a, const MatrixBase<T> &b, double tol
 /// @return true if the matrix is the identity matrix.
 /// @return false if the matrix is not the identity matrix.
 template <typename T>
-inline auto is_identity(const MatrixBase<T> &matrix)
+constexpr inline auto is_identity(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
@@ -468,7 +468,7 @@ inline auto is_identity(const MatrixBase<T> &matrix)
 /// @return true if the matrix is orthogonal.
 /// @return false if the matrix is not orthogonal.
 template <typename T>
-inline auto is_orthogonal(const MatrixBase<T> &matrix)
+constexpr inline auto is_orthogonal(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
@@ -480,7 +480,7 @@ inline auto is_orthogonal(const MatrixBase<T> &matrix)
 /// @return true if the matrix is invertible.
 /// @return false if the matrix is not invertible.
 template <typename T>
-inline auto is_invertible(const MatrixBase<T> &matrix)
+constexpr inline auto is_invertible(const MatrixBase<T> &matrix) noexcept
 {
     return matrix.determinant() != 0;
 }
@@ -490,7 +490,7 @@ inline auto is_invertible(const MatrixBase<T> &matrix)
 /// @return true if the matrix is linearly dependent.
 /// @return false if the matrix is not linearly dependent.
 template <typename T>
-inline auto is_linearly_dependent(const MatrixBase<T> &matrix)
+constexpr inline auto is_linearly_dependent(const MatrixBase<T> &matrix) noexcept
 {
     return matrix.determinant() == 0;
 }
@@ -500,7 +500,7 @@ inline auto is_linearly_dependent(const MatrixBase<T> &matrix)
 /// @return true if the matrix is linearly independent.
 /// @return false if the matrix is not linearly independent.
 template <typename T>
-inline auto is_linearly_independent(const MatrixBase<T> &matrix)
+constexpr inline auto is_linearly_independent(const MatrixBase<T> &matrix) noexcept
 {
     return !matrix.is_linearly_dependent();
 }
@@ -510,7 +510,7 @@ inline auto is_linearly_independent(const MatrixBase<T> &matrix)
 /// @return true if the matrix is a lower triangular one.
 /// @return false if the matrix is not a lower triangular one.
 template <typename T>
-inline auto is_lower_triangular(const MatrixBase<T> &matrix)
+constexpr inline auto is_lower_triangular(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
@@ -526,7 +526,7 @@ inline auto is_lower_triangular(const MatrixBase<T> &matrix)
 /// @return true if the matrix is a upper triangular one.
 /// @return false if the matrix is not a upper triangular one.
 template <typename T>
-inline auto is_upper_triangular(const MatrixBase<T> &matrix)
+constexpr inline auto is_upper_triangular(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
@@ -538,19 +538,19 @@ inline auto is_upper_triangular(const MatrixBase<T> &matrix)
 }
 
 template <typename T>
-auto &reshape(malg::Matrix<T> &m, unsigned rows, unsigned cols)
+constexpr inline auto &reshape(malg::Matrix<T> &m, unsigned rows, unsigned cols) noexcept
 {
     return m.reshape(rows, cols);
 }
 
 template <typename T>
-auto &resize(malg::Matrix<T> &m, unsigned rows, unsigned cols)
+constexpr inline auto &resize(malg::Matrix<T> &m, unsigned rows, unsigned cols) noexcept
 {
     return m.resize(rows, cols);
 }
 
 template <typename T>
-inline T inner_product(T *first1, T *last1, T *first2, T init)
+constexpr inline T inner_product(T *first1, T *last1, T *first2, T init) noexcept
 {
     while (first1 != last1) {
         init = std::move(init) + (*first1) * (*first2);
@@ -560,25 +560,25 @@ inline T inner_product(T *first1, T *last1, T *first2, T init)
 }
 
 template <typename MatrixType>
-inline auto view(MatrixType &matrix, unsigned start_row = 0, unsigned end_row = -1, unsigned start_col = 0, unsigned end_col = -1)
+constexpr inline auto view(MatrixType &matrix, unsigned start_row = 0, unsigned end_row = -1, unsigned start_col = 0, unsigned end_col = -1) noexcept
 {
     return View(matrix, start_row, end_row, start_col, end_col);
 }
 
 template <typename MatrixType>
-inline auto row(MatrixType &matrix, unsigned row, unsigned start_col = 0, unsigned end_col = -1)
+constexpr inline auto row(MatrixType &matrix, unsigned row, unsigned start_col = 0, unsigned end_col = -1) noexcept
 {
     return View(matrix, row, row + 1, start_col, end_col);
 }
 
 template <typename MatrixType>
-inline auto col(MatrixType &matrix, unsigned col, unsigned start_row = 0, unsigned end_row = -1)
+constexpr inline auto col(MatrixType &matrix, unsigned col, unsigned start_row = 0, unsigned end_row = -1) noexcept
 {
     return View(matrix, start_row, end_row, col, col + 1);
 }
 
 template <class T>
-inline T accumulate(T *first, T *last, T init)
+constexpr inline T accumulate(T *first, T *last, T init) noexcept
 {
     while (first != last) {
         init = std::move(init) + (*first);
@@ -591,7 +591,7 @@ inline T accumulate(T *first, T *last, T init)
 /// @tparam T
 /// @return int
 template <typename T>
-static inline auto basis()
+static constexpr inline auto basis() noexcept
 {
     T x = 1, eins = 1, b = 1;
     while ((x + eins) - x == eins)
@@ -602,7 +602,7 @@ static inline auto basis()
 }
 
 template <typename T, typename T2>
-inline auto rand_matrix(unsigned rows, unsigned cols, T2 min, T2 max)
+constexpr inline auto rand_matrix(unsigned rows, unsigned cols, T2 min, T2 max) noexcept
 {
     if constexpr (malg::is_complex_v<T>) {
         using data_type_t    = typename T::value_type;
@@ -633,7 +633,7 @@ inline auto rand_matrix(unsigned rows, unsigned cols, T2 min, T2 max)
 }
 
 template <typename T, typename T2>
-inline auto rand_vector(unsigned size, T2 min, T2 max)
+constexpr inline auto rand_vector(unsigned size, T2 min, T2 max) noexcept
 {
     if constexpr (malg::is_complex_v<T>) {
         using data_type_t    = typename T::value_type;

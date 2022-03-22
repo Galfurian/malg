@@ -18,15 +18,15 @@ public:
     using T = typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::base_type, typename MatrixType::base_type>;
 
     MatrixType &_matrix;
-    unsigned _start_row, _end_row;
-    unsigned _start_col, _end_col;
+    size_type_t _start_row, _end_row;
+    size_type_t _start_col, _end_col;
 
 public:
-    View(MatrixType &matrix,
-         unsigned start_row = 0,
-         unsigned end_row   = -1,
-         unsigned start_col = 0,
-         unsigned end_col   = -1)
+    constexpr View(MatrixType &matrix,
+         size_type_t start_row = 0,
+         size_type_t end_row   = -1,
+         size_type_t start_col = 0,
+         size_type_t end_col   = -1) noexcept
         : _matrix(matrix),
           _start_row(start_row),
           _end_row(end_row),
@@ -39,21 +39,21 @@ public:
 
     /// @brief Get the number of rows of the matrix.
     /// @return the number of rows.
-    inline unsigned rows() const override
+    constexpr inline size_type_t rows() const noexcept override
     {
         return std::min(_end_row, _matrix.rows()) - _start_row;
     }
 
     /// @brief Get the number of columns of the matrix.
     /// @return the number of columns.
-    inline unsigned cols() const override
+    constexpr inline size_type_t cols() const noexcept override
     {
         return std::min(_end_col, _matrix.cols()) - _start_col;
     }
 
     /// @brief Returns the total size of the matrix.
     /// @return the total size of the matrix.
-    inline unsigned size() const override
+    constexpr inline size_type_t size() const noexcept override
     {
         return this->rows() * this->cols();
     }
@@ -62,12 +62,12 @@ public:
     /// @param rhs the other matrix.
     /// @return a reference to this matrix.
     template <typename T2>
-    auto &operator=(const MatrixBase<T2> &rhs)
+    constexpr inline auto &operator=(const MatrixBase<T2> &rhs) noexcept
     {
         assert(this->rows() == rhs.rows());
         assert(this->cols() == rhs.cols());
-        for (unsigned r = 0; r < rhs.rows(); ++r)
-            for (unsigned c = 0; c < rhs.cols(); ++c)
+        for (size_type_t r = 0; r < rhs.rows(); ++r)
+            for (size_type_t c = 0; c < rhs.cols(); ++c)
                 this->at(r, c) = rhs(r, c);
         return *this;
     }
@@ -75,12 +75,12 @@ public:
     /// @brief Assign operator.
     /// @param rhs the other matrix.
     /// @return a reference to this matrix.
-    auto &operator=(const View<MatrixType> &rhs)
+    constexpr inline auto &operator=(const View<MatrixType> &rhs) noexcept
     {
         assert(this->rows() == rhs.rows());
         assert(this->cols() == rhs.cols());
-        for (unsigned r = 0; r < rhs.rows(); ++r)
-            for (unsigned c = 0; c < rhs.cols(); ++c)
+        for (size_type_t r = 0; r < rhs.rows(); ++r)
+            for (size_type_t c = 0; c < rhs.cols(); ++c)
                 this->at(r, c) = rhs(r, c);
         return *this;
     }
@@ -89,22 +89,22 @@ public:
     /// @param rhs the other matrix.
     /// @return a reference to this matrix.
     template <typename T2>
-    auto &operator=(const View<T2> &rhs)
+    constexpr inline auto &operator=(const View<T2> &rhs) noexcept
     {
         assert(this->rows() == rhs.rows());
         assert(this->cols() == rhs.cols());
-        for (unsigned r = 0; r < rhs.rows(); ++r)
-            for (unsigned c = 0; c < rhs.cols(); ++c)
+        for (size_type_t r = 0; r < rhs.rows(); ++r)
+            for (size_type_t c = 0; c < rhs.cols(); ++c)
                 this->at(r, c) = rhs(r, c);
         return *this;
     }
 
-    inline T *data() override
+    constexpr inline T *data() noexcept override
     {
         return _matrix.data();
     }
 
-    inline const T *data() const override
+    constexpr inline const T *data() const noexcept override
     {
         return _matrix.data();
     }
@@ -112,7 +112,7 @@ public:
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
     /// @return the reference to the accessed item.
-    inline T &operator[](unsigned pos) override
+    constexpr inline T &operator[](size_type_t pos) noexcept override
     {
 #ifdef ROW_MAJOR
         return this->at((pos / this->rows()), (pos % this->rows()));
@@ -124,7 +124,7 @@ public:
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
     /// @return the reference to the accessed item.
-    inline const T &operator[](unsigned pos) const override
+    constexpr inline const T &operator[](size_type_t pos) const noexcept override
     {
 #ifdef ROW_MAJOR
         return this->at((pos / this->rows()), (pos % this->rows()));
@@ -137,7 +137,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @return the reference to the accessed item.
-    inline T &operator()(unsigned row, unsigned col) override
+    constexpr inline T &operator()(size_type_t row, size_type_t col) noexcept override
     {
         return this->at(row, col);
     }
@@ -146,7 +146,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @return the const reference to the accessed item.
-    inline const T &operator()(unsigned row, unsigned col) const override
+    constexpr inline const T &operator()(size_type_t row, size_type_t col) const noexcept override
     {
         return this->at(row, col);
     }
@@ -155,7 +155,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @return the reference to the accessed item.
-    inline T &at(unsigned row, unsigned col) override
+    constexpr inline T &at(size_type_t row, size_type_t col) noexcept override
     {
         return _matrix.at(_start_row + row, _start_col + col);
     }
@@ -164,7 +164,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @return the const reference to the accessed item.
-    inline const T &at(unsigned row, unsigned col) const override
+    constexpr inline const T &at(size_type_t row, size_type_t col) const noexcept override
     {
         return _matrix.at(_start_row + row, _start_col + col);
     }
@@ -176,13 +176,13 @@ public:
     using T = typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::base_type, typename MatrixType::base_type>;
 
     MatrixType &_matrix;
-    unsigned _excluded_row;
-    unsigned _excluded_col;
+    size_type_t _excluded_row;
+    size_type_t _excluded_col;
 
 public:
-    CofactorView(MatrixType &matrix,
-                 unsigned excluded_row,
-                 unsigned excluded_col)
+    constexpr CofactorView(MatrixType &matrix,
+                 size_type_t excluded_row,
+                 size_type_t excluded_col) noexcept
         : _matrix(matrix),
           _excluded_row(excluded_row),
           _excluded_col(excluded_col)
@@ -192,21 +192,21 @@ public:
 
     /// @brief Get the number of rows of the matrix.
     /// @return the number of rows.
-    inline unsigned rows() const override
+    constexpr inline size_type_t rows() const noexcept override
     {
         return _matrix.rows() - 1;
     }
 
     /// @brief Get the number of columns of the matrix.
     /// @return the number of columns.
-    inline unsigned cols() const override
+    constexpr inline size_type_t cols() const noexcept override
     {
         return _matrix.cols() - 1;
     }
 
     /// @brief Returns the total size of the matrix.
     /// @return the total size of the matrix.
-    inline unsigned size() const override
+    constexpr inline size_type_t size() const noexcept override
     {
         return this->rows() * this->cols();
     }
@@ -215,22 +215,22 @@ public:
     /// @param rhs the other matrix.
     /// @return a reference to this matrix.
     template <typename T2>
-    auto &operator=(const MatrixBase<T2> &rhs)
+    constexpr inline auto &operator=(const MatrixBase<T2> &rhs) noexcept
     {
         assert(this->rows() == rhs.rows());
         assert(this->cols() == rhs.cols());
-        for (unsigned r = 0; r < rhs.rows(); ++r)
-            for (unsigned c = 0; c < rhs.cols(); ++c)
+        for (size_type_t r = 0; r < rhs.rows(); ++r)
+            for (size_type_t c = 0; c < rhs.cols(); ++c)
                 this->at(r, c) = rhs(r, c);
         return *this;
     }
 
-    inline T *data() override
+    constexpr inline T *data() noexcept override
     {
         return _matrix.data();
     }
 
-    inline const T *data() const override
+    constexpr inline const T *data() const noexcept override
     {
         return _matrix.data();
     }
@@ -238,7 +238,7 @@ public:
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
     /// @return the reference to the accessed item.
-    inline T &operator[](unsigned pos) override
+    constexpr inline T &operator[](size_type_t pos) noexcept override
     {
 #ifdef ROW_MAJOR
         return this->at((pos / this->rows()), (pos % this->rows()));
@@ -250,7 +250,7 @@ public:
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
     /// @return the reference to the accessed item.
-    inline const T &operator[](unsigned pos) const override
+    constexpr inline const T &operator[](size_type_t pos) const noexcept override
     {
 #ifdef ROW_MAJOR
         return this->at((pos / this->rows()), (pos % this->rows()));
@@ -263,7 +263,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @return the reference to the accessed item.
-    inline T &operator()(unsigned row, unsigned col) override
+    constexpr inline T &operator()(size_type_t row, size_type_t col) noexcept override
     {
         return this->at(row, col);
     }
@@ -272,7 +272,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @return the const reference to the accessed item.
-    inline const T &operator()(unsigned row, unsigned col) const override
+    constexpr inline const T &operator()(size_type_t row, size_type_t col) const noexcept override
     {
         return this->at(row, col);
     }
@@ -281,7 +281,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @return the reference to the accessed item.
-    inline T &at(unsigned row, unsigned col) override
+    constexpr inline T &at(size_type_t row, size_type_t col) noexcept override
     {
         return _matrix.at(row + (row >= _excluded_row), col + (col >= _excluded_col));
     }
@@ -290,7 +290,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @return the const reference to the accessed item.
-    inline const T &at(unsigned row, unsigned col) const override
+    constexpr inline const T &at(size_type_t row, size_type_t col) const noexcept override
     {
         return _matrix.at(row + (row >= _excluded_row), col + (col >= _excluded_col));
     }

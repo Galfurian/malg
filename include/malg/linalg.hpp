@@ -62,16 +62,6 @@ inline auto powm(const MatrixBase<T> &A, long N)
     return R;
 }
 
-template <typename T>
-inline auto expm(const MatrixBase<T> &A)
-{
-    auto R = utility::zeros<std::remove_const_t<T>>(A.rows(), A.cols());
-    for (long k = 0; k <= 50; ++k) {
-        R += powm(A, k) / factorial<long double>(k);
-    }
-    return R;
-}
-
 /// @brief Computes the hermitian transpose of the complex matrix.
 /// @param A the matrix.
 /// @return the matrix transposed.
@@ -266,7 +256,7 @@ inline auto qr_decomposition(const Matrix<T> &A)
     // This function is required to build the householder.
     static auto make_householder = [](const Vector<data_type_t> &a) {
         // Find prependicular vector to mirror.
-        auto u = a / (a[0] + std::copysign(malg::norm(a), a[0]));
+        auto u = a / (a[0] + std::copysign(malg::square_norm(a), a[0]));
         u[0]   = 1;
         // Finding Householder projection.
         return utility::eye(a.size(), a.size(), data_type_t(1.)) -
@@ -402,6 +392,59 @@ template <typename T1, typename T2>
 inline auto div(const MatrixBase<T1> &a, const MatrixBase<T2> &b)
 {
     return a * linalg::inverse(b);
+}
+
+template <typename T>
+inline auto expm(const MatrixBase<T> &A, double accuracy = 0.00001)
+{
+#if 0
+    auto R = utility::zeros<std::remove_const_t<T>>(A.rows(), A.cols());
+    for (long k = 0; k <= 50; ++k) {
+        R += powm(A, k) / factorial<long double>(k);
+    }
+    return R;
+#else
+    // NOTE: use simplified form of "scale and square"
+    // Trade faster coversion in power series for a couple of additional square operations
+    // TODO: better/faster algorithm than power series?
+
+    // Scale down matrix A by a power of 2, such that norm(A) < 1.
+    const auto [iterations, scale] = malg::log2_ceil(A);
+    // Apply the scaling.
+    const auto scaled_a = A * scale;
+
+    // Compute power series for e^(A/(2^iterations))
+    // init (k = 0)
+    int batch_size             = A.rows() * A.rows();
+    const auto square_accuracy = accuracy * accuracy * scale * scale;
+    auto mtk                   = malg::utility::eye<T>(A.rows(), A.cols()); // scaled_a to the power k
+    auto ret                   = malg::utility::eye<T>(A.rows(), A.cols()); // sum of power seriees
+    auto fac_inv               = double{ 1.0 };                             // inverse faculty
+    auto rel_square_diff       = square_accuracy + 1.0;
+
+    for (unsigned batch_start_idx = 1; (rel_square_diff > square_accuracy && fac_inv != 0.0); batch_start_idx += batch_size) {
+        auto local_accum = malg::Matrix<T>(A.rows(), A.cols());
+        for (int i = 0; i < batch_size; ++i) {
+            const auto k = batch_start_idx + i;
+            fac_inv      = fac_inv * (1.0 / k);
+            if (feq::approximately_equal(fac_inv, 0.0)) {
+                break;
+            }
+            mtk = mtk * scaled_a;
+            local_accum += mtk * fac_inv;
+        }
+        ret += local_accum;
+        // Caclulate relative change in this iteration
+        // TODO: properly guard against division by zero
+        const malg::Matrix<T> rel_error = malg::linalg::div(local_accum * local_accum, ret * ret + accuracy);
+        rel_square_diff                 = malg::square_norm(rel_error);
+    };
+    // raise the result
+    for (unsigned k = 0; k < iterations; ++k) {
+        ret = ret * ret;
+    }
+    return ret;
+#endif
 }
 
 } // namespace malg::linalg

@@ -10,14 +10,14 @@
 namespace feq
 {
 
-static inline auto &tolerance()
+static inline auto &tolerance() noexcept
 {
     static double tol = std::numeric_limits<double>::epsilon();
     return tol;
 }
 
 template <typename T1, typename T2>
-inline bool approximately_equal(T1 a, T2 b)
+inline constexpr bool approximately_equal(T1 a, T2 b) noexcept
 {
     return std::fabs(a - b) <= tolerance() * std::fmax(std::fabs(a), std::fabs(b));
 }

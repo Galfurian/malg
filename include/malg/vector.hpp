@@ -16,7 +16,7 @@ template <typename T>
 class Vector {
 public:
     /// @brief Construct a new Vector object.
-    Vector()
+    constexpr Vector() noexcept
         : _data(nullptr),
           _size(0)
     {
@@ -25,7 +25,7 @@ public:
 
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
-    Vector(unsigned size)
+    constexpr Vector(unsigned size) noexcept
         : _data(nullptr),
           _size(0)
     {
@@ -35,7 +35,7 @@ public:
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
     /// @param value the vector will be initialized with it.
-    Vector(unsigned size, T value)
+    constexpr Vector(unsigned size, T value) noexcept
         : _data(nullptr),
           _size(0)
     {
@@ -47,7 +47,7 @@ public:
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
     /// @param data the initialization data.
-    Vector(unsigned size, const std::initializer_list<T> &data)
+    constexpr Vector(unsigned size, const std::initializer_list<T> &data) noexcept
         : _data(nullptr),
           _size(0)
     {
@@ -61,7 +61,7 @@ public:
 
     /// @brief Construct a new Vector object.
     /// @param values list of values.
-    Vector(const std::initializer_list<T> &values)
+    constexpr Vector(const std::initializer_list<T> &values) noexcept
         : _data(nullptr),
           _size(0)
     {
@@ -74,7 +74,7 @@ public:
 
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
-    Vector(const Vector<T> &other)
+    constexpr Vector(const Vector<T> &other) noexcept
         : _data(nullptr),
           _size(0)
     {
@@ -86,7 +86,7 @@ public:
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
     template <typename T2>
-    Vector(const Vector<T2> &other)
+    constexpr Vector(const Vector<T2> &other) noexcept
         : _data(nullptr),
           _size(0)
     {
@@ -97,7 +97,7 @@ public:
 
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
-    Vector(Vector<T> &&other)
+    constexpr Vector(Vector<T> &&other) noexcept
         : _data(std::move(other._data)),
           _size(other._size)
     {
@@ -108,7 +108,7 @@ public:
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
     template <typename T2>
-    Vector(Vector<T2> &other)
+    constexpr Vector(Vector<T2> &other) noexcept
         : _data(std::move(other._data)),
           _size(other._size)
     {
@@ -117,28 +117,28 @@ public:
     }
 
     /// @brief Destroy the Vector object.
-    ~Vector()
+    constexpr ~Vector() noexcept
     {
         this->deallocate();
     }
 
     /// @brief Gives access to the data.
     /// @return pointer to the data.
-    inline const T *data() const
+    inline constexpr const auto data() const noexcept
     {
         return _data;
     }
 
     /// @brief Gives access to the data.
     /// @return pointer to the data.
-    inline T *data()
+    inline constexpr auto data() noexcept
     {
         return _data;
     }
 
     /// @brief Returns the dimension of the vector.
     /// @return the dimension of the vector.
-    inline unsigned size() const
+    inline constexpr auto size() const noexcept
     {
         return _size;
     }
@@ -146,12 +146,12 @@ public:
     /// @brief Checks if the vector is empty.
     /// @return true if it is empty.
     /// @return false otherwise.
-    inline virtual bool empty() const
+    inline constexpr auto empty() const noexcept
     {
         return _size == 0;
     }
 
-    auto &resize(unsigned size)
+    inline constexpr auto &resize(unsigned size) noexcept
     {
         this->allocate(size);
         return *this;
@@ -160,25 +160,23 @@ public:
     /// @brief Operator for accessing the vector.
     /// @param pos the position.
     /// @return the reference to the accessed item.
-    T &operator[](unsigned pos)
+    inline constexpr auto &operator[](unsigned pos) noexcept
     {
-        assert(pos < _size);
         return _data[pos];
     }
 
     /// @brief Operator for accessing the vector.
     /// @param pos the position.
     /// @return the reference to the accessed item.
-    const T &operator[](unsigned pos) const
+    inline constexpr const auto &operator[](unsigned pos) const noexcept
     {
-        assert(pos < _size);
         return _data[pos];
     }
 
     /// @brief Assignment operator.
     /// @param other the other vector.
     /// @return this vector.
-    Vector<T> &operator=(const Vector<T> &other)
+    inline constexpr auto &operator=(const Vector<T> &other) noexcept
     {
         if (this->allocate(other.size()))
             for (unsigned i = 0; i < _size; ++i)
@@ -190,7 +188,7 @@ public:
     /// @param other the other vector.
     /// @return this vector.
     template <typename T2>
-    Vector<T> &operator=(const Vector<T2> &other)
+    inline constexpr auto &operator=(const Vector<T2> &other) noexcept
     {
         if (this->allocate(other.size()))
             for (unsigned i = 0; i < _size; ++i)
@@ -201,7 +199,7 @@ public:
     /// @brief Assignment operator.
     /// @param other the other vector.
     /// @return this vector.
-    Vector<T> &operator=(Vector<T> &&other)
+    inline constexpr auto &operator=(Vector<T> &&other) noexcept
     {
         this->deallocate();
         _data       = std::move(other._data);
@@ -215,7 +213,7 @@ public:
     /// @param other the other vector.
     /// @return this vector.
     template <typename T2>
-    Vector<T> &operator=(Vector<T2> &&other)
+    inline constexpr auto &operator=(Vector<T2> &&other) noexcept
     {
         this->deallocate();
         _data       = std::move(other._data);
@@ -227,34 +225,34 @@ public:
 
     /// @brief Provides a pointer to the begining of the vector.
     /// @return the pointer.
-    inline const T *begin() const
+    inline constexpr const auto begin() const noexcept
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the begining of the vector.
     /// @return the pointer.
-    inline T *begin()
+    inline constexpr auto begin() noexcept
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the end of the vector.
     /// @return the pointer.
-    inline const T *end() const
+    inline constexpr const auto end() const noexcept
     {
         return &_data[_size];
     }
 
     /// @brief Provides a pointer to the end of the vector.
     /// @return the pointer.
-    inline T *end()
+    inline constexpr auto end() noexcept
     {
         return &_data[_size];
     }
 
 private:
-    inline bool deallocate()
+    inline constexpr auto deallocate() noexcept
     {
         if (_size > 0) {
             std::free(_data);
@@ -265,7 +263,7 @@ private:
         return false;
     }
 
-    inline bool allocate(unsigned size)
+    inline constexpr auto allocate(unsigned size) noexcept
     {
         if (size == 0)
             return this->deallocate();

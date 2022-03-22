@@ -907,60 +907,9 @@ inline auto projection(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 }
 
 template <typename T>
-inline auto norm(const malg::Vector<T> &v)
-{
-    std::remove_const_t<is_complex_t<T>> accum = 0;
-    for (unsigned i = 0; i < v.size(); ++i) {
-        if constexpr (malg::is_complex_v<T>)
-            accum += std::norm(v[i]);
-        else
-            accum += v[i] * v[i];
-    }
-    return std::sqrt(accum);
-}
-
-/// @brief The Euclidean norm of a matrix, the square root of the sum of all the
-///        squares.
-/// @param A the input matrix.
-/// @return the norm.
-template <typename T>
-inline auto norm(const malg::MatrixBase<T> &A)
-{
-    std::remove_const_t<is_complex_t<T>> accum = 0;
-    for (unsigned r = 0; r < A.rows(); ++r) {
-        for (unsigned c = 0; c < A.cols(); ++c) {
-            if constexpr (malg::is_complex_v<T>)
-                accum += std::norm(A(r, c));
-            else
-                accum += A(r, c) * A(r, c);
-        }
-    }
-    return std::sqrt(accum);
-}
-
-/// @brief The Euclidean norm of the lower leading diagonal of a square matrix.
-/// @param A the input matrix.
-/// @return the square root of the sum of all the squares.
-template <typename T>
-auto sub_norm(const malg::MatrixBase<T> &A)
-{
-    assert(malg::utility::is_square(A));
-    std::remove_const_t<is_complex_t<T>> accum = 0;
-    for (unsigned r = 1; r < A.rows(); ++r) {
-        for (unsigned c = 0; c < r; ++c) {
-            if constexpr (malg::is_complex_v<T>)
-                accum += std::norm(A(r, c));
-            else
-                accum += A(r, c) * A(r, c);
-        }
-    }
-    return std::sqrt(accum);
-}
-
-template <typename T>
 inline auto vector_length(malg::MatrixBase<T> &A, unsigned c, unsigned r_start = 0)
 {
-    std::remove_const_t<is_complex_t<T>> accum = 0;
+    std::remove_const_t<malg::is_complex_t<T>> accum = 0;
     for (unsigned r = r_start; r < A.rows(); r++) {
         if constexpr (malg::is_complex_v<T>)
             accum += std::norm(A(r, c));
@@ -1134,6 +1083,116 @@ inline bool any(const Vector<T> &v)
         if (v[i] != 0)
             return true;
     return false;
+}
+
+template <typename T>
+inline auto square_norm(const malg::Vector<T> &v)
+{
+    std::remove_const_t<malg::is_complex_t<T>> accum = 0;
+    for (unsigned i = 0; i < v.size(); ++i) {
+        if constexpr (malg::is_complex_v<T>)
+            accum += std::norm(v[i]);
+        else
+            accum += v[i] * v[i];
+    }
+    return std::sqrt(accum);
+}
+
+/// @brief The Frobenius norm of a matrix.
+/// @param A the input matrix.
+/// @return the norm.
+template <typename T>
+inline auto square_norm(const malg::MatrixBase<T> &A)
+{
+    std::remove_const_t<malg::is_complex_t<T>> accum = 0;
+    // Compute the sum of squares of the elements of the given matrix.
+    for (unsigned r = 0; r < A.rows(); ++r) {
+        for (unsigned c = 0; c < A.cols(); ++c) {
+            if constexpr (malg::is_complex_v<T>)
+                accum += std::norm(A(r, c));
+            else
+                accum += A(r, c) * A(r, c);
+        }
+    }
+    // Return the square root of the sum of squares.
+    return std::sqrt(accum);
+}
+
+/// @brief Computes the infinity norm of a vector, i.e., largest magnitude among each element of a vector.
+/// @param v the input vector.
+/// @return the infinity norm.
+template <typename T>
+inline auto infinity_norm(const malg::Vector<T> &v)
+{
+    using data_type_t = std::remove_const_t<T>;
+    if (v.empty())
+        return data_type_t(0.);
+    data_type_t max = std::abs(v[0]), tmp;
+    for (unsigned i = 1; i < v.size(); ++i) {
+        tmp = std::abs(v[i]);
+        if (max < tmp) {
+            max = tmp;
+        }
+    }
+    return max;
+}
+
+/// @brief Computes the infinity norm of a matrix, i.e., largest infinity norm among the rows of the matrix.
+/// @param A the input matrix.
+/// @return the infinity norm.
+template <typename T>
+inline auto infinity_norm(const malg::MatrixBase<T> &A)
+{
+    using data_type_t = std::remove_const_t<malg::is_complex_t<T>>;
+    if (A.empty())
+        return data_type_t(0.);
+    data_type_t max{}, accum{};
+    for (unsigned r = 0; r < A.rows(); ++r) {
+        accum = 0.;
+        for (unsigned c = 0; c < A.cols(); ++c)
+            accum += std::abs(A(r, c));
+        max = std::max(max, accum);
+    }
+    return max;
+}
+
+/// @brief The Euclidean norm of the lower leading diagonal of a square matrix.
+/// @param A the input matrix.
+/// @return the square root of the sum of all the squares.
+template <typename T>
+auto sub_norm(const malg::MatrixBase<T> &A)
+{
+    using data_type_t = std::remove_const_t<malg::is_complex_t<T>>;
+    if (A.empty())
+        return data_type_t(0.);
+    assert(malg::utility::is_square(A));
+    data_type_t accum = 0;
+    for (unsigned r = 1; r < A.rows(); ++r) {
+        for (unsigned c = 0; c < r; ++c) {
+            if constexpr (malg::is_complex_v<T>)
+                accum += std::norm(A(r, c));
+            else
+                accum += A(r, c) * A(r, c);
+        }
+    }
+    return std::sqrt(accum);
+}
+
+/// @brief Scale down matrix A by a power of 2, such that norm(A) < 1.
+/// @param A the input matrix.
+/// @return the square root of the sum of all the squares.
+template <typename T>
+auto log2_ceil(const malg::MatrixBase<T> &A)
+{
+    using data_type_t   = std::remove_const_t<malg::is_complex_t<T>>;
+    unsigned iterations = 0;
+    data_type_t scale   = 1.0;
+    const auto norm     = malg::infinity_norm(A);
+    while ((norm * scale) > 1.0) {
+        scale *= 0.5;
+        ++iterations;
+    }
+    return std::make_pair(iterations, scale);
 }
 
 } // namespace malg

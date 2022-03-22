@@ -27,7 +27,7 @@ auto operator+(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
     // Create the result matrix.
     malg::Matrix<data_type_t> result(a.rows(), a.cols());
     // Compute the result.
-    for (unsigned i = 0; i < result.size(); ++i)
+    for (malg::size_type_t i = 0; i < result.size(); ++i)
         result[i] = a[i] + b[i];
     return result;
 }
@@ -44,7 +44,7 @@ inline auto operator+(const malg::MatrixBase<T1> &a, const T2 &b)
     // Declare the output matrix.
     malg::Matrix<data_type_t> result(a.rows(), a.cols());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] + b;
     return result;
 }
@@ -60,7 +60,7 @@ auto &operator+=(malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
     assert((a.rows() == b.rows()) && "Matrices has different number of rows.");
     assert((a.cols() == b.cols()) && "Matrices has different number of colmuns.");
     // Compute the result.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] += b[i];
     return a;
 }
@@ -73,7 +73,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 inline auto operator+=(malg::MatrixBase<T1> &a, const T2 &b)
 {
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] += b;
     return a;
 }
@@ -93,7 +93,7 @@ auto operator-(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
     // Create the result matrix.
     malg::Matrix<data_type_t> result(a.rows(), a.cols());
     // Compute the result.
-    for (unsigned i = 0; i < result.size(); ++i)
+    for (malg::size_type_t i = 0; i < result.size(); ++i)
         result[i] = a[i] - b[i];
     return result;
 }
@@ -110,7 +110,7 @@ inline auto operator-(const malg::MatrixBase<T1> &a, const T2 &b)
     // Declare the output matrix.
     malg::Matrix<data_type_t> result(a.rows(), a.cols());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] - b;
     return result;
 }
@@ -126,7 +126,7 @@ auto &operator-=(malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
     assert((a.rows() == b.rows()) && "Matrices has different number of rows.");
     assert((a.cols() == b.cols()) && "Matrices has different number of colmuns.");
     // Compute the result.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] -= b[i];
     return a;
 }
@@ -142,7 +142,7 @@ template <
 inline auto operator-=(malg::MatrixBase<T1> &a, const T2 &b)
 {
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] -= b;
     return a;
 }
@@ -163,9 +163,9 @@ auto operator*(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
     // Declare the output matrix.
     malg::Matrix<data_type_t> result(a.rows(), b.cols());
     // Perform the operation.
-    for (unsigned r = 0; r < a.rows(); r++)
-        for (unsigned c = 0; c < b.cols(); c++)
-            for (unsigned k = 0; k < b.rows(); k++)
+    for (malg::size_type_t r = 0; r < a.rows(); r++)
+        for (malg::size_type_t c = 0; c < b.cols(); c++)
+            for (malg::size_type_t k = 0; k < b.rows(); k++)
                 result(r, c) += a(r, k) * b(k, c);
     return result;
 }
@@ -182,7 +182,7 @@ inline auto operator*(const malg::MatrixBase<T1> &a, const T2 &b)
     // Declare the output matrix.
     malg::Matrix<data_type_t> result(a.rows(), a.cols());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] * b;
     return result;
 }
@@ -213,11 +213,11 @@ auto &operator*=(malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
     // Declare the output matrix.
     malg::Matrix<data_type_t> result(a.rows(), a.cols());
     // Perform the operation.
-    for (unsigned r = 0; r < a.rows(); r++)
-        for (unsigned c = 0; c < b.cols(); c++)
-            for (unsigned k = 0; k < b.rows(); k++)
+    for (malg::size_type_t r = 0; r < a.rows(); r++)
+        for (malg::size_type_t c = 0; c < b.cols(); c++)
+            for (malg::size_type_t k = 0; k < b.rows(); k++)
                 result(r, c) += a(r, k) * b(k, c);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = result[i];
     return a;
 }
@@ -230,7 +230,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 inline auto &operator*=(malg::MatrixBase<T1> &a, const T2 &b)
 {
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = a[i] * b;
     return a;
 }
@@ -247,7 +247,7 @@ inline auto operator/(const malg::MatrixBase<T1> &a, const T2 &b)
     // Declare the output matrix.
     malg::Matrix<data_type_t> result(a.rows(), a.cols());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] / b;
     return result;
 }
@@ -260,7 +260,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 inline auto &operator/=(malg::MatrixBase<T1> &a, const T2 &b)
 {
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = a[i] / b;
     return a;
 }
@@ -275,7 +275,7 @@ auto operator==(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
 {
     assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i) {
+    for (malg::size_type_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
             result[i] = feq::approximately_equal(a[i], b[i]);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
@@ -297,7 +297,7 @@ auto operator==(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
     assert(a.size() == b.size());
     malg::Vector<bool> result(a.size());
-    for (unsigned i = 0; i < a.size(); ++i) {
+    for (malg::size_type_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
             result[i] = feq::approximately_equal(a[i], b[i]);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
@@ -318,7 +318,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 auto operator==(const malg::MatrixBase<T1> &a, const T2 &b)
 {
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i) {
+    for (malg::size_type_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
             result[i] = feq::approximately_equal(a[i], b);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
@@ -339,7 +339,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 auto operator==(const malg::Vector<T1> &a, const T2 &b)
 {
     malg::Vector<bool> result(a.size(), false);
-    for (unsigned i = 0; i < a.size(); ++i) {
+    for (malg::size_type_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
             result[i] = feq::approximately_equal(a[i], b);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
@@ -361,7 +361,7 @@ auto operator!=(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
 {
     assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i) {
+    for (malg::size_type_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
             result[i] = !feq::approximately_equal(a[i], b[i]);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
@@ -383,7 +383,7 @@ auto operator!=(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
     assert(a.size() == b.size());
     malg::Vector<bool> result(a.size(), false);
-    for (unsigned i = 0; i < a.size(); ++i) {
+    for (malg::size_type_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
             result[i] = !feq::approximately_equal(a[i], b[i]);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
@@ -404,7 +404,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 auto operator!=(const malg::MatrixBase<T1> &a, const T2 &b)
 {
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i) {
+    for (malg::size_type_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
             result[i] = !feq::approximately_equal(a[i], b);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
@@ -425,7 +425,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 auto operator!=(const malg::Vector<T1> &a, const T2 &b)
 {
     malg::Vector<bool> result(a.size(), false);
-    for (unsigned i = 0; i < a.size(); ++i) {
+    for (malg::size_type_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
             result[i] = !feq::approximately_equal(a[i], b);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
@@ -447,7 +447,7 @@ auto operator>(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
 {
     assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] > b[i];
     return result;
 }
@@ -462,7 +462,7 @@ auto operator>=(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
 {
     assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] >= b[i];
     return result;
 }
@@ -476,7 +476,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 auto operator>(const malg::MatrixBase<T1> &a, const T2 &b)
 {
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] > b;
     return result;
 }
@@ -490,7 +490,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 auto operator>=(const malg::MatrixBase<T1> &a, const T2 &b)
 {
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] >= b;
     return result;
 }
@@ -505,7 +505,7 @@ auto operator<(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
 {
     assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] < b[i];
     return result;
 }
@@ -520,7 +520,7 @@ auto operator<=(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
 {
     assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] <= b[i];
     return result;
 }
@@ -534,7 +534,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 auto operator<(const malg::MatrixBase<T1> &a, const T2 &b)
 {
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] < b;
     return result;
 }
@@ -548,7 +548,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 auto operator<=(const malg::MatrixBase<T1> &a, const T2 &b)
 {
     malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] <= b;
     return result;
 }
@@ -566,7 +566,7 @@ inline auto operator+(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
     // Declare the output vector.
     malg::Vector<data_type_t> result(a.size());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] + b[i];
     return result;
 }
@@ -579,7 +579,7 @@ inline auto operator+(const malg::Vector<T1> &a, const T2 &b)
     // Declare the output vector.
     malg::Vector<data_type_t> result(a.size());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] + b;
     return result;
 }
@@ -589,7 +589,7 @@ inline auto &operator+=(malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
     assert(a.size() == b.size());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = a[i] + b[i];
     return a;
 }
@@ -598,7 +598,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 inline auto operator+=(const malg::Vector<T1> &a, const T2 &b)
 {
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = a[i] + b;
     return a;
 }
@@ -612,7 +612,7 @@ inline auto operator-(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
     // Declare the output vector.
     malg::Vector<data_type_t> result(a.size());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] - b[i];
     return result;
 }
@@ -625,7 +625,7 @@ inline auto operator-(const malg::Vector<T1> &a, const T2 &b)
     // Declare the output vector.
     malg::Vector<data_type_t> result(a.size());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] - b;
     return result;
 }
@@ -635,7 +635,7 @@ inline auto &operator-=(malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
     assert(a.size() == b.size());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = a[i] - b[i];
     return a;
 }
@@ -644,7 +644,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 inline auto operator-=(const malg::Vector<T1> &a, const T2 &b)
 {
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = a[i] - b;
     return a;
 }
@@ -658,7 +658,7 @@ inline auto operator*(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
     // Declare the output vector.
     data_type_t result = data_type_t(0.);
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result += a[i] * b[i];
     return result;
 }
@@ -671,7 +671,7 @@ inline auto operator*(const malg::Vector<T1> &a, const T2 &b)
     // Declare the output vector.
     malg::Vector<data_type_t> result(a.size());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] * b;
     return result;
 }
@@ -684,7 +684,7 @@ inline auto operator*(const T1 &a, const malg::Vector<T2> &b)
     // Declare the output vector.
     data_type_t result = data_type_t(0.);
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result += a * b[i];
     return result;
 }
@@ -693,7 +693,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 inline auto operator*=(const malg::Vector<T1> &a, const T2 &b)
 {
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = a[i] * b;
     return a;
 }
@@ -706,7 +706,7 @@ inline auto operator/(const malg::Vector<T1> &a, const T2 &b)
     // Declare the output vector.
     malg::Vector<data_type_t> result(a.size());
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = a[i] / b;
     return result;
 }
@@ -715,7 +715,7 @@ template <typename T1, typename T2, typename = typename std::enable_if_t<std::is
 inline auto operator/=(const malg::Vector<T1> &a, const T2 &b)
 {
     // Perform the operation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         a[i] = a[i] / b;
     return a;
 }
@@ -735,8 +735,8 @@ inline auto dot(const malg::MatrixBase<T1> &a, const malg::Vector<T2> &b)
     // Create the result vector.
     malg::Vector<data_type_t> result(a.rows());
     // Perform the computation.
-    for (unsigned r = 0; r < a.rows(); ++r)
-        for (unsigned c = 0; c < a.cols(); ++c)
+    for (malg::size_type_t r = 0; r < a.rows(); ++r)
+        for (malg::size_type_t c = 0; c < a.cols(); ++c)
             result[r] += a(r, c) * b[c];
     return result;
 }
@@ -776,7 +776,7 @@ inline auto element_wise_binary_function(const malg::Vector<T1> &a, const malg::
     // Create the resulting vector.
     malg::Vector<data_type_t> result(a.size());
     // Perform the computation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = fun(a[i], b[i]);
     // Return the vector.
     return result;
@@ -792,7 +792,7 @@ inline auto element_wise_binary_function(const malg::MatrixBase<T1> &a, const ma
     // Create the resulting matrix.
     malg::Matrix<data_type_t> result(a.rows(), a.cols());
     // Perform the computation.
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         result[i] = fun(a[i], b[i]);
     // Return the matrix.
     return result;
@@ -907,10 +907,10 @@ inline auto projection(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 }
 
 template <typename T>
-inline auto vector_length(malg::MatrixBase<T> &A, unsigned c, unsigned r_start = 0)
+inline auto vector_length(malg::MatrixBase<T> &A, malg::size_type_t c, malg::size_type_t r_start = 0)
 {
     std::remove_const_t<malg::is_complex_t<T>> accum = 0;
-    for (unsigned r = r_start; r < A.rows(); r++) {
+    for (malg::size_type_t r = r_start; r < A.rows(); r++) {
         if constexpr (malg::is_complex_v<T>)
             accum += std::norm(A(r, c));
         else
@@ -929,8 +929,8 @@ auto linear_combination(
 {
     assert((B.cols() == A.rows()) && (B.rows() == A.cols()));
     auto C = A * a;
-    for (unsigned r = 0; r < A.rows(); ++r)
-        for (unsigned c = 0; c < A.cols(); ++c)
+    for (malg::size_type_t r = 0; r < A.rows(); ++r)
+        for (malg::size_type_t c = 0; c < A.cols(); ++c)
             C(r, c) += b * B(r, c);
     return C;
 }
@@ -942,7 +942,7 @@ template <typename T>
 inline auto sum(const Vector<T> &v)
 {
     std::remove_const_t<T> s = 0;
-    for (unsigned i = 0; i < v.size(); ++i)
+    for (malg::size_type_t i = 0; i < v.size(); ++i)
         s += v[i];
     return s;
 }
@@ -957,7 +957,7 @@ inline auto trace(const MatrixBase<T> &A)
     return sum(diag(A));
 #else
     std::remove_const_t<T> result = 0;
-    for (unsigned i = 0; i < A.rows(); ++i)
+    for (malg::size_type_t i = 0; i < A.rows(); ++i)
         result += A(i, i);
     return result;
 #endif
@@ -971,9 +971,9 @@ inline auto min(const Vector<T> &v)
 {
     using data_type_t = std::remove_const_t<T>;
     if (v.empty())
-        return std::make_pair(data_type_t(0.), unsigned(0));
-    unsigned min_val_pos = 0;
-    for (unsigned i = 1; i < v.size(); ++i)
+        return std::make_pair(data_type_t(0.), malg::size_type_t(0));
+    malg::size_type_t min_val_pos = 0;
+    for (malg::size_type_t i = 1; i < v.size(); ++i)
         if (v[i] < v[min_val_pos])
             min_val_pos = i;
     return std::make_pair(v[min_val_pos], min_val_pos);
@@ -989,7 +989,7 @@ inline auto min(const Matrix<T> &a)
     if (a.empty())
         return Vector<data_type_t>();
     Vector<data_type_t> values(a.cols(), data_type_t(0.));
-    for (unsigned c = 0, r, min_val_pos; c < a.cols(); ++c) {
+    for (malg::size_type_t c = 0, r, min_val_pos; c < a.cols(); ++c) {
         for (min_val_pos = 0, r = 1; r < a.rows(); ++r)
             if (a(r, c) < a(min_val_pos, c))
                 min_val_pos = r;
@@ -1006,9 +1006,9 @@ inline auto max(const Vector<T> &v)
 {
     using data_type_t = std::remove_const_t<T>;
     if (v.empty())
-        return std::make_pair(data_type_t(0.), unsigned(0));
-    unsigned max_val_pos = 0;
-    for (unsigned i = 1; i < v.size(); ++i)
+        return std::make_pair(data_type_t(0.), malg::size_type_t(0));
+    malg::size_type_t max_val_pos = 0;
+    for (malg::size_type_t i = 1; i < v.size(); ++i)
         if (v[i] > v[max_val_pos])
             max_val_pos = i;
     return std::make_pair(v[max_val_pos], max_val_pos);
@@ -1024,7 +1024,7 @@ inline auto max(const Matrix<T> &a)
     if (a.empty())
         return Vector<data_type_t>();
     Vector<data_type_t> values(a.cols(), data_type_t(0.));
-    for (unsigned c = 0, r, max_val_pos; c < a.cols(); ++c) {
+    for (malg::size_type_t c = 0, r, max_val_pos; c < a.cols(); ++c) {
         for (max_val_pos = 0, r = 1; r < a.rows(); ++r)
             if (a(r, c) > a(max_val_pos, c))
                 max_val_pos = r;
@@ -1040,7 +1040,7 @@ inline auto max(const Matrix<T> &a)
 template <typename T>
 inline bool all(const MatrixBase<T> &a)
 {
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         if (a[i] == 0)
             return false;
     return true;
@@ -1053,7 +1053,7 @@ inline bool all(const MatrixBase<T> &a)
 template <typename T>
 inline bool all(const Vector<T> &v)
 {
-    for (unsigned i = 0; i < v.size(); ++i)
+    for (malg::size_type_t i = 0; i < v.size(); ++i)
         if (v[i] == 0)
             return false;
     return true;
@@ -1066,7 +1066,7 @@ inline bool all(const Vector<T> &v)
 template <typename T>
 inline bool any(const MatrixBase<T> &a)
 {
-    for (unsigned i = 0; i < a.size(); ++i)
+    for (malg::size_type_t i = 0; i < a.size(); ++i)
         if (a[i] != 0)
             return true;
     return false;
@@ -1079,7 +1079,7 @@ inline bool any(const MatrixBase<T> &a)
 template <typename T>
 inline bool any(const Vector<T> &v)
 {
-    for (unsigned i = 0; i < v.size(); ++i)
+    for (malg::size_type_t i = 0; i < v.size(); ++i)
         if (v[i] != 0)
             return true;
     return false;
@@ -1089,7 +1089,7 @@ template <typename T>
 inline auto square_norm(const malg::Vector<T> &v)
 {
     std::remove_const_t<malg::is_complex_t<T>> accum = 0;
-    for (unsigned i = 0; i < v.size(); ++i) {
+    for (malg::size_type_t i = 0; i < v.size(); ++i) {
         if constexpr (malg::is_complex_v<T>)
             accum += std::norm(v[i]);
         else
@@ -1106,8 +1106,8 @@ inline auto square_norm(const malg::MatrixBase<T> &A)
 {
     std::remove_const_t<malg::is_complex_t<T>> accum = 0;
     // Compute the sum of squares of the elements of the given matrix.
-    for (unsigned r = 0; r < A.rows(); ++r) {
-        for (unsigned c = 0; c < A.cols(); ++c) {
+    for (malg::size_type_t r = 0; r < A.rows(); ++r) {
+        for (malg::size_type_t c = 0; c < A.cols(); ++c) {
             if constexpr (malg::is_complex_v<T>)
                 accum += std::norm(A(r, c));
             else
@@ -1128,7 +1128,7 @@ inline auto infinity_norm(const malg::Vector<T> &v)
     if (v.empty())
         return data_type_t(0.);
     data_type_t max = std::abs(v[0]), tmp;
-    for (unsigned i = 1; i < v.size(); ++i) {
+    for (malg::size_type_t i = 1; i < v.size(); ++i) {
         tmp = std::abs(v[i]);
         if (max < tmp) {
             max = tmp;
@@ -1147,9 +1147,9 @@ inline auto infinity_norm(const malg::MatrixBase<T> &A)
     if (A.empty())
         return data_type_t(0.);
     data_type_t max{}, accum{};
-    for (unsigned r = 0; r < A.rows(); ++r) {
+    for (malg::size_type_t r = 0; r < A.rows(); ++r) {
         accum = 0.;
-        for (unsigned c = 0; c < A.cols(); ++c)
+        for (malg::size_type_t c = 0; c < A.cols(); ++c)
             accum += std::abs(A(r, c));
         max = std::max(max, accum);
     }
@@ -1167,8 +1167,8 @@ auto sub_norm(const malg::MatrixBase<T> &A)
         return data_type_t(0.);
     assert(malg::utility::is_square(A));
     data_type_t accum = 0;
-    for (unsigned r = 1; r < A.rows(); ++r) {
-        for (unsigned c = 0; c < r; ++c) {
+    for (malg::size_type_t r = 1; r < A.rows(); ++r) {
+        for (malg::size_type_t c = 0; c < r; ++c) {
             if constexpr (malg::is_complex_v<T>)
                 accum += std::norm(A(r, c));
             else
@@ -1185,7 +1185,7 @@ template <typename T>
 auto log2_ceil(const malg::MatrixBase<T> &A)
 {
     using data_type_t   = std::remove_const_t<malg::is_complex_t<T>>;
-    unsigned iterations = 0;
+    malg::size_type_t iterations = 0;
     data_type_t scale   = 1.0;
     const auto norm     = malg::infinity_norm(A);
     while ((norm * scale) > 1.0) {

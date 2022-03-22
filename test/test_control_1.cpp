@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[])
 {
-    unsigned size = 4;
+    malg::size_type_t size = 4;
     // Create the state-space model.
     malg::control::StateSpace<double> sys{
         malg::utility::rand_matrix<double>(size, size, -10, 10),

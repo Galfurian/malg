@@ -25,7 +25,7 @@ template <typename T>
 constexpr inline auto wilkinson_shift(const malg::Matrix<std::complex<T>> &A) noexcept
 {
     std::complex<T> s(0.0);
-    unsigned N = A.rows() - 1;
+    size_type_t N = A.rows() - 1;
     if (N > 0) {
         // Bottom-right elements.
         auto a = A(N - 1, N - 1), b = A(N - 1, N), c = A(N, N - 1), d = A(N, N);
@@ -88,7 +88,7 @@ constexpr auto qr_factorise_givens(const malg::Matrix<std::complex<T>> &A) noexc
 {
     malg::Matrix<std::complex<T>> Q = malg::utility::identity<std::complex<T>>(A.rows());
     malg::Matrix<std::complex<T>> R(A);
-    for (unsigned i = 1, j = 0; i < A.rows(); ++i, j = i - 1) {
+    for (size_type_t i = 1, j = 0; i < A.rows(); ++i, j = i - 1) {
         // i : The row number
         // j : aiming to zero the element one place below the diagonal.
         if (std::abs(R(i, j)) < std::numeric_limits<T>::epsilon())
@@ -103,7 +103,7 @@ constexpr auto qr_factorise_givens(const malg::Matrix<std::complex<T>> &A) noexc
         std::complex<T> sstar            = std::conj(s); //        ( s*  c )         ( -s* c* )     <--- i
         malg::Matrix<std::complex<T>> RR = R;
         malg::Matrix<std::complex<T>> QQ = Q;
-        for (unsigned m = 0; m < A.cols(); m++) {
+        for (size_type_t m = 0; m < A.cols(); m++) {
             R(j, m) = (cstar * RR(j, m)) - (s * RR(i, m));
             R(i, m) = (sstar * RR(j, m)) + (c * RR(i, m));
             Q(m, j) = (c * QQ(m, j)) - (sstar * QQ(m, i));

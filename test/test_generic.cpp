@@ -1,6 +1,8 @@
 #include "malg/control/control.hpp"
 #include "malg/linalg.hpp"
 #include "malg/eigen.hpp"
+#include "malg/matrix.hpp"
+#include "malg/vector.hpp"
 #include "malg/io.hpp"
 
 #include <cassert>

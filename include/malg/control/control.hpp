@@ -115,7 +115,7 @@ inline auto simulate(
     std::vector<Vector<T>> y;
     // Perform the simulation.
     double rtime = 0.;
-    for (unsigned i = 0; i < steps; ++i, rtime += sys.sample_time) {
+    for (size_type_t i = 0; i < steps; ++i, rtime += sys.sample_time) {
         t[i]      = rtime;
         auto step = simulate_step(sys, x.back(), u[i]);
         x.emplace_back(step.first);
@@ -141,7 +141,7 @@ inline auto ctrb(const MatrixBase<T> &A, const MatrixBase<T> &B)
     // Create the controllability matrix.
     Matrix<T> result = B;
     // Construct the controllability matrix.
-    for (unsigned i = 1; i < A.rows(); ++i)
+    for (size_type_t i = 1; i < A.rows(); ++i)
         result = utility::hstack(result, linalg::powm(A, i) * B);
     return result;
 }
@@ -168,7 +168,7 @@ inline auto obsv(const MatrixBase<T> &A, const MatrixBase<T> &C)
     // Create the observability matrix.
     Matrix<T> result = C;
     // Construct the observability matrix.
-    for (unsigned i = 1; i < A.rows(); ++i)
+    for (size_type_t i = 1; i < A.rows(); ++i)
         result = utility::vstack(result, C * linalg::powm(A, i));
     return result;
 }
@@ -181,8 +181,8 @@ inline auto poly(const Vector<T> &a)
 {
     Vector<T> c(a.size() + 1);
     c[0] = 1;
-    for (unsigned j = 0; j < a.size(); ++j)
-        for (unsigned i = j + 1; i >= 1; --i)
+    for (size_type_t j = 0; j < a.size(); ++j)
+        for (size_type_t i = j + 1; i >= 1; --i)
             c[i] -= a[j] * c[i - 1];
     return c;
 }
@@ -190,7 +190,7 @@ inline auto poly(const Vector<T> &a)
 template <typename T>
 inline auto polyreduce(const Vector<T> &a)
 {
-    unsigned i, j;
+    size_type_t i, j;
     for (j = 0; j < a.size(); ++j)
         if (a[j] != 0)
             break;
@@ -216,8 +216,8 @@ inline auto poly(const MatrixBase<T> &A)
     if ((A.rows() == 1) || (A.cols() == 1)) {
         Vector<T> c(A.size() + 1);
         c[0] = 1;
-        for (unsigned j = 0; j < A.size(); ++j)
-            for (unsigned i = j + 1; i >= 1; --i)
+        for (size_type_t j = 0; j < A.size(); ++j)
+            for (size_type_t i = j + 1; i >= 1; --i)
                 c[i] -= A[j] * c[i - 1];
         return c;
     }
@@ -232,7 +232,7 @@ inline auto poly(const MatrixBase<T> &A)
     c[0]        = 1;
     c[1]        = -last_c;
     auto I      = utility::identity<T>(B.rows());
-    for (unsigned m = 2; m < (n + 1); ++m) {
+    for (size_type_t m = 2; m < (n + 1); ++m) {
         B      = A * (B - (I * last_c));
         last_c = trace(B) / m;
         c[m]   = -last_c;
@@ -266,7 +266,7 @@ inline auto acker(const MatrixBase<T> &A, const MatrixBase<T> &B, const MatrixBa
     auto p = poly(poles);
     // Place the poles using Ackermann's method.
     auto Ap = utility::zeros<T>(A.rows(), A.cols());
-    for (unsigned int i = 0; i < (A.rows() + 1); ++i) {
+    for (size_type_t i = 0; i < (A.rows() + 1); ++i) {
         Ap += linalg::powm(A, (A.cols() - i)) * p[i];
     }
     // Prepare the selection matrix.

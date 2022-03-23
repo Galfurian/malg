@@ -12,6 +12,10 @@ add_executable(test_rlc test_rlc.cpp)
 target_link_libraries(test_rlc malg)
 add_test(NAME run_test_rlc COMMAND test_rlc)
 
+add_executable(test_math test_math.cpp)
+target_link_libraries(test_math malg)
+add_test(NAME run_test_math COMMAND test_math)
+
 add_executable(test_read_write_file test_read_write_file.cpp)
 target_link_libraries(test_read_write_file malg)
 add_test(NAME run_test_read_write_file COMMAND test_read_write_file)
@@ -40,6 +44,7 @@ add_custom_target(
     check_malg COMMAND ${CMAKE_CTEST_COMMAND}
     DEPENDS
     test_rlc
+    test_math
     test_read_write_file
     test_generic
     test_control_1

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "malg/control/control.hpp"
 #include "malg/matrix_base.hpp"
 #include "malg/vector.hpp"
 
@@ -66,7 +67,7 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::Vector<T> &rhs)
     // Get the longhest value.
     malg::size_type_t i, length = __get_longhest_value(rhs, lhs.precision());
     // Print the vector size.
-    lhs << rhs.size() << "\n";
+    lhs << "V " << rhs.size() << "\n";
     // Print the vector.
     for (i = 0; i < rhs.size(); ++i) {
         lhs << std::setw(length) << rhs[i];
@@ -83,7 +84,7 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &
     // Get the longhest value.
     malg::size_type_t r, c, length = __get_longhest_value(rhs, lhs.precision());
     // Print the matrix size.
-    lhs << rhs.rows() << " " << rhs.cols() << "\n";
+    lhs << "M " << rhs.rows() << " " << rhs.cols() << "\n";
     // Print the matrix.
     for (r = 0; r < rhs.rows(); ++r) {
         for (c = 0; c < rhs.cols(); ++c) {
@@ -102,6 +103,13 @@ template <typename T>
 inline std::ifstream &operator>>(std::ifstream &lhs, malg::Vector<T> &rhs)
 {
     malg::size_type_t size, i;
+    char type;
+    // Read the type.
+    lhs >> type;
+    if (type != 'V') {
+        std::cerr << "The file does not contain a valid vector.\n";
+        return lhs;
+    }
     // Read the size.
     lhs >> size;
     // Prepare the vector.
@@ -116,6 +124,13 @@ template <typename T>
 inline std::ifstream &operator>>(std::ifstream &lhs, malg::Matrix<T> &rhs)
 {
     malg::size_type_t rows, cols, r, c;
+    char type;
+    // Read the type.
+    lhs >> type;
+    if (type != 'M') {
+        std::cerr << "The file does not contain a valid matrix.\n";
+        return lhs;
+    }
     // Read the size.
     lhs >> rows;
     lhs >> cols;

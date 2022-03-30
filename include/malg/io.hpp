@@ -7,6 +7,7 @@
 #include "malg/control/control.hpp"
 #include "malg/matrix_base.hpp"
 #include "malg/vector.hpp"
+#include "malg/view.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -96,6 +97,12 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &
             lhs << "\n";
     }
     lhs << "\n";
+    return lhs;
+}
+
+inline std::ostream &operator<<(std::ostream &lhs, const malg::Range &rhs)
+{
+    lhs << "[" << rhs.start << ", " << rhs.stop << "]";
     return lhs;
 }
 

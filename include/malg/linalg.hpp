@@ -210,7 +210,7 @@ inline auto adjoint(const MatrixBase<T> &matrix)
     for (size_type_t i = 0; i < N; ++i) {
         for (size_type_t j = 0; j < N; ++j) {
             // Get cofactor of A[i][j]
-            auto support = CofactorView(matrix, i, j);
+            auto support = CofactorView(&matrix, i, j);
             // Sign of adj[j][i] positive if sum of row and column indexes is
             // even. Interchanging rows and columns to get the transpose of the
             // cofactor matrix.

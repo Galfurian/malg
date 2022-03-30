@@ -119,7 +119,7 @@ public:
     }
 
     /// @brief Destroy the Vector object.
-    constexpr ~Vector() noexcept
+    ~Vector() noexcept
     {
         this->deallocate();
     }

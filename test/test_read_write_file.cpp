@@ -6,35 +6,63 @@
 #include "malg/control/control.hpp"
 #include "malg/io.hpp"
 
+int test_vec()
+{
+    malg::Vector<double> data_in, data_out;
+    // Generate the vector.
+    data_out = malg::utility::rand_vector<double>(5, -10, 10);
+    // Save the vector.
+    std::ofstream data_out_file("vector.malg");
+    if (!data_out_file.is_open())
+        return 1;
+    data_out_file << std::setprecision(9);
+    data_out_file << data_out;
+    data_out_file.close();
+    // Read the vector.
+    std::ifstream data_in_file("vector.malg");
+    if (!data_in_file.is_open())
+        return 1;
+    data_in_file >> data_in;
+    data_in_file.close();
+    // Set the tollerance.
+    feq::tolerance() = 1e-06;
+    // Check correctness.
+    if (!malg::all(data_in == data_out))
+        return 1;
+    return 0;
+}
+
+int test_matrix()
+{
+    malg::Matrix<double> data_in, data_out;
+    // Generate the matrix.
+    data_out = malg::utility::rand_matrix<double>(5, 5, -10, 10);
+    // Save the matrix.
+    std::ofstream data_out_file("matrix.malg");
+    if (!data_out_file.is_open())
+        return 1;
+    data_out_file << std::setprecision(9);
+    data_out_file << data_out;
+    data_out_file.close();
+    // Read the matrix.
+    std::ifstream data_in_file("matrix.malg");
+    if (!data_in_file.is_open())
+        return 1;
+    data_in_file >> data_in;
+    data_in_file.close();
+    // Set the tollerance.
+    feq::tolerance() = 1e-06;
+    // Check correctness.
+    if (!malg::all(data_in == data_out))
+        return 1;
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
-    auto vec_out = malg::utility::rand_vector<double>(5, -10, 10);
-    std::cout << malg::dump_vector("vec_out", vec_out) << "\n";
-    std::ofstream vec_out_file("vector.malg");
-    if (vec_out_file.is_open()) {
-        vec_out_file << vec_out;
-        vec_out_file.close();
-        std::ifstream vec_in_file("vector.malg");
-        if (vec_in_file.is_open()) {
-            malg::Vector<double> vec_in;
-            vec_in_file >> vec_in;
-            std::cout << malg::dump_vector("vec_in", vec_in) << "\n";
-        }
-    }
-
-    auto mat_out = malg::utility::rand_matrix<double>(5, 5, -10, 10);
-    std::cout << malg::dump_matrix("mat_out", mat_out) << "\n";
-    std::ofstream mat_out_file("matrix.malg");
-    if (mat_out_file.is_open()) {
-        mat_out_file << mat_out;
-        mat_out_file.close();
-        std::ifstream mat_in_file("matrix.malg");
-        if (mat_in_file.is_open()) {
-            malg::Matrix<double> mat_in;
-            mat_in_file >> mat_in;
-            std::cout << malg::dump_matrix("mat_in", mat_in) << "\n";
-        }
-    }
-
+    if (test_vec())
+        return 1;
+    if (test_matrix())
+        return 1;
     return 0;
 }

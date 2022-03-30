@@ -22,8 +22,7 @@ namespace malg::utility
 /// @return the basis.
 constexpr inline auto basis() noexcept
 {
-    double x, eins, b;
-    x = eins = b = 1;
+    double x = 1, eins = 1, b = 1;
     while ((x + eins) - x == eins)
         x *= 2;
     while ((x + b) == x)
@@ -112,8 +111,8 @@ constexpr inline auto ones(size_type_t size) noexcept
 template <typename T>
 constexpr inline auto diag(const MatrixBase<T> &matrix) noexcept
 {
-    using data_type = std::remove_const_t<T>;
-    size_type_t size   = std::min(matrix.rows(), matrix.cols());
+    using data_type  = std::remove_const_t<T>;
+    size_type_t size = std::min(matrix.rows(), matrix.cols());
     Vector<data_type> result(size, data_type(0.));
     for (size_type_t i = 0; i < size; ++i)
         result[i] = matrix(i, i);
@@ -214,10 +213,10 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b) noexc
 
 template <typename T>
 constexpr inline auto extract(const MatrixBase<T> &matrix,
-                    size_type_t start_row    = 0,
-                    size_type_t end_row      = -1,
-                    size_type_t start_column = 0,
-                    size_type_t end_column   = -1) noexcept
+                              size_type_t start_row    = 0,
+                              size_type_t end_row      = -1,
+                              size_type_t start_column = 0,
+                              size_type_t end_column   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_row         = std::min(matrix.rows(), end_row);
@@ -237,9 +236,9 @@ constexpr inline auto extract(const MatrixBase<T> &matrix,
 /// @return the extracted column as a vector.
 template <typename T>
 constexpr inline auto extract_column(const MatrixBase<T> &matrix,
-                           size_type_t column,
-                           size_type_t start_row = 0,
-                           size_type_t end_row   = -1) noexcept
+                                     size_type_t column,
+                                     size_type_t start_row = 0,
+                                     size_type_t end_row   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_row         = std::min(matrix.rows(), end_row);
@@ -257,9 +256,9 @@ constexpr inline auto extract_column(const MatrixBase<T> &matrix,
 /// @return the extracted row as a vector.
 template <typename T>
 constexpr inline auto extract_row(const MatrixBase<T> &matrix,
-                        size_type_t row,
-                        size_type_t start_column = 0,
-                        size_type_t end_column   = -1) noexcept
+                                  size_type_t row,
+                                  size_type_t start_column = 0,
+                                  size_type_t end_column   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_column      = std::min(matrix.cols(), end_column);
@@ -562,19 +561,19 @@ constexpr inline T inner_product(T *first1, T *last1, T *first2, T init) noexcep
 template <typename MatrixType>
 constexpr inline auto view(MatrixType &matrix, size_type_t start_row = 0, size_type_t end_row = -1, size_type_t start_col = 0, size_type_t end_col = -1) noexcept
 {
-    return View(matrix, start_row, end_row, start_col, end_col);
+    return View(&matrix, start_row, end_row, start_col, end_col);
 }
 
 template <typename MatrixType>
 constexpr inline auto row(MatrixType &matrix, size_type_t row, size_type_t start_col = 0, size_type_t end_col = -1) noexcept
 {
-    return View(matrix, row, row + 1, start_col, end_col);
+    return View(&matrix, row, row + 1, start_col, end_col);
 }
 
 template <typename MatrixType>
 constexpr inline auto col(MatrixType &matrix, size_type_t col, size_type_t start_row = 0, size_type_t end_row = -1) noexcept
 {
-    return View(matrix, start_row, end_row, col, col + 1);
+    return View(&matrix, start_row, end_row, col, col + 1);
 }
 
 template <class T>

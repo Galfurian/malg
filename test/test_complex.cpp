@@ -33,6 +33,5 @@ int main(int argc, char *argv[])
     test_complex_1<float, double>();
     test_complex_2<float, double>();
     test_complex_2<double, int>();
-
     return 0;
 }

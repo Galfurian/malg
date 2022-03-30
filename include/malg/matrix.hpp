@@ -14,6 +14,11 @@
 namespace malg
 {
 
+class Range;
+
+template <typename MatrixType>
+class View;
+
 template <typename T>
 class Matrix : public MatrixBase<T> {
 public:
@@ -139,7 +144,7 @@ public:
     }
 
     /// @brief Destroy the Matrix object.
-    constexpr virtual ~Matrix() noexcept override
+    virtual ~Matrix() noexcept override
     {
         // Nothing to do.
     }
@@ -331,6 +336,18 @@ public:
     {
         return this->at(row, col);
     }
+
+    /// @brief Operator for generating a view of the matrix.
+    /// @param row the range of rows to extract.
+    /// @param col the range of columns to extract.
+    /// @return the desired view.
+    constexpr View<Matrix<T>> operator()(Range row, Range col) noexcept;
+
+    /// @brief Operator for generating a view of the matrix.
+    /// @param row the range of rows to extract.
+    /// @param col the range of columns to extract.
+    /// @return the desired view.
+    constexpr View<const Matrix<T>> operator()(Range row, Range col) const noexcept;
 
     /// @brief Alternative function to access the matrix.
     /// @param row the accessed row.

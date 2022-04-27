@@ -558,7 +558,7 @@ auto operator<=(const malg::MatrixBase<T1> &a, const T2 &b)
 // ========================================================
 
 template <typename T1, typename T2>
-inline auto operator+(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
+inline constexpr auto operator+(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
     assert(a.size() == b.size());
     // Select the right type.
@@ -728,7 +728,7 @@ namespace malg
 {
 
 template <typename T1, typename T2>
-inline auto dot(const malg::MatrixBase<T1> &a, const malg::Vector<T2> &b)
+inline constexpr auto dot(const malg::MatrixBase<T1> &a, const malg::Vector<T2> &b)
 {
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;

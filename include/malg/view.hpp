@@ -23,9 +23,9 @@ struct Range {
 };
 
 template <typename MatrixType>
-class View : public MatrixBase<typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::base_type, typename MatrixType::base_type>> {
+class View : public MatrixBase<typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::value_type, typename MatrixType::value_type>> {
 public:
-    using T = typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::base_type, typename MatrixType::base_type>;
+    using T = typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::value_type, typename MatrixType::value_type>;
 
     MatrixType *_matrix;
     Range _row;
@@ -230,9 +230,9 @@ constexpr View<Matrix<T>> Matrix<T>::operator()(Range row, Range col) noexcept
 }
 
 template <typename MatrixType>
-class CofactorView : public MatrixBase<typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::base_type, typename MatrixType::base_type>> {
+class CofactorView : public MatrixBase<typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::value_type, typename MatrixType::value_type>> {
 public:
-    using T = typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::base_type, typename MatrixType::base_type>;
+    using T = typename std::conditional_t<std::is_const_v<MatrixType>, const typename MatrixType::value_type, typename MatrixType::value_type>;
 
     MatrixType *_matrix;
     size_type_t _excluded_row;

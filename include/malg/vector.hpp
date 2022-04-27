@@ -17,6 +17,8 @@ using size_type_t = unsigned;
 template <typename T>
 class Vector {
 public:
+    using value_type = T;
+
     /// @brief Construct a new Vector object.
     constexpr Vector() noexcept
         : _data(nullptr),
@@ -119,7 +121,7 @@ public:
     }
 
     /// @brief Destroy the Vector object.
-    ~Vector() noexcept
+    constexpr ~Vector() noexcept
     {
         this->deallocate();
     }
@@ -151,6 +153,12 @@ public:
     inline constexpr auto empty() const noexcept
     {
         return _size == 0;
+    }
+
+    inline constexpr auto &resize(const Vector &other) noexcept
+    {
+        this->allocate(other.size());
+        return *this;
     }
 
     inline constexpr auto &resize(size_type_t size) noexcept

@@ -25,8 +25,7 @@ public:
     Vector<T> _data;
 
 public:
-    using this_type = Matrix<T>;
-    using base_type = T;
+    using value_type = T;
 
     /// @brief Construct a new Matrix object.
     constexpr Matrix() noexcept
@@ -301,6 +300,7 @@ public:
                 this->at(r, c) = *c_it;
             }
         }
+        return *this;
     }
 
     /// @brief Operator for accessing the matrix linearly.

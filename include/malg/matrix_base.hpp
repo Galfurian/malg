@@ -22,8 +22,7 @@ public:
     size_type_t _cols;
 
 public:
-    using this_type = MatrixBase<T>;
-    using base_type = T;
+    using value_type = T;
 
     /// @brief Construct a new Matrix Base object.
     constexpr MatrixBase() noexcept

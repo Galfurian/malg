@@ -277,7 +277,7 @@ inline auto acker(const MatrixBase<T> &A, const MatrixBase<T> &B, const MatrixBa
         exit(1);
     }
     // Make sure the system is controllable.
-    auto ct = ctrb(A, B);
+    auto ct = ctrb<T>(A, B);
     if (linalg::determinant(ct) == 0) {
         std::cerr << "acker: system not reachable, pole placement invalid.\n";
         exit(1);

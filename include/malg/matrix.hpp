@@ -14,7 +14,7 @@
 namespace malg
 {
 
-class Range;
+struct Range;
 
 template <typename MatrixType>
 class View;

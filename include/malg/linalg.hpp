@@ -42,10 +42,10 @@ inline constexpr T factorial(T n)
 /// @param N the power to compute.
 /// @returns the result of the operation.
 template <typename T>
-inline auto powm(const MatrixBase<T> &A, long N)
+inline auto powm(const MatrixBase<T> &A, std::size_t N)
 {
     auto R = utility::eye<std::remove_const_t<T>>(A.rows(), A.cols());
-    for (long k = 0; k < N; ++k)
+    for (std::size_t k = 0; k < N; ++k)
         R *= A;
     return R;
 }
@@ -108,10 +108,12 @@ inline auto cofactor(const MatrixBase<T> &matrix, std::size_t p, std::size_t q)
 /// multiplying the diagonal to get the determinant.
 /// @param matrix the input matrix.
 /// @returns the determinant of the matrix.
-template <typename T>
-inline auto determinant(const MatrixBase<T> &matrix)
+template <typename CT>
+inline auto determinant(const MatrixBase<CT> &matrix)
 {
     assert(utility::is_square(matrix) && "Matrix must be square.");
+    // Create an alias for the non-constant type.
+    using T = std::remove_const_t<CT>;
     // Get the size of the matrix.
     const std::size_t N = matrix.cols();
     // Fast exit with a 1x1.
@@ -144,11 +146,11 @@ inline auto determinant(const MatrixBase<T> &matrix)
                matrix(0, 1) * matrix(1, 0) * matrix(2, 2) * matrix(3, 3) + matrix(0, 0) * matrix(1, 1) * matrix(2, 2) * matrix(3, 3);
     }
     // We need to create a temporary.
-    Matrix<std::remove_const_t<T>> A(matrix);
+    Matrix<T> A(matrix);
     // Create the indexing variables.
     std::size_t c, r, k;
     // Initialize the determinant, and create both pivot and ratio variable.
-    std::remove_const_t<T> det = 1., pivot, ratio;
+    T det = static_cast<T>(1.), pivot, ratio;
     // We convert the temporary to upper triangular form.
     for (c = 0; c < N; ++c) {
         // If we have a negative value on the diagonal, we need to move it

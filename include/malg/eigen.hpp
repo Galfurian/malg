@@ -20,12 +20,14 @@
 namespace malg::eigen
 {
 
-// Wilkinson shift in QR algorithm
+/// @brief Wilkinson shift in QR algorithm
+/// @param A the matrix on which we perofmr the shift.
+/// @returns a complex value, result of the shift.
 template <typename T>
 constexpr inline auto wilkinson_shift(const malg::Matrix<std::complex<T>> &A) noexcept
 {
     std::complex<T> s(0.0);
-    size_type_t N = A.rows() - 1;
+    std::size_t N = A.rows() - 1;
     if (N > 0) {
         // Bottom-right elements.
         auto a = A(N - 1, N - 1), b = A(N - 1, N), c = A(N, N - 1), d = A(N, N);
@@ -37,9 +39,12 @@ constexpr inline auto wilkinson_shift(const malg::Matrix<std::complex<T>> &A) no
     return s;
 }
 
-// Reduce A to hessenberg form A = P H P-1 where P is unitary, H is hessenberg
-//                             i.e. P-1 A P = H
-// A hessenberg Matrix is upper triangular plus single non-zero diagonal below main diagonal
+/// @brief Reduce A to hessenberg form A = P H P-1 where P is unitary, H is
+/// hessenberg (i.e., P-1 A P = H).
+/// @details A hessenberg Matrix is upper triangular plus single non-zero
+/// diagonal below main diagonal
+/// @param A the input matrix.
+/// @returns matrix A reduced to hessenberg form.
 template <typename T>
 constexpr inline auto hessenberg(const malg::Matrix<std::complex<T>> &A) noexcept
 {
@@ -81,14 +86,16 @@ constexpr inline auto hessenberg(const malg::Matrix<std::complex<T>> &A) noexcep
     return std::make_pair(P, H);
 }
 
-// Factorises a hessenberg malg::Matrix<std::complex<T>> A as QR, where Q is unitary and R is upper triangular
-// Uses N-1 Givens rotations
+/// @brief Factorises a hessenberg malg::Matrix<std::complex<T>> A as QR, where
+/// Q is unitary and R is upper triangular. It uses N-1 Givens rotations.
+/// @param A the input matrix.
+/// @returns the pair of matrices (Q, R).
 template <typename T>
 constexpr auto qr_factorise_givens(const malg::Matrix<std::complex<T>> &A) noexcept
 {
     malg::Matrix<std::complex<T>> Q = malg::utility::identity<std::complex<T>>(A.rows());
     malg::Matrix<std::complex<T>> R(A);
-    for (size_type_t i = 1, j = 0; i < A.rows(); ++i, j = i - 1) {
+    for (std::size_t i = 1, j = 0; i < A.rows(); ++i, j = i - 1) {
         // i : The row number
         // j : aiming to zero the element one place below the diagonal.
         if (std::abs(R(i, j)) < std::numeric_limits<T>::epsilon())
@@ -103,7 +110,7 @@ constexpr auto qr_factorise_givens(const malg::Matrix<std::complex<T>> &A) noexc
         std::complex<T> sstar            = std::conj(s); //        ( s*  c )         ( -s* c* )     <--- i
         malg::Matrix<std::complex<T>> RR = R;
         malg::Matrix<std::complex<T>> QQ = Q;
-        for (size_type_t m = 0; m < A.cols(); m++) {
+        for (std::size_t m = 0; m < A.cols(); m++) {
             R(j, m) = (cstar * RR(j, m)) - (s * RR(i, m));
             R(i, m) = (sstar * RR(j, m)) + (c * RR(i, m));
             Q(m, j) = (c * QQ(m, j)) - (sstar * QQ(m, i));
@@ -113,17 +120,20 @@ constexpr auto qr_factorise_givens(const malg::Matrix<std::complex<T>> &A) noexc
     return std::make_pair(Q, R);
 }
 
-// Apply the QR algorithm to the matrix A.
-//
-// Multi-stage:
-//    - transform to a hessenberg matrix
-//    - apply QR factorisation based on Givens rotations
-//    - uses (single) Wilkinson shift - double-shift version in development
-//
-// Should give a Shur decomposition A = P T P-1 where P is unitary, T is upper triangular
-//                             i.e. P-1 A P = T
-// Eigenvalues of A should be the diagonal elements of T
-// If A is hermitian T would be diagonal and the eigenvectors would be the columns of P
+/// @brief Apply the QR algorithm to the matrix A.
+/// @details
+/// Multi-stage:
+///    - transform to a hessenberg matrix
+///    - apply QR factorisation based on Givens rotations
+///    - uses (single) Wilkinson shift - double-shift version in development
+///
+/// Should give a Shur decomposition A = P T P-1 where P is unitary, T is upper
+/// triangular (i.e. P-1 A P = T). Eigenvalues of A should be the diagonal
+/// elements of T. If A is hermitian T would be diagonal and the eigenvectors
+/// would be the columns of P.
+/// @param A the input matrix.
+/// @returns the pair of matrices (H, U), which are the Hessenberg matrix and the
+/// unitary transformation matrix, respectivelly.
 template <typename T>
 constexpr auto QRHessenberg(const malg::Matrix<std::complex<T>> &A) noexcept
 {
@@ -174,9 +184,11 @@ constexpr auto QRHessenberg(const malg::Matrix<std::complex<T>> &A) noexcept
     return std::make_pair(HM, UT);
 }
 
-// Find the eigenvectors of upper-triangular matrix T; returns them as column vectors of matrix E
-// The eigenvalues are necessarily the diagonal elements of T
-// NOTE: if there are repeated eigenvalues, then THERE MAY NOT BE N EIGENVECTORS
+/// @brief Find the eigenvectors of upper-triangular matrix T. The eigenvalues
+/// are necessarily the diagonal elements of T. NOTE: if there are repeated
+/// eigenvalues, then THERE MAY NOT BE N EIGENVECTORS.
+/// @param M the input matrix.
+/// @returns the eigenvectors as column vectors of the output matrix.
 template <typename T>
 constexpr auto eigenvectorUpper(const malg::Matrix<std::complex<T>> &M) noexcept
 {

@@ -1,4 +1,4 @@
-/// @file matrix2d.hpp
+/// @file matrix.hpp
 /// @author Enrico Fraccaroli (enry.frak@gmail.com)
 /// @brief The matrix class.
 
@@ -19,12 +19,15 @@ class Range;
 template <typename MatrixType>
 class View;
 
+/// @brief Matrix structure.
 template <typename T>
 class Matrix : public MatrixBase<T> {
 public:
+    /// The internal data.
     Vector<T> _data;
 
 public:
+    /// The data types of the element of the matrix.
     using value_type = T;
 
     /// @brief Construct a new Matrix object.
@@ -39,7 +42,7 @@ public:
     /// @param rows
     /// @param cols
     /// @param initial
-    constexpr Matrix(size_type_t rows, size_type_t cols, const T &initial = T(0)) noexcept
+    constexpr Matrix(std::size_t rows, std::size_t cols, const T &initial = T(0)) noexcept
         : MatrixBase<T>(rows, cols),
           _data(rows * cols, initial)
     {
@@ -50,12 +53,12 @@ public:
     /// @param rows
     /// @param cols
     /// @param data
-    constexpr Matrix(size_type_t rows, size_type_t cols, const std::initializer_list<T> &data) noexcept
+    constexpr Matrix(std::size_t rows, std::size_t cols, const std::initializer_list<T> &data) noexcept
         : MatrixBase<T>(rows, cols),
           _data(rows * cols)
     {
         auto it = data.begin();
-        for (size_type_t r = 0, c; r < this->rows(); ++r)
+        for (std::size_t r = 0, c; r < this->rows(); ++r)
             for (c = 0; c < this->cols(); ++c, ++it)
                 this->at(r, c) = *it;
     }
@@ -76,7 +79,7 @@ public:
         _data = Vector<T>(this->rows() * this->cols());
         // Get an interator for the data.
         auto r_it = data.begin();
-        for (size_type_t r = 0, c = 0; r < this->rows(); ++r, ++r_it) {
+        for (std::size_t r = 0, c = 0; r < this->rows(); ++r, ++r_it) {
             auto c_it = (*r_it).begin();
             for (c = 0; c < this->cols(); ++c, ++c_it) {
                 this->at(r, c) = *c_it;
@@ -90,7 +93,7 @@ public:
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
     {
-        for (size_type_t i = 0; i < (this->rows() * this->cols()); ++i)
+        for (std::size_t i = 0; i < (this->rows() * this->cols()); ++i)
             _data[i] = rhs[i];
     }
 
@@ -100,7 +103,7 @@ public:
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
     {
-        for (size_type_t i = 0; i < (this->rows() * this->cols()); ++i)
+        for (std::size_t i = 0; i < (this->rows() * this->cols()); ++i)
             _data[i] = rhs[i];
     }
 
@@ -110,7 +113,7 @@ public:
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
     {
-        for (size_type_t i = 0; i < (this->rows() * this->cols()); ++i)
+        for (std::size_t i = 0; i < (this->rows() * this->cols()); ++i)
             _data[i] = rhs[i];
     }
 
@@ -120,7 +123,7 @@ public:
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
     {
-        for (size_type_t i = 0; i < (this->rows() * this->cols()); ++i)
+        for (std::size_t i = 0; i < (this->rows() * this->cols()); ++i)
             _data[i] = rhs[i];
     }
 
@@ -148,17 +151,25 @@ public:
         // Nothing to do.
     }
 
+    /// @brief Returns a pointer to the internal data.
+    /// @return the pointer.
     constexpr inline T *data() noexcept override
     {
         return _data.data();
     }
 
+    /// @brief Returns a constant pointer to the internal data.
+    /// @return the constant pointer.
     constexpr inline const T *data() const noexcept override
     {
         return _data.data();
     }
 
-    constexpr auto &reshape(size_type_t rows, size_type_t cols) noexcept
+    /// @brief Changes the shape of the matrix, but not the overall number of elements.
+    /// @param rows the new number of rows.
+    /// @param cols the new number of columns.
+    /// @return a reference to this matrix.
+    constexpr auto &reshape(std::size_t rows, std::size_t cols) noexcept
     {
         assert(this->size() == (rows * cols));
         this->_rows = rows;
@@ -166,11 +177,15 @@ public:
         return *this;
     }
 
-    constexpr auto &resize(size_type_t rows, size_type_t cols) noexcept
+    /// @brief Changes the shape of the matrix, without preserving the overall number of elements.
+    /// @param rows the new number of rows.
+    /// @param cols the new number of columns.
+    /// @return a reference to this matrix.
+    constexpr auto &resize(std::size_t rows, std::size_t cols) noexcept
     {
         malg::Matrix<T> m(rows, cols, static_cast<T>(0));
-        for (size_type_t r = 0; r < std::min(this->rows(), rows); ++r)
-            for (size_type_t c = 0; c < std::min(this->cols(), cols); ++c)
+        for (std::size_t r = 0; r < std::min(this->rows(), rows); ++r)
+            for (std::size_t c = 0; c < std::min(this->cols(), cols); ++c)
                 m(r, c) = this->at(r, c);
         // Move the data.
         _data = std::move(m._data);
@@ -182,7 +197,7 @@ public:
 
     /// @brief Assign operator.
     /// @param rhs the other matrix.
-    /// @return a reference to this matrix.
+    /// @returns a reference to this matrix.
     constexpr auto &operator=(const Matrix<T> &rhs) noexcept
     {
         if (&rhs == this)
@@ -194,8 +209,8 @@ public:
             this->_rows = rhs.rows();
             this->_cols = rhs.cols();
             // Copy the content.
-            for (size_type_t r = 0; r < this->rows(); ++r)
-                for (size_type_t c = 0; c < this->cols(); ++c)
+            for (std::size_t r = 0; r < this->rows(); ++r)
+                for (std::size_t c = 0; c < this->cols(); ++c)
                     this->at(r, c) = rhs(r, c);
         }
         return *this;
@@ -203,7 +218,7 @@ public:
 
     /// @brief Assign operator.
     /// @param rhs the other matrix.
-    /// @return a reference to this matrix.
+    /// @returns a reference to this matrix.
     constexpr auto &operator=(const MatrixBase<T> &rhs) noexcept
     {
         if (&rhs == this)
@@ -215,8 +230,8 @@ public:
             this->_rows = rhs.rows();
             this->_cols = rhs.cols();
             // Copy the content.
-            for (size_type_t r = 0; r < this->rows(); ++r)
-                for (size_type_t c = 0; c < this->cols(); ++c)
+            for (std::size_t r = 0; r < this->rows(); ++r)
+                for (std::size_t c = 0; c < this->cols(); ++c)
                     this->at(r, c) = rhs(r, c);
         }
         return *this;
@@ -224,7 +239,7 @@ public:
 
     /// @brief Assign operator.
     /// @param rhs the other matrix.
-    /// @return a reference to this matrix.
+    /// @returns a reference to this matrix.
     template <typename T2>
     constexpr auto &operator=(const MatrixBase<T2> &rhs) noexcept
     {
@@ -235,8 +250,8 @@ public:
             this->_rows = rhs.rows();
             this->_cols = rhs.cols();
             // Copy the content.
-            for (size_type_t r = 0; r < this->rows(); ++r)
-                for (size_type_t c = 0; c < this->cols(); ++c)
+            for (std::size_t r = 0; r < this->rows(); ++r)
+                for (std::size_t c = 0; c < this->cols(); ++c)
                     this->at(r, c) = rhs(r, c);
         }
         return *this;
@@ -244,7 +259,7 @@ public:
 
     /// @brief Assign operator.
     /// @param rhs the other matrix.
-    /// @return a reference to this matrix.
+    /// @returns a reference to this matrix.
     template <typename T2>
     constexpr auto &operator=(const Matrix<T2> &rhs) noexcept
     {
@@ -258,8 +273,8 @@ public:
             this->_rows = rhs.rows();
             this->_cols = rhs.cols();
             // Copy the content.
-            for (size_type_t r = 0; r < this->rows(); ++r)
-                for (size_type_t c = 0; c < this->cols(); ++c)
+            for (std::size_t r = 0; r < this->rows(); ++r)
+                for (std::size_t c = 0; c < this->cols(); ++c)
                     this->at(r, c) = rhs(r, c);
         }
         return *this;
@@ -267,7 +282,7 @@ public:
 
     /// @brief Assign operator.
     /// @param rhs the other matrix.
-    /// @return a reference to this matrix.
+    /// @returns a reference to this matrix.
     constexpr auto &operator=(Matrix<T> &&rhs) noexcept
     {
         if ((&rhs != this) && (rhs.size() > 0)) {
@@ -294,7 +309,7 @@ public:
         _data = Vector<T>(this->rows() * this->cols());
         // Get an interator for the data.
         auto r_it = data.begin();
-        for (size_type_t r = 0, c = 0; r < this->rows(); ++r, ++r_it) {
+        for (std::size_t r = 0, c = 0; r < this->rows(); ++r, ++r_it) {
             auto c_it = (*r_it).begin();
             for (c = 0; c < this->cols(); ++c, ++c_it) {
                 this->at(r, c) = *c_it;
@@ -305,16 +320,16 @@ public:
 
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
-    /// @return the reference to the accessed item.
-    constexpr inline T &operator[](size_type_t pos) noexcept override
+    /// @returns the reference to the accessed item.
+    constexpr inline T &operator[](std::size_t pos) noexcept override
     {
         return _data[pos];
     }
 
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
-    /// @return the reference to the accessed item.
-    constexpr inline const T &operator[](size_type_t pos) const noexcept override
+    /// @returns the reference to the accessed item.
+    constexpr inline const T &operator[](std::size_t pos) const noexcept override
     {
         return _data[pos];
     }
@@ -322,8 +337,8 @@ public:
     /// @brief Operator for accessing the matrix.
     /// @param row the accessed row.
     /// @param col the accessed column.
-    /// @return the reference to the accessed item.
-    constexpr inline T &operator()(size_type_t row, size_type_t col) noexcept override
+    /// @returns the reference to the accessed item.
+    constexpr inline T &operator()(std::size_t row, std::size_t col) noexcept override
     {
         return this->at(row, col);
     }
@@ -331,8 +346,8 @@ public:
     /// @brief Operator for accessing the matrix.
     /// @param row the accessed row.
     /// @param col the accessed column.
-    /// @return the const reference to the accessed item.
-    constexpr inline const T &operator()(size_type_t row, size_type_t col) const noexcept override
+    /// @returns the const reference to the accessed item.
+    constexpr inline const T &operator()(std::size_t row, std::size_t col) const noexcept override
     {
         return this->at(row, col);
     }
@@ -340,20 +355,20 @@ public:
     /// @brief Operator for generating a view of the matrix.
     /// @param row the range of rows to extract.
     /// @param col the range of columns to extract.
-    /// @return the desired view.
+    /// @returns the desired view.
     constexpr View<Matrix<T>> operator()(Range row, Range col) noexcept;
 
     /// @brief Operator for generating a view of the matrix.
     /// @param row the range of rows to extract.
     /// @param col the range of columns to extract.
-    /// @return the desired view.
+    /// @returns the desired view.
     constexpr View<const Matrix<T>> operator()(Range row, Range col) const noexcept;
 
     /// @brief Alternative function to access the matrix.
     /// @param row the accessed row.
     /// @param col the accessed column.
-    /// @return the reference to the accessed item.
-    constexpr inline T &at(size_type_t row, size_type_t col) noexcept override
+    /// @returns the reference to the accessed item.
+    constexpr inline T &at(std::size_t row, std::size_t col) noexcept override
     {
 #ifdef ROW_MAJOR
         return _data[(row * this->cols()) + col];
@@ -365,8 +380,8 @@ public:
     /// @brief Alternative function to access the matrix.
     /// @param row the accessed row.
     /// @param col the accessed column.
-    /// @return the const reference to the accessed item.
-    constexpr inline const T &at(size_type_t row, size_type_t col) const noexcept override
+    /// @returns the const reference to the accessed item.
+    constexpr inline const T &at(std::size_t row, std::size_t col) const noexcept override
     {
 #ifdef ROW_MAJOR
         return _data[(row * this->cols()) + col];
@@ -374,22 +389,31 @@ public:
         return _data[(col * this->rows()) + row];
 #endif
     }
-
+    
+    /// @brief A constant iterator poiting to the beginning of the internal data.
+    /// @return the iterator.
     constexpr inline auto begin() const noexcept
     {
         return _data.begin();
     }
 
+    /// @brief Iterator poiting to the beginning of the internal data.
+    /// @return the iterator.
     constexpr inline auto begin() noexcept
     {
         return _data.begin();
     }
 
+    /// @brief A constant iterator poiting to the end of the internal data.
+    /// @return the iterator.
     constexpr inline auto end() const noexcept
     {
         return _data.end();
     }
 
+
+    /// @brief Iterator poiting to the end of the internal data.
+    /// @return the iterator.
     constexpr inline auto end() noexcept
     {
         return _data.end();

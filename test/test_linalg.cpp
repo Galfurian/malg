@@ -93,7 +93,7 @@ int test_expm()
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     test_expm();
     return 0;

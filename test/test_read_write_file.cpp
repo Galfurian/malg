@@ -58,7 +58,7 @@ int test_matrix()
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     if (test_vec())
         return 1;

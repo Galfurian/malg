@@ -19,10 +19,11 @@ namespace malg::utility
 {
 
 /// @brief Find the basis for representing numbers on the computer.
-/// @return the basis.
+/// @returns the basis.
+template <typename T>
 constexpr inline auto basis() noexcept
 {
-    double x = 1, eins = 1, b = 1;
+    T x = 1, eins = 1, b = 1;
     while ((x + eins) - x == eins)
         x *= 2;
     while ((x + b) == x)
@@ -34,15 +35,15 @@ constexpr inline auto basis() noexcept
 /// @param rows the number of rows.
 /// @param cols the number of columns.
 /// @param value value for the diagonal.
-/// @return the generated matrix.
+/// @returns the generated matrix.
 template <typename T>
-constexpr inline auto eye(size_type_t rows, size_type_t cols, T value = T(1.)) noexcept
+constexpr inline auto eye(std::size_t rows, std::size_t cols, T value = T(1.)) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((rows > 0) && "You must provide a number of rows greather than zero");
     assert((cols > 0) && "You must provide a number of columns greather than zero");
     Matrix<data_type> m(rows, cols, data_type(0.));
-    for (size_type_t i = 0; i < std::min(rows, cols); ++i)
+    for (std::size_t i = 0; i < std::min(rows, cols); ++i)
         m(i, i) = value;
     return m;
 }
@@ -50,19 +51,19 @@ constexpr inline auto eye(size_type_t rows, size_type_t cols, T value = T(1.)) n
 /// @brief Creates an identity matrix.
 /// @param N size of the identity matrix.
 /// @param value value for the diagonal.
-/// @return the identity matrix.
+/// @returns the identity matrix.
 template <typename T>
-constexpr inline auto identity(size_type_t N, T value = T(1.)) noexcept
+constexpr inline auto identity(std::size_t N, T value = T(1.)) noexcept
 {
     return eye(N, N, value);
 }
 
 /// @brief Creates a matrix with all zeros.
 /// @param rows the number of rows.
-/// @param columns the number of columns.
-/// @return the newly created matrix.
+/// @param cols the number of columns.
+/// @returns the newly created matrix.
 template <typename T>
-constexpr inline auto zeros(size_type_t rows, size_type_t cols) noexcept
+constexpr inline auto zeros(std::size_t rows, std::size_t cols) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((rows > 0) && "You must provide a number of rows greather than zero");
@@ -72,9 +73,9 @@ constexpr inline auto zeros(size_type_t rows, size_type_t cols) noexcept
 
 /// @brief Creates a vector with all zeros.
 /// @param size the size of the vector.
-/// @return the newly created vector.
+/// @returns the newly created vector.
 template <typename T>
-constexpr inline auto zeros(size_type_t size) noexcept
+constexpr inline auto zeros(std::size_t size) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((size > 0) && "You must provide a size greather than zero");
@@ -83,10 +84,10 @@ constexpr inline auto zeros(size_type_t size) noexcept
 
 /// @brief Creates a matrix with all ones.
 /// @param rows the number of rows.
-/// @param columns the number of columns.
-/// @return the newly created matrix.
+/// @param cols the number of columns.
+/// @returns the newly created matrix.
 template <typename T>
-constexpr inline auto ones(size_type_t rows, size_type_t cols) noexcept
+constexpr inline auto ones(std::size_t rows, std::size_t cols) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((rows > 0) && "You must provide a number of rows greather than zero");
@@ -96,9 +97,9 @@ constexpr inline auto ones(size_type_t rows, size_type_t cols) noexcept
 
 /// @brief Creates a vector with all ones.
 /// @param size the size of the vector.
-/// @return the newly created vector.
+/// @returns the newly created vector.
 template <typename T>
-constexpr inline auto ones(size_type_t size) noexcept
+constexpr inline auto ones(std::size_t size) noexcept
 {
     using data_type = std::remove_const_t<T>;
     assert((size > 0) && "You must provide a size greather than zero");
@@ -106,45 +107,50 @@ constexpr inline auto ones(size_type_t size) noexcept
 }
 
 /// @brief Extracts the diagonal elements from the matrix.
-/// @param matrix the matrix.
-/// @return the diagonal elements.
+/// @param A the matrix.
+/// @returns the diagonal elements.
 template <typename T>
-constexpr inline auto diag(const MatrixBase<T> &matrix) noexcept
+constexpr inline auto diag(const MatrixBase<T> &A) noexcept
 {
     using data_type  = std::remove_const_t<T>;
-    size_type_t size = std::min(matrix.rows(), matrix.cols());
+    std::size_t size = std::min(A.rows(), A.cols());
     Vector<data_type> result(size, data_type(0.));
-    for (size_type_t i = 0; i < size; ++i)
-        result[i] = matrix(i, i);
+    for (std::size_t i = 0; i < size; ++i)
+        result[i] = A(i, i);
     return result;
 }
 
-/// @brief Extracts the diagonal elements from the matrix.
-/// @param matrix the matrix.
-/// @return the diagonal elements.
+/// @brief Generates a diagonal matrix from the elements of the vector..
+/// @param a the vector.
+/// @returns the diagonal matrix.
 template <typename T>
-constexpr inline auto diag(const Vector<T> &v) noexcept
+constexpr inline auto diag(const Vector<T> &a) noexcept
 {
     using data_type = std::remove_const_t<T>;
-    Matrix<data_type> matrix(v.size(), v.size(), data_type(0.));
-    for (size_type_t i = 0; i < v.size(); ++i)
-        matrix(i, i) = v[i];
+    Matrix<data_type> matrix(a.size(), a.size(), data_type(0.));
+    for (std::size_t i = 0; i < a.size(); ++i)
+        matrix(i, i) = a[i];
     return matrix;
 }
 
-/// @brief Extracts the diagonal elements from the matrix.
-/// @param matrix the matrix.
-/// @return the diagonal elements.
+/// @brief Transforms a vector into a matrix.
+/// @param a the input vector.
+/// @param row_matrix if the output matrix should be a row matrix (true), or a column matrix (false).
+/// @returns the generated matrix.
 template <typename T>
-constexpr inline auto to_matrix(const Vector<T> &v, bool row_matrix) noexcept
+constexpr inline auto to_matrix(const Vector<T> &a, bool row_matrix) noexcept
 {
     using data_type = std::remove_const_t<T>;
-    Matrix<data_type> matrix(row_matrix ? 1u : v.size(), row_matrix ? v.size() : 1u, data_type(0));
-    for (size_type_t i = 0; i < v.size(); ++i)
-        matrix[i] = v[i];
+    Matrix<data_type> matrix(row_matrix ? 1u : a.size(), row_matrix ? a.size() : 1u, data_type(0));
+    for (std::size_t i = 0; i < a.size(); ++i)
+        matrix[i] = a[i];
     return matrix;
 }
 
+/// @brief Vertically stacks two matrices.
+/// @param A the first (*xN) matrix.
+/// @param B the second (*xN) matrix.
+/// @returns the two matrices stacked into one.
 template <typename T1, typename T2>
 constexpr inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B) noexcept
 {
@@ -156,12 +162,16 @@ constexpr inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B) n
     // Resize the matrix by adding rows for B.
     C.resize(A.rows() + B.rows(), A.cols());
     // Append B to C.
-    for (size_type_t r = 0, c; r < B.rows(); ++r)
+    for (std::size_t r = 0, c; r < B.rows(); ++r)
         for (c = 0; c < B.cols(); ++c)
             C(r + A.rows(), c) = B(r, c);
     return C;
 }
 
+/// @brief Vertically stacks a matrix and a vector.
+/// @param A the matrix of size (*xN).
+/// @param b the vector of size N.
+/// @returns the result of the stacking.
 template <typename T1, typename T2>
 constexpr inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b) noexcept
 {
@@ -173,11 +183,15 @@ constexpr inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b) noexc
     // Resize the matrix by adding the row for b.
     C.resize(A.rows() + 1, A.cols());
     // Append b to C.
-    for (size_type_t i = 0; i < b.size(); ++i)
+    for (std::size_t i = 0; i < b.size(); ++i)
         C(A.rows(), i) = b[i];
     return C;
 }
 
+/// @brief Horizontally stacks two matrices.
+/// @param A the first (Mx*) matrix.
+/// @param B the second (Mx*) matrix.
+/// @returns the two matrices stacked into one.
 template <typename T1, typename T2>
 constexpr inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B) noexcept
 {
@@ -189,12 +203,16 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B) n
     // Resize the matrix by adding cols for B.
     C.resize(A.rows(), A.cols() + B.cols());
     // Append B to C.
-    for (size_type_t c = 0, r; c < B.cols(); ++c)
+    for (std::size_t c = 0, r; c < B.cols(); ++c)
         for (r = 0; r < B.rows(); ++r)
             C(r, c + A.cols()) = B(r, c);
     return C;
 }
 
+/// @brief Horizontally stacks a matrix and a vector.
+/// @param A the matrix of size (Mx*).
+/// @param b the vector of size M.
+/// @returns the result of the stacking.
 template <typename T1, typename T2>
 constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b) noexcept
 {
@@ -206,17 +224,24 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b) noexc
     // Resize the matrix by adding the row for b.
     C.resize(A.rows(), A.cols() + 1);
     // Append b to C.
-    for (size_type_t i = 0; i < b.size(); ++i)
+    for (std::size_t i = 0; i < b.size(); ++i)
         C(i, A.cols()) = b[i];
     return C;
 }
 
+/// @brief Extracs a sub-matrix.
+/// @param matrix the input matrix.
+/// @param start_row the starting row.
+/// @param end_row the ending row.
+/// @param start_column the starting column.
+/// @param end_column the ending column.
+/// @returns the extracted sub-matrix.
 template <typename T>
 constexpr inline auto extract(const MatrixBase<T> &matrix,
-                              size_type_t start_row    = 0,
-                              size_type_t end_row      = -1,
-                              size_type_t start_column = 0,
-                              size_type_t end_column   = -1) noexcept
+                              std::size_t start_row    = 0,
+                              std::size_t end_row      = -1,
+                              std::size_t start_column = 0,
+                              std::size_t end_column   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_row         = std::min(matrix.rows(), end_row);
@@ -224,8 +249,8 @@ constexpr inline auto extract(const MatrixBase<T> &matrix,
     assert(start_row < end_row);
     assert(start_column < end_column);
     Matrix<data_type> result(end_row - start_row, end_column - start_column, data_type(0.));
-    for (size_type_t r = start_row; r < end_row; ++r)
-        for (size_type_t c = start_column; c < end_column; ++c)
+    for (std::size_t r = start_row; r < end_row; ++r)
+        for (std::size_t c = start_column; c < end_column; ++c)
             result(r - start_row, c - start_column) = matrix(r, c);
     return result;
 }
@@ -233,19 +258,21 @@ constexpr inline auto extract(const MatrixBase<T> &matrix,
 /// @brief Extracts a column from the matrix.
 /// @param matrix the matrix.
 /// @param column the column to extract.
-/// @return the extracted column as a vector.
+/// @param start_row the starting row.
+/// @param end_row the ending row.
+/// @returns the extracted column as a vector.
 template <typename T>
 constexpr inline auto extract_column(const MatrixBase<T> &matrix,
-                                     size_type_t column,
-                                     size_type_t start_row = 0,
-                                     size_type_t end_row   = -1) noexcept
+                                     std::size_t column,
+                                     std::size_t start_row = 0,
+                                     std::size_t end_row   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_row         = std::min(matrix.rows(), end_row);
     assert(start_row < end_row);
     assert(column < matrix.cols());
     Vector<data_type> result(end_row - start_row, data_type(0.));
-    for (size_type_t r = start_row; r < end_row; ++r)
+    for (std::size_t r = start_row; r < end_row; ++r)
         result[r - start_row] = matrix(r, column);
     return result;
 }
@@ -253,19 +280,21 @@ constexpr inline auto extract_column(const MatrixBase<T> &matrix,
 /// @brief Extracts a row from the matrix.
 /// @param matrix the matrix.
 /// @param row the row to extract.
-/// @return the extracted row as a vector.
+/// @param start_column the starting column.
+/// @param end_column the ending column.
+/// @returns the extracted row as a vector.
 template <typename T>
 constexpr inline auto extract_row(const MatrixBase<T> &matrix,
-                                  size_type_t row,
-                                  size_type_t start_column = 0,
-                                  size_type_t end_column   = -1) noexcept
+                                  std::size_t row,
+                                  std::size_t start_column = 0,
+                                  std::size_t end_column   = -1) noexcept
 {
     using data_type = std::remove_const_t<T>;
     end_column      = std::min(matrix.cols(), end_column);
     assert(row < matrix.rows());
     assert(start_column < end_column);
     Vector<data_type> result(end_column - start_column, data_type(0.));
-    for (size_type_t c = start_column; c < end_column; ++c)
+    for (std::size_t c = start_column; c < end_column; ++c)
         result[c - start_column] = matrix(row, c);
     return result;
 }
@@ -274,11 +303,13 @@ constexpr inline auto extract_row(const MatrixBase<T> &matrix,
 /// @param matrix the matrix.
 /// @param i the first row.
 /// @param j the second row.
+/// @param start_column the starting column.
+/// @param end_column the ending column.
 template <typename T>
-constexpr inline void swap_rows(MatrixBase<T> &matrix, size_type_t i, size_type_t j, size_type_t start_column = 0, size_type_t end_column = -1) noexcept
+constexpr inline void swap_rows(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_column = 0, std::size_t end_column = -1) noexcept
 {
     end_column = std::min(end_column, matrix.cols());
-    for (size_type_t c = start_column; c < end_column; ++c)
+    for (std::size_t c = start_column; c < end_column; ++c)
         std::swap(matrix(i, c), matrix(j, c));
 }
 
@@ -286,20 +317,26 @@ constexpr inline void swap_rows(MatrixBase<T> &matrix, size_type_t i, size_type_
 /// @param matrix the matrix.
 /// @param i the first column.
 /// @param j the second column.
+/// @param start_row the starting row.
+/// @param end_row the ending row.
 template <typename T>
-constexpr inline void swap_cols(MatrixBase<T> &matrix, size_type_t i, size_type_t j, size_type_t start_row = 0, size_type_t end_row = -1) noexcept
+constexpr inline void swap_cols(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_row = 0, std::size_t end_row = -1) noexcept
 {
     end_row = std::min(matrix.rows(), end_row);
-    for (size_type_t r = start_row; r < end_row; ++r)
+    for (std::size_t r = start_row; r < end_row; ++r)
         std::swap(matrix(r, i), matrix(r, j));
 }
 
+/// @brief Removes the given row from the matrix.
+/// @param matrix the input matrix.
+/// @param row the row that must be removed.
+/// @returns a reference to the input matrix with the row removed.
 template <typename T>
-constexpr inline auto &remove_row(Matrix<T> &matrix, size_type_t row) noexcept
+constexpr inline auto &remove_row(Matrix<T> &matrix, std::size_t row) noexcept
 {
     assert(row < matrix.rows());
-    for (size_type_t r = row; r < (matrix.rows() - 1); ++r) {
-        for (size_type_t c = 0; c < matrix.cols(); ++c) {
+    for (std::size_t r = row; r < (matrix.rows() - 1); ++r) {
+        for (std::size_t c = 0; c < matrix.cols(); ++c) {
             std::swap(matrix(r, c), matrix(r + 1, c));
         }
     }
@@ -307,12 +344,16 @@ constexpr inline auto &remove_row(Matrix<T> &matrix, size_type_t row) noexcept
     return matrix;
 }
 
+/// @brief Removes the given column from the matrix.
+/// @param matrix the input matrix.
+/// @param column the column that must be removed.
+/// @returns a reference to the input matrix with the column removed.
 template <typename T>
-constexpr inline auto &remove_column(Matrix<T> &matrix, size_type_t column) noexcept
+constexpr inline auto &remove_column(Matrix<T> &matrix, std::size_t column) noexcept
 {
     assert(column < matrix.cols());
-    for (size_type_t c = column; c < (matrix.cols() - 1); ++c) {
-        for (size_type_t r = 0; r < matrix.rows(); ++r) {
+    for (std::size_t c = column; c < (matrix.cols() - 1); ++c) {
+        for (std::size_t r = 0; r < matrix.rows(); ++r) {
             std::swap(matrix(r, c), matrix(r, c + 1));
         }
     }
@@ -322,8 +363,8 @@ constexpr inline auto &remove_column(Matrix<T> &matrix, size_type_t column) noex
 
 /// @brief Checks if the matrix is square.
 /// @param matrix the matrix.
-/// @return true if the matrix is square.
-/// @return false if the matrix is not square.
+/// @returns true if the matrix is square.
+/// @returns false if the matrix is not square.
 template <typename T>
 constexpr inline auto is_square(const MatrixBase<T> &matrix) noexcept
 {
@@ -332,8 +373,8 @@ constexpr inline auto is_square(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is a column vector.
 /// @param matrix the matrix.
-/// @return true if the matrix is a column vector.
-/// @return false if the matrix is not a column vector.
+/// @returns true if the matrix is a column vector.
+/// @returns false if the matrix is not a column vector.
 template <typename T>
 constexpr inline auto is_column_vector(const MatrixBase<T> &matrix) noexcept
 {
@@ -342,8 +383,8 @@ constexpr inline auto is_column_vector(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is a row vector.
 /// @param matrix the matrix.
-/// @return true if the matrix is a row vector.
-/// @return false if the matrix is not a row vector.
+/// @returns true if the matrix is a row vector.
+/// @returns false if the matrix is not a row vector.
 template <typename T>
 constexpr inline auto is_row_vector(const MatrixBase<T> &matrix) noexcept
 {
@@ -352,15 +393,15 @@ constexpr inline auto is_row_vector(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is symmetric.
 /// @param matrix the matrix.
-/// @return true if the matrix is symmetric.
-/// @return false if the matrix is not symmetric.
+/// @returns true if the matrix is symmetric.
+/// @returns false if the matrix is not symmetric.
 template <typename T>
 constexpr inline auto is_symmetric(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
-    for (size_type_t i = 0; i < matrix.rows(); ++i)
-        for (size_type_t j = 0; j < matrix.cols(); ++j)
+    for (std::size_t i = 0; i < matrix.rows(); ++i)
+        for (std::size_t j = 0; j < matrix.cols(); ++j)
             if (matrix(i, j) != matrix(j, i))
                 return false;
     return true;
@@ -368,15 +409,15 @@ constexpr inline auto is_symmetric(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is skew symmetric.
 /// @param matrix the matrix.
-/// @return true if the matrix is skew symmetric.
-/// @return false if the matrix is not skew symmetric.
+/// @returns true if the matrix is skew symmetric.
+/// @returns false if the matrix is not skew symmetric.
 template <typename T>
 constexpr inline auto is_skew_symmetric(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
-    for (size_type_t i = 0; i < matrix.rows(); ++i)
-        for (size_type_t j = i + 1; j < matrix.cols(); ++j)
+    for (std::size_t i = 0; i < matrix.rows(); ++i)
+        for (std::size_t j = i + 1; j < matrix.cols(); ++j)
             if (matrix(i, j) != -matrix(j, i))
                 return false;
     return true;
@@ -384,15 +425,15 @@ constexpr inline auto is_skew_symmetric(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is diagonal.
 /// @param matrix the matrix.
-/// @return true if the matrix is diagonal.
-/// @return false if the matrix is not diagonal.
+/// @returns true if the matrix is diagonal.
+/// @returns false if the matrix is not diagonal.
 template <typename T>
 constexpr inline auto is_diagonal(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
-    for (size_type_t i = 0; i < matrix.rows(); ++i)
-        for (size_type_t j = 0; j < matrix.cols(); ++j)
+    for (std::size_t i = 0; i < matrix.rows(); ++i)
+        for (std::size_t j = 0; j < matrix.cols(); ++j)
             if ((i != j) && (matrix(i, j) != 0))
                 return false;
     return true;
@@ -400,8 +441,8 @@ constexpr inline auto is_diagonal(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix contains all zeros.
 /// @param matrix the matrix.
-/// @return true if the matrix contains all zeros.
-/// @return false if the matrix does not contain all zeros.
+/// @returns true if the matrix contains all zeros.
+/// @returns false if the matrix does not contain all zeros.
 template <typename T>
 constexpr inline auto is_zero(const MatrixBase<T> &matrix) noexcept
 {
@@ -410,8 +451,8 @@ constexpr inline auto is_zero(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix contains the same value everywhere.
 /// @param matrix the matrix.
-/// @return true if the matrix contains the same value everywhere.
-/// @return false if the matrix does not contain the same value everywhere.
+/// @returns true if the matrix contains the same value everywhere.
+/// @returns false if the matrix does not contain the same value everywhere.
 template <typename T>
 constexpr inline auto is_constant(const MatrixBase<T> &matrix) noexcept
 {
@@ -422,13 +463,13 @@ constexpr inline auto is_constant(const MatrixBase<T> &matrix) noexcept
 /// @param a the first matrix.
 /// @param b the second matrix.
 /// @param tolerance the tollerated difference between the two matrices.
-/// @return true if the two arrays are equal within the given tolerance.
-/// @return false otherwise.
+/// @returns true if the two arrays are equal within the given tolerance.
+/// @returns false otherwise.
 template <typename T>
 constexpr inline auto all_close(const Vector<T> &a, const Vector<T> &b, double tolerance = 0.0001) noexcept
 {
     assert(a.size() == b.size());
-    for (size_type_t i = 0; i < a.size(); ++i)
+    for (std::size_t i = 0; i < a.size(); ++i)
         if (std::abs(a[i] - b[i]) > tolerance)
             return false;
     return true;
@@ -438,13 +479,13 @@ constexpr inline auto all_close(const Vector<T> &a, const Vector<T> &b, double t
 /// @param a the first matrix.
 /// @param b the second matrix.
 /// @param tolerance the tollerated difference between the two matrices.
-/// @return true if the two arrays are equal within the given tolerance.
-/// @return false otherwise.
+/// @returns true if the two arrays are equal within the given tolerance.
+/// @returns false otherwise.
 template <typename T>
 constexpr inline auto all_close(const MatrixBase<T> &a, const MatrixBase<T> &b, double tolerance = 0.0001) noexcept
 {
     assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
-    for (size_type_t i = 0; i < a.size(); ++i)
+    for (std::size_t i = 0; i < a.size(); ++i)
         if (std::abs(a[i] - b[i]) > tolerance)
             return false;
     return true;
@@ -452,8 +493,8 @@ constexpr inline auto all_close(const MatrixBase<T> &a, const MatrixBase<T> &b, 
 
 /// @brief Checks if the matrix is the identity matrix.
 /// @param matrix the matrix.
-/// @return true if the matrix is the identity matrix.
-/// @return false if the matrix is not the identity matrix.
+/// @returns true if the matrix is the identity matrix.
+/// @returns false if the matrix is not the identity matrix.
 template <typename T>
 constexpr inline auto is_identity(const MatrixBase<T> &matrix) noexcept
 {
@@ -464,8 +505,8 @@ constexpr inline auto is_identity(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is orthogonal.
 /// @param matrix the matrix.
-/// @return true if the matrix is orthogonal.
-/// @return false if the matrix is not orthogonal.
+/// @returns true if the matrix is orthogonal.
+/// @returns false if the matrix is not orthogonal.
 template <typename T>
 constexpr inline auto is_orthogonal(const MatrixBase<T> &matrix) noexcept
 {
@@ -476,8 +517,8 @@ constexpr inline auto is_orthogonal(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is invertible.
 /// @param matrix the matrix.
-/// @return true if the matrix is invertible.
-/// @return false if the matrix is not invertible.
+/// @returns true if the matrix is invertible.
+/// @returns false if the matrix is not invertible.
 template <typename T>
 constexpr inline auto is_invertible(const MatrixBase<T> &matrix) noexcept
 {
@@ -486,8 +527,8 @@ constexpr inline auto is_invertible(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is linearly dependent.
 /// @param matrix the matrix.
-/// @return true if the matrix is linearly dependent.
-/// @return false if the matrix is not linearly dependent.
+/// @returns true if the matrix is linearly dependent.
+/// @returns false if the matrix is not linearly dependent.
 template <typename T>
 constexpr inline auto is_linearly_dependent(const MatrixBase<T> &matrix) noexcept
 {
@@ -496,8 +537,8 @@ constexpr inline auto is_linearly_dependent(const MatrixBase<T> &matrix) noexcep
 
 /// @brief Checks if the matrix is linearly independent.
 /// @param matrix the matrix.
-/// @return true if the matrix is linearly independent.
-/// @return false if the matrix is not linearly independent.
+/// @returns true if the matrix is linearly independent.
+/// @returns false if the matrix is not linearly independent.
 template <typename T>
 constexpr inline auto is_linearly_independent(const MatrixBase<T> &matrix) noexcept
 {
@@ -506,14 +547,14 @@ constexpr inline auto is_linearly_independent(const MatrixBase<T> &matrix) noexc
 
 /// @brief Checks if the matrix is a lower triangular one.
 /// @param matrix the matrix.
-/// @return true if the matrix is a lower triangular one.
-/// @return false if the matrix is not a lower triangular one.
+/// @returns true if the matrix is a lower triangular one.
+/// @returns false if the matrix is not a lower triangular one.
 template <typename T>
 constexpr inline auto is_lower_triangular(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
-    for (size_type_t r = 0, c; r < matrix.rows(); ++r)
+    for (std::size_t r = 0, c; r < matrix.rows(); ++r)
         for (c = r + 1; c < matrix.cols(); ++c)
             if (matrix(r, c))
                 return false;
@@ -522,32 +563,48 @@ constexpr inline auto is_lower_triangular(const MatrixBase<T> &matrix) noexcept
 
 /// @brief Checks if the matrix is a upper triangular one.
 /// @param matrix the matrix.
-/// @return true if the matrix is a upper triangular one.
-/// @return false if the matrix is not a upper triangular one.
+/// @returns true if the matrix is a upper triangular one.
+/// @returns false if the matrix is not a upper triangular one.
 template <typename T>
 constexpr inline auto is_upper_triangular(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
-    for (size_type_t r = 0, c; r < matrix.rows(); ++r)
+    for (std::size_t r = 0, c; r < matrix.rows(); ++r)
         for (c = 0; c < r; ++c)
             if (matrix(r, c))
                 return false;
     return true;
 }
 
+/// @brief Changes the shape of the matrix **A**, but not the overall number of elements.
+/// @param A the matrix.
+/// @param rows the new number of rows.
+/// @param cols the new number of columns.
+/// @return the matrix **A** reshaped.
 template <typename T>
-constexpr inline auto &reshape(malg::Matrix<T> &m, size_type_t rows, size_type_t cols) noexcept
+constexpr inline auto &reshape(malg::Matrix<T> &A, std::size_t rows, std::size_t cols) noexcept
 {
-    return m.reshape(rows, cols);
+    return A.reshape(rows, cols);
 }
 
+/// @brief Changes the shape of the matrix **A**, without preserving the overall number of elements.
+/// @param A the matrix.
+/// @param rows the new number of rows.
+/// @param cols the new number of columns.
+/// @return the matrix **A** resized.
 template <typename T>
-constexpr inline auto &resize(malg::Matrix<T> &m, size_type_t rows, size_type_t cols) noexcept
+constexpr inline auto &resize(malg::Matrix<T> &A, std::size_t rows, std::size_t cols) noexcept
 {
-    return m.resize(rows, cols);
+    return A.resize(rows, cols);
 }
 
+/// @brief Computes the inner product of two lists by using iterators.
+/// @param first1 the starting iterator of the **first list**.
+/// @param last1 the final iterator of the **first list**.
+/// @param first2 the starting iterator of the **second list**.
+/// @param init the initial value.
+/// @return the inner product of the two lists.
 template <typename T>
 constexpr inline T inner_product(T *first1, T *last1, T *first2, T init) noexcept
 {
@@ -558,24 +615,11 @@ constexpr inline T inner_product(T *first1, T *last1, T *first2, T init) noexcep
     return init;
 }
 
-template <typename MatrixType>
-constexpr inline auto view(MatrixType &matrix, size_type_t start_row = 0, size_type_t end_row = -1, size_type_t start_col = 0, size_type_t end_col = -1) noexcept
-{
-    return View(&matrix, start_row, end_row, start_col, end_col);
-}
-
-template <typename MatrixType>
-constexpr inline auto row(MatrixType &matrix, size_type_t row, size_type_t start_col = 0, size_type_t end_col = -1) noexcept
-{
-    return View(&matrix, row, row + 1, start_col, end_col);
-}
-
-template <typename MatrixType>
-constexpr inline auto col(MatrixType &matrix, size_type_t col, size_type_t start_row = 0, size_type_t end_row = -1) noexcept
-{
-    return View(&matrix, start_row, end_row, col, col + 1);
-}
-
+/// @brief Sums the lement of the given list.
+/// @param first the starting iterator of the **list**.
+/// @param last the final iterator of the **list**.
+/// @param init the initial value.
+/// @return the sums of the element of the list.
 template <class T>
 constexpr inline T accumulate(T *first, T *last, T init) noexcept
 {
@@ -586,77 +630,137 @@ constexpr inline T accumulate(T *first, T *last, T init) noexcept
     return init;
 }
 
-/// @brief Find the basis for representing numbers on the computer.
-/// @tparam T
-/// @return int
-template <typename T>
-static constexpr inline auto basis() noexcept
+/// @brief Generates a **view** for the given matrix **A**.
+/// @param A the matrix.
+/// @param start_row the starating row.
+/// @param end_row the final row.
+/// @param start_col the starating column.
+/// @param end_col the final column.
+/// @return the generated view.
+template <typename MatrixType>
+constexpr inline auto view(MatrixType &A, std::size_t start_row = 0, std::size_t end_row = -1, std::size_t start_col = 0, std::size_t end_col = -1) noexcept
 {
-    T x = 1, eins = 1, b = 1;
-    while ((x + eins) - x == eins)
-        x *= 2;
-    while ((x + b) == x)
-        b *= 2;
-    return (int)((x + b) - x);
+    return View(&A, start_row, end_row, start_col, end_col);
 }
 
+/// @brief Generates a **row view** for the given matrix **A**.
+/// @param A the matrix.
+/// @param row the row.
+/// @param start_col the starating column.
+/// @param end_col the final column.
+/// @return the generated view.
+template <typename MatrixType>
+constexpr inline auto row(MatrixType &A, std::size_t row, std::size_t start_col = 0, std::size_t end_col = -1) noexcept
+{
+    return View(&A, row, row + 1, start_col, end_col);
+}
+
+/// @brief Generates a **column view** for the given matrix **A**.
+/// @param A the matrix.
+/// @param col the column.
+/// @param start_row the starating row.
+/// @param end_row the final row.
+/// @return the generated view.
+template <typename MatrixType>
+constexpr inline auto col(MatrixType &A, std::size_t col, std::size_t start_row = 0, std::size_t end_row = -1) noexcept
+{
+    return View(&A, start_row, end_row, col, col + 1);
+}
+
+/// @brief Generates a random matrix.
+/// @param rows the number of rows.
+/// @param cols the number of columns.
+/// @param min the minimum value.
+/// @param max the maximum value.
+/// @return the random matrix.
 template <typename T, typename T2>
-constexpr inline auto rand_matrix(size_type_t rows, size_type_t cols, T2 min, T2 max) noexcept
+constexpr inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2 max) noexcept
 {
     if constexpr (malg::is_complex_v<T>) {
-        using data_type_t    = typename T::value_type;
+        // First, we extract the underlying datatype for the complex value.
+        using data_type_t = typename T::value_type;
+        // Then, we define the type of for the distribution.
         using distribution_t = std::conditional_t<
             std::is_floating_point_v<data_type_t>,
             std::uniform_real_distribution<data_type_t>,
             std::uniform_int_distribution<data_type_t>>;
+        // Create the distribution.
         distribution_t dist(min, max);
+        // Create the interface to the random number generator.
         std::random_device dev;
+        // Create the random number generator.
         std::mt19937 rng(dev());
+        // Initialize the matrix.
         Matrix<std::complex<data_type_t>> m(rows, cols, std::complex<data_type_t>(0., 0.));
-        for (size_type_t i = 0; i < m.size(); ++i)
+        // Generate the matrix.
+        for (std::size_t i = 0; i < m.size(); ++i)
             m[i] = std::complex<data_type_t>(dist(rng), dist(rng));
         return m;
     } else {
+        // We define the type of for the distribution.
         using distribution_t = std::conditional_t<
             std::is_floating_point_v<T>,
             std::uniform_real_distribution<T>,
             std::uniform_int_distribution<T>>;
+        // Create the distribution.
         distribution_t dist(min, max);
+        // Create the interface to the random number generator.
         std::random_device dev;
+        // Create the random number generator.
         std::mt19937 rng(dev());
+        // Initialize the matrix.
         Matrix<T> m(rows, cols, static_cast<T>(0));
-        for (size_type_t i = 0; i < m.size(); ++i)
+        // Generate the matrix.
+        for (std::size_t i = 0; i < m.size(); ++i)
             m[i] = dist(rng);
         return m;
     }
 }
 
+/// @brief Generates a random vector.
+/// @param size the size of the vector.
+/// @param min the minimum value.
+/// @param max the maximum value.
+/// @return the random vector.
 template <typename T, typename T2>
-constexpr inline auto rand_vector(size_type_t size, T2 min, T2 max) noexcept
+constexpr inline auto rand_vector(std::size_t size, T2 min, T2 max) noexcept
 {
     if constexpr (malg::is_complex_v<T>) {
-        using data_type_t    = typename T::value_type;
+        // First, we extract the underlying datatype for the complex value.
+        using data_type_t = typename T::value_type;
+        // Then, we define the type of for the distribution.
         using distribution_t = std::conditional_t<
             std::is_floating_point_v<data_type_t>,
             std::uniform_real_distribution<data_type_t>,
             std::uniform_int_distribution<data_type_t>>;
+        // Create the distribution.
         distribution_t dist(min, max);
+        // Create the interface to the random number generator.
         std::random_device dev;
+        // Create the random number generator.
         std::mt19937 rng(dev());
+        // Initialize the vector.
         Vector<T> v(size, std::complex<data_type_t>(0., 0.));
-        for (size_type_t i = 0; i < v.size(); ++i)
+        // Generate the vector.
+        for (std::size_t i = 0; i < v.size(); ++i)
             v[i] = std::complex<data_type_t>(dist(rng), dist(rng));
         return v;
     } else {
+        // We define the type of for the distribution.
         using distribution_t = std::conditional_t<
             std::is_floating_point_v<T>,
             std::uniform_real_distribution<T>,
             std::uniform_int_distribution<T>>;
+        // Create the distribution.
         distribution_t dist(min, max);
+        // Create the interface to the random number generator.
         std::random_device dev;
+        // Create the random number generator.
         std::mt19937 rng(dev());
+        // Initialize the vector.
         Vector<T> v(size, T(0.));
-        for (size_type_t i = 0; i < v.size(); ++i)
+        // Generate the vector.
+        for (std::size_t i = 0; i < v.size(); ++i)
             v[i] = dist(rng);
         return v;
     }

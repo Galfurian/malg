@@ -16,6 +16,11 @@ static inline auto &tolerance() noexcept
     return tol;
 }
 
+/// @brief Checks if the two floating point values are equal.
+/// @param a the first value.
+/// @param b the second value.
+/// @returns true if they are approximately equal.
+/// @returns false otherwise.
 template <typename T1, typename T2>
 inline constexpr bool approximately_equal(T1 a, T2 b) noexcept
 {

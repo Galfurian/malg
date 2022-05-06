@@ -1,4 +1,4 @@
-/// @file complex_type_traits.hpp
+/// @file type_traits.hpp
 /// @author Enrico Fraccaroli (enry.frak@gmail.com)
 /// @brief Helper functions for dealing with template types.
 
@@ -15,7 +15,7 @@ namespace malg
 /// @tparam T a normal type.
 template <typename T>
 struct is_complex : public std::false_type {
-    using type = T;
+    using type = T; ///< An alias for T.
 };
 
 /// @brief This structure has a twofold purpose, it can be used to check if a
@@ -23,7 +23,7 @@ struct is_complex : public std::false_type {
 /// @tparam T the internal type of a complex.
 template <typename T>
 struct is_complex<std::complex<T>> : public std::true_type {
-    using type = T;
+    using type = T; ///< An alias for T.
 };
 
 /// @brief Alias template for checking if a type is complex.

@@ -185,7 +185,7 @@ int test_complex()
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     if (test_int())
         return 1;

@@ -28,7 +28,7 @@ void test_complex_2()
     std::cout << t1 << " / " << t2 << " = " << (t1 / t2) << " | " << t2 << " / " << t1 << " = " << (t2 / t1) << "\n";
 }
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     test_complex_1<float, double>();
     test_complex_2<float, double>();

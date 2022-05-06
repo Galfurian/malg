@@ -11,17 +11,17 @@
 namespace malg
 {
 
-using size_type_t = unsigned;
-
+/// @brief The base class for matrix-like structures.
 template <typename T>
 class MatrixBase {
-public:
+protected:
     /// Rows of the matrix.
-    size_type_t _rows;
+    std::size_t _rows;
     /// Columns of the matrix.
-    size_type_t _cols;
+    std::size_t _cols;
 
 public:
+    /// The data types of the element of the matrix.
     using value_type = T;
 
     /// @brief Construct a new Matrix Base object.
@@ -34,7 +34,7 @@ public:
     /// @brief Construct a new Matrix Base object.
     /// @param rows
     /// @param cols
-    constexpr MatrixBase(size_type_t rows, size_type_t cols) noexcept
+    constexpr MatrixBase(std::size_t rows, std::size_t cols) noexcept
         : _rows(rows),
           _cols(cols)
     {
@@ -45,71 +45,75 @@ public:
     virtual ~MatrixBase() = default;
 
     /// @brief Get the number of rows of the matrix.
-    /// @return the number of rows.
-    constexpr inline virtual size_type_t rows() const noexcept
+    /// @returns the number of rows.
+    inline virtual std::size_t rows() const noexcept
     {
         return _rows;
     }
 
     /// @brief Get the number of columns of the matrix.
-    /// @return the number of columns.
-    constexpr inline virtual size_type_t cols() const noexcept
+    /// @returns the number of columns.
+    inline virtual std::size_t cols() const noexcept
     {
         return _cols;
     }
 
     /// @brief Returns the total size of the matrix.
-    /// @return the total size of the matrix.
-    constexpr inline virtual size_type_t size() const noexcept
+    /// @returns the total size of the matrix.
+    inline virtual std::size_t size() const noexcept
     {
         return _rows * _cols;
     }
 
     /// @brief Checks if the matrix is empty.
-    /// @return true if it is empty.
-    /// @return false otherwise.
-    constexpr inline virtual bool empty() const noexcept
+    /// @returns true if it is empty.
+    /// @returns false otherwise.
+    inline virtual bool empty() const noexcept
     {
         return (_rows == 0) || (_cols == 0);
     }
 
+    /// @brief Returns a pointer to the internal data.
+    /// @return the pointer.
     virtual T *data() = 0;
 
+    /// @brief Returns a constant pointer to the internal data.
+    /// @return the constant pointer.
     virtual const T *data() const = 0;
 
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
-    /// @return the reference to the accessed item.
-    virtual T &operator[](size_type_t pos) = 0;
+    /// @returns the reference to the accessed item.
+    virtual T &operator[](std::size_t pos) = 0;
 
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
-    /// @return the reference to the accessed item.
-    virtual const T &operator[](size_type_t pos) const = 0;
+    /// @returns the reference to the accessed item.
+    virtual const T &operator[](std::size_t pos) const = 0;
 
     /// @brief Operator for accessing the matrix.
     /// @param row the accessed row.
     /// @param col the accessed column.
-    /// @return the reference to the accessed item.
-    virtual T &operator()(size_type_t row, size_type_t col) = 0;
+    /// @returns the reference to the accessed item.
+    virtual T &operator()(std::size_t row, std::size_t col) = 0;
 
     /// @brief Operator for accessing the matrix.
     /// @param row the accessed row.
     /// @param col the accessed column.
-    /// @return the const reference to the accessed item.
-    virtual const T &operator()(size_type_t row, size_type_t col) const = 0;
+    /// @returns the const reference to the accessed item.
+    virtual const T &operator()(std::size_t row, std::size_t col) const = 0;
 
     /// @brief Alternative function to access the matrix.
     /// @param row the accessed row.
     /// @param col the accessed column.
-    /// @return the reference to the accessed item.
-    virtual T &at(size_type_t row, size_type_t col) = 0;
+    /// @returns the reference to the accessed item.
+    virtual T &at(std::size_t row, std::size_t col) = 0;
 
     /// @brief Alternative function to access the matrix.
     /// @param row the accessed row.
     /// @param col the accessed column.
-    /// @return the const reference to the accessed item.
-    virtual const T &at(size_type_t row, size_type_t col) const = 0;
+    /// @returns the const reference to the accessed item.
+    virtual const T &at(std::size_t row, std::size_t col) const = 0;
 };
 
 } // namespace malg

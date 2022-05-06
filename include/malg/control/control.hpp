@@ -1,4 +1,4 @@
-/// @file state_space.hpp
+/// @file control.hpp
 /// @author Enrico Fraccaroli (enry.frak@gmail.com)
 /// @brief Control algorithms and data-structures.
 
@@ -14,11 +14,16 @@ namespace malg::control
 template <typename T>
 class StateSpace {
 public:
+    /// System matrix.
     Matrix<T> A;
+    /// Input matrix.
     Matrix<T> B;
+    /// Output matrix.
     Matrix<T> C;
+    /// Feedforward matrix.
     Matrix<T> D;
 
+    /// @brief Construct a new State Space object.
     StateSpace()
         : A(),
           B(),
@@ -28,6 +33,7 @@ public:
         // Nothing to do.
     }
 
+    /// @brief Construct a new State Space object, with the given matrices.
     StateSpace(const Matrix<T> &_A, const Matrix<T> &_B, const Matrix<T> &_C, const Matrix<T> &_D)
         : A(_A),
           B(_B),
@@ -42,8 +48,10 @@ public:
 template <typename T>
 class DiscreteStateSpace : public StateSpace<T> {
 public:
+    /// Sample time used for the discretization.
     T sample_time;
 
+    /// @brief Construct a new Discrete State Space object.
     DiscreteStateSpace()
         : StateSpace<T>(),
           sample_time(.0)
@@ -51,6 +59,7 @@ public:
         // Nothing to do.
     }
 
+    /// @brief Construct a new Discrete State Space object, with the given matrices.
     DiscreteStateSpace(const Matrix<T> &_A, const Matrix<T> &_B, const Matrix<T> &_C, const Matrix<T> &_D, T _sample_time)
         : StateSpace<T>(_A, _B, _C, _D),
           sample_time(_sample_time)
@@ -62,7 +71,7 @@ public:
 /// @brief Discretize the state space model, with the given time-step.
 /// @param sys the continuous-time state space model.
 /// @param sample_time the sample time step.
-/// @return the discretized state space.
+/// @returns the discretized state space.
 template <typename T>
 inline auto c2d(const StateSpace<T> &sys, T sample_time)
 {
@@ -86,7 +95,7 @@ inline auto c2d(const StateSpace<T> &sys, T sample_time)
 /// @param sys the system to simulate.
 /// @param x the current state.
 /// @param u the current input.
-/// @return a tuple containing the next state, and the output.
+/// @returns a tuple containing the next state, and the output.
 template <typename T>
 inline auto simulate_step(
     const DiscreteStateSpace<T> &sys,
@@ -98,6 +107,12 @@ inline auto simulate_step(
         dot(sys.C, x) + dot(sys.D, u));
 }
 
+/// @brief Simulate the discrete time state-space model.
+/// @param sys the discrete time state-space model.
+/// @param u the inputs to provide.
+/// @param simulated_time the total simulated time.
+/// @param init the initial state.
+/// @returns auto
 template <typename T>
 inline auto simulate(
     const DiscreteStateSpace<T> &sys,
@@ -115,7 +130,7 @@ inline auto simulate(
     std::vector<Vector<T>> y;
     // Perform the simulation.
     double rtime = 0.;
-    for (size_type_t i = 0; i < steps; ++i, rtime += sys.sample_time) {
+    for (std::size_t i = 0; i < steps; ++i, rtime += sys.sample_time) {
         t[i]      = rtime;
         auto step = simulate_step(sys, x.back(), u[i]);
         x.emplace_back(step.first);
@@ -127,7 +142,7 @@ inline auto simulate(
 /// @brief Controllabilty matrix.
 /// @param A State matrix of the system (NxN).
 /// @param B Input matrix of the system (NxQ).
-/// @return Controllability matrix.
+/// @returns Controllability matrix.
 /// @details CM = [ B    A*B    A^2*B    ...    A^(N-1)*B ]
 template <typename T>
 inline auto ctrb(const MatrixBase<T> &A, const MatrixBase<T> &B)
@@ -141,7 +156,7 @@ inline auto ctrb(const MatrixBase<T> &A, const MatrixBase<T> &B)
     // Create the controllability matrix.
     Matrix<T> result = B;
     // Construct the controllability matrix.
-    for (size_type_t i = 1; i < A.rows(); ++i)
+    for (std::size_t i = 1; i < A.rows(); ++i)
         result = utility::hstack(result, linalg::powm(A, i) * B);
     return result;
 }
@@ -149,7 +164,7 @@ inline auto ctrb(const MatrixBase<T> &A, const MatrixBase<T> &B)
 /// @brief Observability matrix.
 /// @param A State matrix of the system (NxN).
 /// @param C Output matrix of the system (PxN).
-/// @return Observability matrix.
+/// @returns Observability matrix.
 /// @details
 ///      | C         |
 ///      | C*A       |
@@ -168,29 +183,33 @@ inline auto obsv(const MatrixBase<T> &A, const MatrixBase<T> &C)
     // Create the observability matrix.
     Matrix<T> result = C;
     // Construct the observability matrix.
-    for (size_type_t i = 1; i < A.rows(); ++i)
+    for (std::size_t i = 1; i < A.rows(); ++i)
         result = utility::vstack(result, C * linalg::powm(A, i));
     return result;
 }
 
 /// @brief Computes the coefficients of the polynomial whose roots are the elements of a.
 /// @param a the input vector.
-/// @return coefficients of the polynomial.
+/// @returns coefficients of the polynomial.
 template <typename T>
 inline auto poly(const Vector<T> &a)
 {
     Vector<T> c(a.size() + 1);
     c[0] = 1;
-    for (size_type_t j = 0; j < a.size(); ++j)
-        for (size_type_t i = j + 1; i >= 1; --i)
+    for (std::size_t j = 0; j < a.size(); ++j)
+        for (std::size_t i = j + 1; i >= 1; --i)
             c[i] -= a[j] * c[i - 1];
     return c;
 }
 
+/// @brief Reduce a polynomial coefficient vector to a minimum number of terms
+/// by stripping off any leading zeros. 
+/// @param a the input coefficient vector.
+/// @returns the reduced vector.
 template <typename T>
 inline auto polyreduce(const Vector<T> &a)
 {
-    size_type_t i, j;
+    std::size_t i, j;
     for (j = 0; j < a.size(); ++j)
         if (a[j] != 0)
             break;
@@ -204,7 +223,7 @@ inline auto polyreduce(const Vector<T> &a)
 
 /// @brief Computes the coefficients of the polynomial.
 /// @param A Could be a row/column vector, or a matrix.
-/// @return coefficients of the polynomial.
+/// @returns coefficients of the polynomial.
 template <typename T>
 inline auto poly(const MatrixBase<T> &A)
 {
@@ -216,8 +235,8 @@ inline auto poly(const MatrixBase<T> &A)
     if ((A.rows() == 1) || (A.cols() == 1)) {
         Vector<T> c(A.size() + 1);
         c[0] = 1;
-        for (size_type_t j = 0; j < A.size(); ++j)
-            for (size_type_t i = j + 1; i >= 1; --i)
+        for (std::size_t j = 0; j < A.size(); ++j)
+            for (std::size_t i = j + 1; i >= 1; --i)
                 c[i] -= A[j] * c[i - 1];
         return c;
     }
@@ -232,18 +251,19 @@ inline auto poly(const MatrixBase<T> &A)
     c[0]        = 1;
     c[1]        = -last_c;
     auto I      = utility::identity<T>(B.rows());
-    for (size_type_t m = 2; m < (n + 1); ++m) {
+    for (std::size_t m = 2; m < (n + 1); ++m) {
         B      = A * (B - (I * last_c));
-        last_c = trace(B) / m;
+        last_c = trace(B) / static_cast<double>(m);
         c[m]   = -last_c;
     }
     return c;
 }
 
 /// @brief Pole placement using Ackermann method.
-/// @param A State matrix of the system.
-/// @param B Input matrix of the system.
-/// @return Gains such that A - BK has given eigenvalues.
+/// @param A state matrix of the system.
+/// @param B input matrix of the system.
+/// @param poles for generating the desired closed-loop behaviour.
+/// @returns Gains such that A - BK has given eigenvalues.
 template <typename T>
 inline auto acker(const MatrixBase<T> &A, const MatrixBase<T> &B, const MatrixBase<T> &poles)
 {
@@ -266,7 +286,7 @@ inline auto acker(const MatrixBase<T> &A, const MatrixBase<T> &B, const MatrixBa
     auto p = poly(poles);
     // Place the poles using Ackermann's method.
     auto Ap = utility::zeros<T>(A.rows(), A.cols());
-    for (size_type_t i = 0; i < (A.rows() + 1); ++i) {
+    for (std::size_t i = 0; i < (A.rows() + 1); ++i) {
         Ap += linalg::powm(A, (A.cols() - i)) * p[i];
     }
     // Prepare the selection matrix.
@@ -279,7 +299,7 @@ inline auto acker(const MatrixBase<T> &A, const MatrixBase<T> &B, const MatrixBa
 
 /// @brief Generates an empty input vector.
 /// @param sys The system for which we want to generate the input.
-/// @return The empty input vector.
+/// @returns The empty input vector.
 template <typename T>
 inline auto generate_input_zero(const StateSpace<T> &sys)
 {
@@ -288,7 +308,7 @@ inline auto generate_input_zero(const StateSpace<T> &sys)
 
 /// @brief Generates an empty state vector.
 /// @param sys The system for which we want to generate the state.
-/// @return The empty state vector.
+/// @returns The empty state vector.
 template <typename T>
 inline auto generate_state_zero(const StateSpace<T> &sys)
 {

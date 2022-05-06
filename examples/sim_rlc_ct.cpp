@@ -64,7 +64,7 @@ struct ObserverPrint {
     }
 };
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     Model rlc;
     State x{ .0, .0 };

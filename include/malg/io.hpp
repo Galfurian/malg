@@ -14,27 +14,33 @@
 #include <sstream>
 #include <iomanip>
 
+/// @brief Returns the longhest value inside the data.
+/// @param data the input data.
+/// @param precision the desired precision.
+/// @returns the number of characters for the longhest value.
 template <typename T>
-inline malg::size_type_t __get_longhest_value(T &ds, malg::size_type_t precision = 6)
+inline auto __get_longhest_value(T &data, std::size_t precision = 6)
 {
     std::stringstream ss;
     ss.precision(precision);
-    malg::size_type_t longhest = 0, length;
-    for (malg::size_type_t i = 0; i < ds.size(); ++i) {
+    int longhest = 0, length;
+    for (std::size_t i = 0; i < data.size(); ++i) {
         ss.str("");
-        ss << ds[i];
-        length = ss.str().length();
+        ss << data[i];
+        length = static_cast<int>(ss.str().length());
         if (longhest < length)
             longhest = length;
     }
     return longhest;
 }
 
+/// @brief Stream operator for Vector.
 template <typename T>
 inline std::ostream &operator<<(std::ostream &lhs, const malg::Vector<T> &rhs)
 {
+    std::size_t i;
     // Get the longhest value.
-    malg::size_type_t i, length = __get_longhest_value(rhs, lhs.precision());
+    auto length = __get_longhest_value(rhs, lhs.precision());
     // Print the vector.
     for (i = 0; i < rhs.size(); ++i) {
         lhs << std::setw(length) << rhs[i];
@@ -44,11 +50,13 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::Vector<T> &rhs)
     return lhs;
 }
 
+/// @brief Stream operator for MatrixBase.
 template <typename T>
 inline std::ostream &operator<<(std::ostream &lhs, const malg::MatrixBase<T> &rhs)
 {
+    std::size_t r, c;
     // Get the longhest value.
-    malg::size_type_t r, c, length = __get_longhest_value(rhs, lhs.precision());
+    auto length = __get_longhest_value(rhs, lhs.precision());
     // Print the matrix.
     for (r = 0; r < rhs.rows(); ++r) {
         for (c = 0; c < rhs.cols(); ++c) {
@@ -62,11 +70,13 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::MatrixBase<T> &rh
     return lhs;
 }
 
+/// @brief Stream operator for writing Vector on file.
 template <typename T>
 inline std::ofstream &operator<<(std::ofstream &lhs, const malg::Vector<T> &rhs)
 {
+    std::size_t i;
     // Get the longhest value.
-    malg::size_type_t i, length = __get_longhest_value(rhs, lhs.precision());
+    auto length = __get_longhest_value(rhs, lhs.precision());
     // Print the vector size.
     lhs << "V " << rhs.size() << "\n";
     // Print the vector.
@@ -79,11 +89,13 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::Vector<T> &rhs)
     return lhs;
 }
 
+/// @brief Stream operator for writing MatrixBase on file.
 template <typename T>
 inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &rhs)
 {
+    std::size_t r, c;
     // Get the longhest value.
-    malg::size_type_t r, c, length = __get_longhest_value(rhs, lhs.precision());
+    auto length = __get_longhest_value(rhs, lhs.precision());
     // Print the matrix size.
     lhs << "M " << rhs.rows() << " " << rhs.cols() << "\n";
     // Print the matrix.
@@ -100,16 +112,18 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &
     return lhs;
 }
 
+/// @brief Stream operator for Range.
 inline std::ostream &operator<<(std::ostream &lhs, const malg::Range &rhs)
 {
     lhs << "[" << rhs.start << ", " << rhs.stop << "]";
     return lhs;
 }
 
+/// @brief Stream operator for reading a Vector from file.
 template <typename T>
 inline std::ifstream &operator>>(std::ifstream &lhs, malg::Vector<T> &rhs)
 {
-    malg::size_type_t size, i;
+    std::size_t size, i;
     char type;
     // Read the type.
     lhs >> type;
@@ -127,10 +141,11 @@ inline std::ifstream &operator>>(std::ifstream &lhs, malg::Vector<T> &rhs)
     return lhs;
 }
 
+/// @brief Stream operator for reading a Matrix from file.
 template <typename T>
 inline std::ifstream &operator>>(std::ifstream &lhs, malg::Matrix<T> &rhs)
 {
-    malg::size_type_t rows, cols, r, c;
+    std::size_t rows, cols, r, c;
     char type;
     // Read the type.
     lhs >> type;
@@ -153,7 +168,7 @@ inline std::ifstream &operator>>(std::ifstream &lhs, malg::Matrix<T> &rhs)
 /// @brief Output stream function.
 /// @param lhs the stream.
 /// @param rhs the state space model.
-/// @return the original stream.
+/// @returns the original stream.
 template <typename T>
 inline std::ostream &operator<<(std::ostream &lhs, const malg::control::StateSpace<T> &rhs)
 {
@@ -172,7 +187,7 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::control::StateSpa
 /// @brief Output stream function.
 /// @param lhs the stream.
 /// @param rhs the state space model.
-/// @return the original stream.
+/// @returns the original stream.
 template <typename T>
 inline std::ostream &operator<<(std::ostream &lhs, const malg::control::DiscreteStateSpace<T> &rhs)
 {
@@ -192,6 +207,22 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::control::Discrete
 namespace malg
 {
 
+/// @brief Prepares a string for printing the vector.
+/// @param name the name to show.
+/// @param v the vector to display.
+/// @returns the output string.
+template <typename T>
+inline std::string dump_vector(const char *name, const malg::Vector<T> &v)
+{
+    std::stringstream ss;
+    ss << name << " = " << v;
+    return ss.str();
+}
+
+/// @brief Prepares a string for printing the matrix.
+/// @param name the name to show.
+/// @param m the matrix to display.
+/// @returns the output string.
 template <typename T>
 inline std::string dump_matrix(const char *name, const malg::MatrixBase<T> &m)
 {
@@ -201,20 +232,16 @@ inline std::string dump_matrix(const char *name, const malg::MatrixBase<T> &m)
     return ss.str();
 }
 
-template <typename T>
-inline std::string dump_vector(const char *name, const malg::Vector<T> &v)
-{
-    std::stringstream ss;
-    ss << name << " = " << v;
-    return ss.str();
-}
-
+/// @brief Prepares a matlab declaration of the input vector.
+/// @param name the name to show.
+/// @param v the vector to transform.
+/// @returns the output string.
 template <typename T>
 inline std::string to_matlab(const char *name, const malg::Vector<T> &v)
 {
     std::stringstream ss;
     ss << name << " = [";
-    for (malg::size_type_t i = 0; i < v.size(); ++i) {
+    for (std::size_t i = 0; i < v.size(); ++i) {
         ss << v[i];
         if (i < (v.size() - 1))
             ss << " ";
@@ -223,12 +250,16 @@ inline std::string to_matlab(const char *name, const malg::Vector<T> &v)
     return ss.str();
 }
 
+/// @brief Prepares a matlab declaration of the input matrix.
+/// @param name the name to show.
+/// @param m the matrix to transform.
+/// @returns the output string.
 template <typename T>
 inline std::string to_matlab(const char *name, const malg::MatrixBase<T> &m)
 {
     std::stringstream ss;
     ss << name << " = [";
-    for (malg::size_type_t r = 0, c; r < m.rows(); ++r) {
+    for (std::size_t r = 0, c; r < m.rows(); ++r) {
         ss << "[";
         for (c = 0; c < m.cols(); ++c) {
             if constexpr (malg::is_complex_v<T>) {
@@ -245,64 +276,56 @@ inline std::string to_matlab(const char *name, const malg::MatrixBase<T> &m)
     return ss.str();
 }
 
+/// @brief Prepares a c++ declaration of the input vector.
+/// @param name the name to show.
+/// @param type the declaration type to use.
+/// @param v the vector to transform.
+/// @returns the output string.
 template <typename T>
-struct to_cpp {
-    std::string name;
-    const malg::Vector<T> *v;
-    const malg::MatrixBase<T> *m;
-
-    to_cpp(std::string _name, const malg::Vector<T> &_v)
-        : name(_name),
-          v(&_v),
-          m(nullptr)
-    {
-        // Nothing to do.
+inline std::string to_cpp(const char *name, const char *type, const malg::Vector<T> &v)
+{
+    std::stringstream ss;
+    ss << "malg::Vector<" << type << "> " << name << " = {";
+    for (std::size_t i = 0; i < v->size(); ++i) {
+        if constexpr (malg::is_complex_v<T>) {
+            ss << v->operator[](i).real() << std::showpos << v->operator[](i).imag() << "i" << std::noshowpos;
+        } else {
+            ss << v->operator[](i);
+        }
+        if (i < (v->size() - 1))
+            ss << ", ";
     }
+    ss << "}";
+    return ss.str();
+}
 
-    to_cpp(std::string _name, const malg::MatrixBase<T> &_m)
-        : name(_name),
-          v(nullptr),
-          m(&_m)
-    {
-        // Nothing to do.
+/// @brief Prepares a c++ declaration of the input matrix.
+/// @param name the name to show.
+/// @param type the declaration type to use.
+/// @param m the matrix to transform.
+/// @returns the output string.
+template <typename T>
+inline std::string to_cpp(const char *name, const char *type, const malg::MatrixBase<T> &m)
+{
+    std::stringstream ss;
+    ss << "malg::Matrix<" << type << "> " << name << " = {";
+    for (std::size_t r = 0, c; r < m->rows(); ++r) {
+        ss << "{";
+        for (c = 0; c < m->cols(); ++c) {
+            if constexpr (malg::is_complex_v<T>) {
+                ss << m->operator()(r, c).real() << std::showpos << m->operator()(r, c).imag() << "i" << std::noshowpos;
+            } else {
+                ss << m->operator()(r, c);
+            }
+            if (c < (m->cols() - 1))
+                ss << ",";
+        }
+        ss << "}";
+        if (r < (m->rows() - 1))
+            ss << ",";
     }
-};
+    ss << "}";
+    return ss.str();
+}
 
 } // namespace malg
-
-template <typename T>
-inline std::ostream &operator<<(std::ostream &lhs, const malg::to_cpp<T> &rhs)
-{
-    if (rhs.v) {
-        lhs << "malg::Vector<double> " << rhs.name << " = {";
-        for (malg::size_type_t i = 0; i < rhs.v->size(); ++i) {
-            if constexpr (malg::is_complex_v<T>) {
-                lhs << rhs.v->operator[](i).real() << std::showpos << rhs.v->operator[](i).imag() << "i" << std::noshowpos;
-            } else {
-                lhs << rhs.v->operator[](i);
-            }
-            if (i < (rhs.v->size() - 1))
-                lhs << ", ";
-        }
-        lhs << "}";
-    } else {
-        lhs << "malg::Matrix<double> " << rhs.name << " = {";
-        for (malg::size_type_t r = 0, c; r < rhs.m->rows(); ++r) {
-            lhs << "{";
-            for (c = 0; c < rhs.m->cols(); ++c) {
-                if constexpr (malg::is_complex_v<T>) {
-                    lhs << rhs.m->operator()(r, c).real() << std::showpos << rhs.m->operator()(r, c).imag() << "i" << std::noshowpos;
-                } else {
-                    lhs << rhs.m->operator()(r, c);
-                }
-                if (c < (rhs.m->cols() - 1))
-                    lhs << ",";
-            }
-            lhs << "}";
-            if (r < (rhs.m->rows() - 1))
-                lhs << ",";
-        }
-        lhs << "}";
-    }
-    return lhs;
-}

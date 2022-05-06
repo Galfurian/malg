@@ -164,7 +164,7 @@ int test_poly()
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     if (test_c2d())
         return 1;

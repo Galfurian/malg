@@ -12,11 +12,11 @@
 namespace malg
 {
 
-using size_type_t = unsigned;
-
+/// @brief The vector class.
 template <typename T>
 class Vector {
 public:
+    /// The data types of the element of the vector.
     using value_type = T;
 
     /// @brief Construct a new Vector object.
@@ -29,7 +29,7 @@ public:
 
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
-    constexpr Vector(size_type_t size) noexcept
+    constexpr Vector(std::size_t size) noexcept
         : _data(nullptr),
           _size(0)
     {
@@ -39,26 +39,26 @@ public:
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
     /// @param value the vector will be initialized with it.
-    constexpr Vector(size_type_t size, T value) noexcept
+    constexpr Vector(std::size_t size, T value) noexcept
         : _data(nullptr),
           _size(0)
     {
         if (this->allocate(size))
-            for (size_type_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i)
                 _data[i] = value;
     }
 
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
     /// @param data the initialization data.
-    constexpr Vector(size_type_t size, const std::initializer_list<T> &data) noexcept
+    constexpr Vector(std::size_t size, const std::initializer_list<T> &data) noexcept
         : _data(nullptr),
           _size(0)
     {
         assert(size == data.size());
         if (this->allocate(size)) {
             auto it = data.begin();
-            for (size_type_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i)
                 _data[i] = *it++;
         }
     }
@@ -71,7 +71,7 @@ public:
     {
         if (this->allocate(values.size())) {
             auto it = values.begin();
-            for (size_type_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i)
                 _data[i] = *it++;
         }
     }
@@ -83,7 +83,7 @@ public:
           _size(0)
     {
         if (this->allocate(other.size()))
-            for (size_type_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i)
                 _data[i] = other[i];
     }
 
@@ -95,7 +95,7 @@ public:
           _size(0)
     {
         if (this->allocate(other.size()))
-            for (size_type_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i)
                 _data[i] = other[i];
     }
 
@@ -121,47 +121,53 @@ public:
     }
 
     /// @brief Destroy the Vector object.
-    constexpr ~Vector() noexcept
+    ~Vector() noexcept
     {
         this->deallocate();
     }
 
     /// @brief Gives access to the data.
-    /// @return pointer to the data.
+    /// @returns pointer to the data.
     inline constexpr const auto data() const noexcept
     {
         return _data;
     }
 
     /// @brief Gives access to the data.
-    /// @return pointer to the data.
+    /// @returns pointer to the data.
     inline constexpr auto data() noexcept
     {
         return _data;
     }
 
     /// @brief Returns the dimension of the vector.
-    /// @return the dimension of the vector.
+    /// @returns the dimension of the vector.
     inline constexpr auto size() const noexcept
     {
         return _size;
     }
 
     /// @brief Checks if the vector is empty.
-    /// @return true if it is empty.
-    /// @return false otherwise.
+    /// @returns true if it is empty.
+    /// @returns false otherwise.
     inline constexpr auto empty() const noexcept
     {
         return _size == 0;
     }
 
+    /// @brief Resizes the vector based on the size of the **other**.
+    /// @param other the other vector.
+    /// @return a reference to this vector.
     inline constexpr auto &resize(const Vector &other) noexcept
     {
         this->allocate(other.size());
         return *this;
     }
 
-    inline constexpr auto &resize(size_type_t size) noexcept
+    /// @brief Resizes the vector based on the given **size**.
+    /// @param size the new size.
+    /// @return a reference to this vector.
+    inline constexpr auto &resize(std::size_t size) noexcept
     {
         this->allocate(size);
         return *this;
@@ -169,46 +175,46 @@ public:
 
     /// @brief Operator for accessing the vector.
     /// @param pos the position.
-    /// @return the reference to the accessed item.
-    inline constexpr auto &operator[](size_type_t pos) noexcept
+    /// @returns the reference to the accessed item.
+    inline constexpr auto &operator[](std::size_t pos) noexcept
     {
         return _data[pos];
     }
 
     /// @brief Operator for accessing the vector.
     /// @param pos the position.
-    /// @return the reference to the accessed item.
-    inline constexpr const auto &operator[](size_type_t pos) const noexcept
+    /// @returns the reference to the accessed item.
+    inline constexpr const auto &operator[](std::size_t pos) const noexcept
     {
         return _data[pos];
     }
 
     /// @brief Assignment operator.
     /// @param other the other vector.
-    /// @return this vector.
+    /// @returns this vector.
     inline constexpr auto &operator=(const Vector<T> &other) noexcept
     {
         if (this->allocate(other.size()))
-            for (size_type_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i)
                 _data[i] = other[i];
         return *this;
     }
 
     /// @brief Assignment operator.
     /// @param other the other vector.
-    /// @return this vector.
+    /// @returns this vector.
     template <typename T2>
     inline constexpr auto &operator=(const Vector<T2> &other) noexcept
     {
         if (this->allocate(other.size()))
-            for (size_type_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i)
                 _data[i] = other[i];
         return *this;
     }
 
     /// @brief Assignment operator.
     /// @param other the other vector.
-    /// @return this vector.
+    /// @returns this vector.
     inline constexpr auto &operator=(Vector<T> &&other) noexcept
     {
         this->deallocate();
@@ -221,7 +227,7 @@ public:
 
     /// @brief Assignment operator.
     /// @param other the other vector.
-    /// @return this vector.
+    /// @returns this vector.
     template <typename T2>
     inline constexpr auto &operator=(Vector<T2> &&other) noexcept
     {
@@ -234,28 +240,28 @@ public:
     }
 
     /// @brief Provides a pointer to the begining of the vector.
-    /// @return the pointer.
+    /// @returns the pointer.
     inline constexpr const auto begin() const noexcept
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the begining of the vector.
-    /// @return the pointer.
+    /// @returns the pointer.
     inline constexpr auto begin() noexcept
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the end of the vector.
-    /// @return the pointer.
+    /// @returns the pointer.
     inline constexpr const auto end() const noexcept
     {
         return &_data[_size];
     }
 
     /// @brief Provides a pointer to the end of the vector.
-    /// @return the pointer.
+    /// @returns the pointer.
     inline constexpr auto end() noexcept
     {
         return &_data[_size];
@@ -273,7 +279,7 @@ private:
         return false;
     }
 
-    inline constexpr auto allocate(size_type_t size) noexcept
+    inline constexpr auto allocate(std::size_t size) noexcept
     {
         if (size == 0)
             return this->deallocate();
@@ -284,12 +290,12 @@ private:
         _data = static_cast<T *>(std::realloc(_data, sizeof(T) * size));
         // If we are allocating more size, we clean the memory.
         if (size > _size) {
-            for (size_type_t i = _size; i < size; ++i)
+            for (std::size_t i = _size; i < size; ++i)
                 _data[i] = T(0.);
         }
         // If it is the first time we allocate, clean all the data.
         else if (_size == 0) {
-            for (size_type_t i = 0; i < size; ++i)
+            for (std::size_t i = 0; i < size; ++i)
                 _data[i] = T(0.);
         }
         // Set the size.
@@ -300,7 +306,7 @@ private:
     /// The data.
     T *_data;
     /// The size of the vector.
-    size_type_t _size;
+    std::size_t _size;
 };
 
 } // namespace malg

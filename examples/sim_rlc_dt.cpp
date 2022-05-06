@@ -11,7 +11,7 @@ using State  = malg::Vector<double>;
 using Input  = malg::Vector<double>;
 using Output = malg::Vector<double>;
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
     // Define the model's variables.
     double R0 = 100;

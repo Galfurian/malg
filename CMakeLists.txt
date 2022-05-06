@@ -19,7 +19,6 @@ set(CMAKE_CXX_STANDARD 17)
 # -----------------------------------------------------------------------------
 # Add options.
 # -----------------------------------------------------------------------------
-option(CPPTRACER_COMPRESS "Enables the option to compress VCD traces using zlib" OFF)
 option(STRICT_WARNINGS "Enable strict compiler warnings" ON)
 option(WARNINGS_AS_ERRORS "Treat all warnings as errors" OFF)
 option(BUILD_EXAMPLES "Build examples" OFF)

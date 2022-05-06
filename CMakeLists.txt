@@ -100,6 +100,7 @@ if(DOXYGEN_FOUND)
         include/malg/utility.hpp
         include/malg/vector.hpp
         include/malg/view.hpp
+        LICENSE.md
         README.md
     )
 endif()

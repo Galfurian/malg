@@ -9,6 +9,7 @@
 #include "malg/matrix.hpp"
 #include "malg/vector.hpp"
 #include "malg/view.hpp"
+#include "malg/feq.hpp"
 
 #include <algorithm>
 #include <complex>
@@ -665,6 +666,44 @@ template <typename MatrixType>
 constexpr inline auto col(MatrixType &A, std::size_t col, std::size_t start_row = 0, std::size_t end_row = -1) noexcept
 {
     return View(&A, start_row, end_row, col, col + 1);
+}
+
+template <class T>
+constexpr inline auto flatnonzero(const Matrix<T> &M)
+{
+    std::vector<std::size_t> nonzero_indices{};
+    for (std::size_t i = 0; i < M.size(); ++i)
+        if (!feq::approximately_equal(M[i], 0.))
+            nonzero_indices.emplace_back(i);
+    return nonzero_indices;
+}
+
+/// @brief Return a vector of indices of elements of matrix M different from V,
+/// 		as a row if M is a row vector, or as a column otherwise.
+/// @tparam T The type of the matrix.
+/// @param M		  The matrix to analyse.
+/// @param n		  If provided, return only the first n indices.
+/// @param first_last If true it returns the fist n, otherwise the last n.
+/// @return A vector of indices.
+template <class T>
+constexpr inline auto find(const Matrix<T> &M, std::size_t n = -1, bool first_last = true)
+{
+    // Find all the indexes of nonzeros elements.
+    std::vector<size_t> index = utility::flatnonzero(M);
+    if (n == 0) {
+        return Matrix<std::size_t>(0UL, 0UL);
+    }
+    if ((n > 0) && (n < index.size())) {
+        if (first_last)
+            index = std::vector<size_t>(index.begin() + 0UL, index.begin() + n);
+        else
+            index = std::vector<size_t>(index.begin() + index.size() - n, index.begin() + index.size());
+    }
+    // Prepare the array for the indexes. If the input is a row-vector, return the indexes as a row-vector.
+    if (utility::is_row_vector(M)) {
+        return Matrix<std::size_t>(1UL, index.size(), index);
+    }
+    return Matrix<std::size_t>(index.size(), 1UL, index);
 }
 
 /// @brief Generates a random matrix.

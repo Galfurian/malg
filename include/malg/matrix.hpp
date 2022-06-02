@@ -10,6 +10,7 @@
 
 #include <initializer_list>
 #include <cassert>
+#include <vector>
 
 namespace malg
 {
@@ -54,6 +55,20 @@ public:
     /// @param cols
     /// @param data
     constexpr Matrix(std::size_t rows, std::size_t cols, const std::initializer_list<T> &data) noexcept
+        : MatrixBase<T>(rows, cols),
+          _data(rows * cols)
+    {
+        auto it = data.begin();
+        for (std::size_t r = 0, c; r < this->rows(); ++r)
+            for (c = 0; c < this->cols(); ++c, ++it)
+                this->at(r, c) = *it;
+    }
+
+    /// @brief Construct a new Matrix object.
+    /// @param rows
+    /// @param cols
+    /// @param data
+    constexpr Matrix(std::size_t rows, std::size_t cols, const std::vector<T> &data) noexcept
         : MatrixBase<T>(rows, cols),
           _data(rows * cols)
     {

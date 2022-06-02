@@ -188,7 +188,7 @@ public:
 #ifdef ROW_MAJOR
         return this->at((pos / this->cols()), (pos % this->cols()));
 #else
-        return this->at((pos % this->cols()), (pos / this->cols()));
+        return this->at((pos % this->rows()), (pos / this->rows()));
 #endif
     }
 
@@ -200,7 +200,7 @@ public:
 #ifdef ROW_MAJOR
         return this->at((pos / this->cols()), (pos % this->cols()));
 #else
-        return this->at((pos % this->cols()), (pos / this->cols()));
+        return this->at((pos % this->rows()), (pos / this->rows()));
 #endif
     }
 

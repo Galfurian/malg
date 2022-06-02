@@ -4,9 +4,11 @@
 
 #pragma once
 
+#include<cstddef>
+
 /// @brief If NOT commented, the matrices works in row-major. Otherwise, they
 /// work in column-major.
-#define ROW_MAJOR
+//#define ROW_MAJOR
 
 namespace malg
 {

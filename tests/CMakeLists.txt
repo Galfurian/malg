@@ -35,3 +35,7 @@ add_test(NAME ${PROJECT_NAME}_run_test_complex COMMAND ${PROJECT_NAME}_test_comp
 add_executable(${PROJECT_NAME}_test_find test_find.cpp)
 target_link_libraries(${PROJECT_NAME}_test_find malg)
 add_test(NAME ${PROJECT_NAME}_run_test_find COMMAND ${PROJECT_NAME}_test_find)
+
+add_executable(${PROJECT_NAME}_test_memory test_memory.cpp)
+target_link_libraries(${PROJECT_NAME}_test_memory malg)
+add_test(NAME ${PROJECT_NAME}_run_test_memory COMMAND ${PROJECT_NAME}_test_memory)

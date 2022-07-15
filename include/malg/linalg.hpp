@@ -111,7 +111,8 @@ inline auto cofactor(const MatrixBase<T> &matrix, std::size_t p, std::size_t q)
 template <typename CT>
 inline auto determinant(const MatrixBase<CT> &matrix)
 {
-    assert(utility::is_square(matrix) && "Matrix must be square.");
+    if (!malg::utility::is_square(matrix))
+        throw std::invalid_argument("The input matrix is not square.");
     // Create an alias for the non-constant type.
     using T = std::remove_const_t<CT>;
     // Get the size of the matrix.
@@ -189,7 +190,8 @@ inline auto determinant(const MatrixBase<CT> &matrix)
 template <typename T>
 inline auto adjoint(const MatrixBase<T> &matrix)
 {
-    assert(utility::is_square(matrix) && "Matrix must be square.");
+    if (!malg::utility::is_square(matrix))
+        throw std::invalid_argument("The input matrix is not square.");
     // Get the size of the matrix.
     const std::size_t N = matrix.cols();
     // Return 1.
@@ -216,7 +218,8 @@ inline auto adjoint(const MatrixBase<T> &matrix)
 template <typename T>
 inline auto inverse(const MatrixBase<T> &matrix)
 {
-    assert(utility::is_square(matrix) && "Matrix must be square.");
+    if (!malg::utility::is_square(matrix))
+        throw std::invalid_argument("The input matrix is not square.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T, double>>;
     // Compute the determinant.
@@ -287,7 +290,8 @@ inline auto qr_decomposition(const Matrix<T> &A)
 template <typename T>
 inline auto lu_decomposition(const MatrixBase<T> &A)
 {
-    assert(utility::is_square(A) && "Matrix must be square.");
+    if (!malg::utility::is_square(A))
+        throw std::invalid_argument("The input matrix is not square.");
     std::size_t N = A.rows();
     Matrix<T> l(N, N, 0);
     Matrix<T> u(N, N, 0);
@@ -397,7 +401,7 @@ inline auto expm(const MatrixBase<T> &A, double accuracy = 0.00001)
         auto local_accum = malg::Matrix<T>(A.rows(), A.cols());
         for (std::size_t i = 0; i < batch_size; ++i) {
             const double k = static_cast<double>(batch_start_idx + i);
-            fac_inv      = fac_inv * (1.0 / k);
+            fac_inv        = fac_inv * (1.0 / k);
             if (feq::approximately_equal(fac_inv, 0.0)) {
                 break;
             }

@@ -15,7 +15,6 @@
 #include "malg/math.hpp"
 
 #include <complex>
-#include <cassert>
 
 namespace malg::eigen
 {

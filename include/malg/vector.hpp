@@ -9,6 +9,11 @@
 #include <cassert>
 #include <utility>
 
+//#define MEM_TRACE
+#ifdef MEM_TRACE
+#include <iostream>
+#endif
+
 namespace malg
 {
 
@@ -271,6 +276,9 @@ private:
     inline constexpr auto deallocate() noexcept
     {
         if (_size > 0) {
+#ifdef MEM_TRACE
+            std::cout << "Deallocationg " << (sizeof(T) * _size) << " bytes (" << _data << ")\n";
+#endif
             std::free(_data);
             _data = nullptr;
             _size = 0;
@@ -288,6 +296,12 @@ private:
             return true;
         // Re-allocate the data.
         _data = static_cast<T *>(std::realloc(_data, sizeof(T) * size));
+#ifdef MEM_TRACE
+        if (_size == 0)
+            std::cout << "Allocating    " << (sizeof(T) * size) << " bytes (" << _data << ")\n";
+        else
+            std::cout << "Re-allocating " << (sizeof(T) * _size) << " bytes to " << (sizeof(T) * size) << " bytes (" << _data << ")\n";
+#endif
         // If we are allocating more size, we clean the memory.
         if (size > _size) {
             for (std::size_t i = _size; i < size; ++i)

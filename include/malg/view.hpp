@@ -40,8 +40,6 @@ public:
     Range _col;
 
 public:
-
-
     /// @brief Creates a **View** for the given **matrix**.
     /// @param matrix the matrix.
     /// @param start_row the starating row.

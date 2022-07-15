@@ -13,276 +13,285 @@
 #include <type_traits>
 
 /// @brief Sums two matrices.
-/// @param a first matrix.
-/// @param b second matrix.
+/// @param A first matrix.
+/// @param B second matrix.
 /// @returns the resulting matrix.
 template <typename T1, typename T2>
-auto operator+(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator+(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
     // Check the sizes.
-    assert((a.rows() == b.rows()) && "Matrices has different number of rows.");
-    assert((a.cols() == b.cols()) && "Matrices has different number of colmuns.");
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Create the result matrix.
-    malg::Matrix<data_type_t> result(a.rows(), a.cols());
+    malg::Matrix<data_type_t> result(A.rows(), A.cols());
     // Compute the result.
     for (std::size_t i = 0; i < result.size(); ++i)
-        result[i] = a[i] + b[i];
+        result[i] = A[i] + B[i];
     return result;
 }
 
 /// @brief Sums a matrix and a scalar.
-/// @param a first matrix.
+/// @param A first matrix.
 /// @param b scalar value.
 /// @returns the resulting matrix.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-inline auto operator+(const malg::MatrixBase<T1> &a, const T2 &b)
+inline auto operator+(const malg::MatrixBase<T1> &A, const T2 &b)
 {
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output matrix.
-    malg::Matrix<data_type_t> result(a.rows(), a.cols());
+    malg::Matrix<data_type_t> result(A.rows(), A.cols());
     // Perform the operation.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] + b;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] + b;
     return result;
 }
 
 /// @brief Sums two matrices.
-/// @param a first matrix.
-/// @param b second matrix.
-/// @returns matrix a.
+/// @param A first matrix.
+/// @param B second matrix.
+/// @returns matrix A.
 template <typename T1, typename T2>
-auto &operator+=(malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto &operator+=(malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
     // Check the sizes.
-    assert((a.rows() == b.rows()) && "Matrices has different number of rows.");
-    assert((a.cols() == b.cols()) && "Matrices has different number of colmuns.");
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
     // Compute the result.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        a[i] += b[i];
-    return a;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        A[i] += B[i];
+    return A;
 }
 
 /// @brief Sums a matrix and a scalar.
-/// @param a first matrix.
+/// @param A first matrix.
 /// @param b scalar value.
-/// @returns matrix a.
+/// @returns matrix A.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-inline auto operator+=(malg::MatrixBase<T1> &a, const T2 &b)
+inline auto operator+=(malg::MatrixBase<T1> &A, const T2 &b)
 {
     // Perform the operation.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        a[i] += b;
-    return a;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        A[i] += b;
+    return A;
 }
 
 /// @brief Substraction between two matrices.
-/// @param a first matrix.
-/// @param b second matrix.
+/// @param A first matrix.
+/// @param B second matrix.
 /// @returns the resulting matrix.
 template <typename T1, typename T2>
-auto operator-(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator-(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
     // Check the sizes.
-    assert((a.rows() == b.rows()) && "Matrices has different number of rows.");
-    assert((a.cols() == b.cols()) && "Matrices has different number of colmuns.");
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Create the result matrix.
-    malg::Matrix<data_type_t> result(a.rows(), a.cols());
+    malg::Matrix<data_type_t> result(A.rows(), A.cols());
     // Compute the result.
     for (std::size_t i = 0; i < result.size(); ++i)
-        result[i] = a[i] - b[i];
+        result[i] = A[i] - B[i];
     return result;
 }
 
 /// @brief Substraction between a matrix and a scalar.
-/// @param a first matrix.
+/// @param A first matrix.
 /// @param b scalar value.
 /// @returns the resulting matrix.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-inline auto operator-(const malg::MatrixBase<T1> &a, const T2 &b)
+inline auto operator-(const malg::MatrixBase<T1> &A, const T2 &b)
 {
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output matrix.
-    malg::Matrix<data_type_t> result(a.rows(), a.cols());
+    malg::Matrix<data_type_t> result(A.rows(), A.cols());
     // Perform the operation.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] - b;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] - b;
     return result;
 }
 
 /// @brief Substraction between two matrices.
-/// @param a first matrix.
-/// @param b second matrix.
-/// @returns matrix a.
+/// @param A first matrix.
+/// @param B second matrix.
+/// @returns matrix A.
 template <typename T1, typename T2>
-auto &operator-=(malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto &operator-=(malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
     // Check the sizes.
-    assert((a.rows() == b.rows()) && "Matrices has different number of rows.");
-    assert((a.cols() == b.cols()) && "Matrices has different number of colmuns.");
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
     // Compute the result.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        a[i] -= b[i];
-    return a;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        A[i] -= B[i];
+    return A;
 }
 
 /// @brief Substraction between a matrix and a scalar.
-/// @param a first matrix.
+/// @param A first matrix.
 /// @param b scalar value.
-/// @returns matrix a.
-template <
-    typename T1,
-    typename T2,
-    typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-inline auto operator-=(malg::MatrixBase<T1> &a, const T2 &b)
+/// @returns matrix A.
+template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
+inline auto operator-=(malg::MatrixBase<T1> &A, const T2 &b)
 {
     // Perform the operation.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        a[i] -= b;
-    return a;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        A[i] -= b;
+    return A;
 }
 
 /// @brief Multiplication between two matrices.
-/// @param a first *xM matrix.
-/// @param b second Mx* matrix.
+/// @param A first matrix.
+/// @param B second matrix.
 /// @returns the resulting matrix.
 template <typename T1, typename T2>
-auto operator*(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator*(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
     // Check the sizes.
-    assert((a.cols() == b.rows()) &&
-           "For matrix multiplication, the number of columns in the first"
-           "matrix must be equal to the number of rows in the second matrix.");
+    if (A.cols() != B.rows())
+        throw std::invalid_argument("For matrix multiplication, the number of columns in the first"
+                                    "matrix must be equal to the number of rows in the second matrix.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output matrix.
-    malg::Matrix<data_type_t> result(a.rows(), b.cols());
+    malg::Matrix<data_type_t> result(A.rows(), B.cols());
     // Perform the operation.
-    for (std::size_t r = 0; r < a.rows(); r++)
-        for (std::size_t c = 0; c < b.cols(); c++)
-            for (std::size_t k = 0; k < b.rows(); k++)
-                result(r, c) += a(r, k) * b(k, c);
+    for (std::size_t r = 0; r < A.rows(); r++)
+        for (std::size_t c = 0; c < B.cols(); c++)
+            for (std::size_t k = 0; k < B.rows(); k++)
+                result(r, c) += A(r, k) * B(k, c);
     return result;
 }
 
 /// @brief Multiplication between a matrix and a scalar.
-/// @param a first NxM matrix.
+/// @param A the matrix.
 /// @param b scalar value.
 /// @returns the resulting matrix.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-inline auto operator*(const malg::MatrixBase<T1> &a, const T2 &b)
+inline auto operator*(const malg::MatrixBase<T1> &A, const T2 &b)
 {
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output matrix.
-    malg::Matrix<data_type_t> result(a.rows(), a.cols());
+    malg::Matrix<data_type_t> result(A.rows(), A.cols());
     // Perform the operation.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] * b;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] * b;
     return result;
 }
 
 /// @brief Multiplication between a matrix and a scalar.
-/// @param a first NxM matrix.
-/// @param b scalar value.
+/// @param a scalar value.
+/// @param B the matrix.
 /// @returns the resulting matrix.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T1> || malg::is_complex_v<T1>, T1>>
-inline auto operator*(const T1 &a, const malg::MatrixBase<T2> &b)
+inline auto operator*(const T1 &a, const malg::MatrixBase<T2> &B)
 {
-    return b * a;
+    return B * a;
 }
 
 /// @brief Multiplication between two matrices.
-/// @param a first *xM matrix.
-/// @param b second Mx* matrix.
+/// @param A first *xM matrix.
+/// @param B second Mx* matrix.
 /// @returns the resulting matrix.
 template <typename T1, typename T2>
-auto &operator*=(malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto &operator*=(malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
     // Check the sizes.
-    assert((a.cols() == b.rows()) &&
-           "For matrix multiplication, the number of columns in the first"
-           "matrix must be equal to the number of rows in the second matrix.");
+    if (A.cols() != B.rows())
+        throw std::invalid_argument("For matrix multiplication, the number of columns in the first"
+                                    "matrix must be equal to the number of rows in the second matrix.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output matrix.
-    malg::Matrix<data_type_t> result(a.rows(), a.cols());
+    malg::Matrix<data_type_t> result(A.rows(), A.cols());
     // Perform the operation.
-    for (std::size_t r = 0; r < a.rows(); r++)
-        for (std::size_t c = 0; c < b.cols(); c++)
-            for (std::size_t k = 0; k < b.rows(); k++)
-                result(r, c) += a(r, k) * b(k, c);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        a[i] = result[i];
-    return a;
+    for (std::size_t r = 0; r < A.rows(); r++)
+        for (std::size_t c = 0; c < B.cols(); c++)
+            for (std::size_t k = 0; k < B.rows(); k++)
+                result(r, c) += A(r, k) * B(k, c);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        A[i] = result[i];
+    return A;
 }
 
 /// @brief Multiplication between a matrix and a scalar.
-/// @param a first NxM matrix.
+/// @param A first NxM matrix.
 /// @param b scalar value.
 /// @returns the resulting matrix.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-inline auto &operator*=(malg::MatrixBase<T1> &a, const T2 &b)
+inline auto &operator*=(malg::MatrixBase<T1> &A, const T2 &b)
 {
     // Perform the operation.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        a[i] = a[i] * b;
-    return a;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        A[i] = A[i] * b;
+    return A;
 }
 
 /// @brief Division between a matrix and a scalar.
-/// @param a first NxM matrix.
+/// @param A first NxM matrix.
 /// @param b scalar value.
 /// @returns the resulting matrix.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-inline auto operator/(const malg::MatrixBase<T1> &a, const T2 &b)
+inline auto operator/(const malg::MatrixBase<T1> &A, const T2 &b)
 {
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output matrix.
-    malg::Matrix<data_type_t> result(a.rows(), a.cols());
+    malg::Matrix<data_type_t> result(A.rows(), A.cols());
     // Perform the operation.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] / b;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] / b;
     return result;
 }
 
 /// @brief Division between a matrix and a scalar.
-/// @param a first NxM matrix.
+/// @param A first NxM matrix.
 /// @param b scalar value.
 /// @returns the resulting matrix.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-inline auto &operator/=(malg::MatrixBase<T1> &a, const T2 &b)
+inline auto &operator/=(malg::MatrixBase<T1> &A, const T2 &b)
 {
     // Perform the operation.
-    for (std::size_t i = 0; i < a.size(); ++i)
-        a[i] = a[i] / b;
-    return a;
+    for (std::size_t i = 0; i < A.size(); ++i)
+        A[i] = A[i] / b;
+    return A;
 }
 
 /// @brief Equality comparison operator.
-/// @param a the first matrix.
-/// @param b the first matrix.
+/// @param A the first matrix.
+/// @param B the first matrix.
 /// @returns matrix with logical values: true if the element is the same, false
 /// otherwise.
 template <typename T1, typename T2>
-auto operator==(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator==(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
-    assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i) {
+    // Check the sizes.
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
-            result[i] = feq::approximately_equal(a[i], b[i]);
+            result[i] = feq::approximately_equal(A[i], B[i]);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
-            result[i] = feq::approximately_equal(std::real(a[i]), std::real(b[i])) &&
-                        feq::approximately_equal(std::imag(a[i]), std::imag(b[i]));
+            result[i] = feq::approximately_equal(std::real(A[i]), std::real(B[i])) &&
+                        feq::approximately_equal(std::imag(A[i]), std::imag(B[i]));
         else
-            result[i] = a[i] == b[i];
+            result[i] = A[i] == B[i];
     }
     return result;
 }
@@ -295,7 +304,9 @@ auto operator==(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
 template <typename T1, typename T2>
 auto operator==(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     malg::Vector<bool> result(a.size());
     for (std::size_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
@@ -310,30 +321,30 @@ auto operator==(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 }
 
 /// @brief Equality comparison operator.
-/// @param a the matrix.
+/// @param A the matrix.
 /// @param b the scalar.
 /// @returns matrix with logical values: true if the element is the same, false
 /// otherwise.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-auto operator==(const malg::MatrixBase<T1> &a, const T2 &b)
+auto operator==(const malg::MatrixBase<T1> &A, const T2 &b)
 {
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i) {
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
-            result[i] = feq::approximately_equal(a[i], b);
+            result[i] = feq::approximately_equal(A[i], b);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
-            result[i] = feq::approximately_equal(std::real(a[i]), std::real(b)) &&
-                        feq::approximately_equal(std::imag(a[i]), std::imag(b));
+            result[i] = feq::approximately_equal(std::real(A[i]), std::real(b)) &&
+                        feq::approximately_equal(std::imag(A[i]), std::imag(b));
         else
-            result[i] = a[i] == b;
+            result[i] = A[i] == b;
     }
     return result;
 }
 
 /// @brief Equality comparison operator.
-/// @param a the matrix.
+/// @param a the vector.
 /// @param b the scalar.
-/// @returns matrix with logical values: true if the element is the same, false
+/// @returns vector with logical values: true if the element is the same, false
 /// otherwise.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
 auto operator==(const malg::Vector<T1> &a, const T2 &b)
@@ -352,23 +363,27 @@ auto operator==(const malg::Vector<T1> &a, const T2 &b)
 }
 
 /// @brief Inequality comparison operator.
-/// @param a the first matrix.
-/// @param b the first matrix.
+/// @param A the first matrix.
+/// @param B the first matrix.
 /// @returns matrix with logical values: true if the element is different, false
 /// otherwise.
 template <typename T1, typename T2>
-auto operator!=(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator!=(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
-    assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i) {
+    // Check the sizes.
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
-            result[i] = !feq::approximately_equal(a[i], b[i]);
+            result[i] = !feq::approximately_equal(A[i], B[i]);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
-            result[i] = !feq::approximately_equal(std::real(a[i]), std::real(b[i])) ||
-                        !feq::approximately_equal(std::imag(a[i]), std::imag(b[i]));
+            result[i] = !feq::approximately_equal(std::real(A[i]), std::real(B[i])) ||
+                        !feq::approximately_equal(std::imag(A[i]), std::imag(B[i]));
         else
-            result[i] = a[i] != b[i];
+            result[i] = A[i] != B[i];
     }
     return result;
 }
@@ -381,7 +396,9 @@ auto operator!=(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
 template <typename T1, typename T2>
 auto operator!=(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     malg::Vector<bool> result(a.size(), false);
     for (std::size_t i = 0; i < a.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
@@ -396,22 +413,22 @@ auto operator!=(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 }
 
 /// @brief Inequality comparison operator.
-/// @param a the matrix.
+/// @param A the matrix.
 /// @param b the scalar.
 /// @returns matrix with logical values: true if the element is different, false
 /// otherwise.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-auto operator!=(const malg::MatrixBase<T1> &a, const T2 &b)
+auto operator!=(const malg::MatrixBase<T1> &A, const T2 &b)
 {
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i) {
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i) {
         if constexpr (std::is_floating_point_v<T1> || std::is_floating_point_v<T2>)
-            result[i] = !feq::approximately_equal(a[i], b);
+            result[i] = !feq::approximately_equal(A[i], b);
         else if constexpr (malg::is_complex_v<T1> && malg::is_complex_v<T2>)
-            result[i] = !feq::approximately_equal(std::real(a[i]), std::real(b)) ||
-                        !feq::approximately_equal(std::imag(a[i]), std::imag(b));
+            result[i] = !feq::approximately_equal(std::real(A[i]), std::real(b)) ||
+                        !feq::approximately_equal(std::imag(A[i]), std::imag(b));
         else
-            result[i] = a[i] != b;
+            result[i] = A[i] != b;
     }
     return result;
 }
@@ -438,118 +455,134 @@ auto operator!=(const malg::Vector<T1> &a, const T2 &b)
 }
 
 /// @brief Greather-than comparison operator.
-/// @param a the first matrix.
-/// @param b the first matrix.
+/// @param A the first matrix.
+/// @param B the first matrix.
 /// @returns matrix with logical values: true if the first element greather-than
 /// the second, false otherwise.
 template <typename T1, typename T2>
-auto operator>(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator>(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
-    assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] > b[i];
+    // Check the sizes.
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] > B[i];
     return result;
 }
 
 /// @brief Greather-than equal comparison operator.
-/// @param a the first matrix.
-/// @param b the first matrix.
+/// @param A the first matrix.
+/// @param B the second matrix.
 /// @returns matrix with logical values: true if the first element greather-than
 /// equal the second, false otherwise.
 template <typename T1, typename T2>
-auto operator>=(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator>=(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
-    assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] >= b[i];
+    // Check the sizes.
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] >= B[i];
     return result;
 }
 
 /// @brief Greather-than comparison operator.
-/// @param a the matrix.
+/// @param A the matrix.
 /// @param b the scalar.
 /// @returns matrix with logical values: true if the first element greather-than
 /// the second, false otherwise.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-auto operator>(const malg::MatrixBase<T1> &a, const T2 &b)
+auto operator>(const malg::MatrixBase<T1> &A, const T2 &b)
 {
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] > b;
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] > b;
     return result;
 }
 
 /// @brief Greather-than equal comparison operator.
-/// @param a the matrix.
+/// @param A the matrix.
 /// @param b the scalar.
 /// @returns matrix with logical values: true if the first element greather-than
 /// equal the second, false otherwise.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-auto operator>=(const malg::MatrixBase<T1> &a, const T2 &b)
+auto operator>=(const malg::MatrixBase<T1> &A, const T2 &b)
 {
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] >= b;
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] >= b;
     return result;
 }
 
 /// @brief Lesser-than comparison operator.
-/// @param a the first matrix.
-/// @param b the first matrix.
+/// @param A the first matrix.
+/// @param B the first matrix.
 /// @returns matrix with logical values: true if the first element lesser-than
 /// the second, false otherwise.
 template <typename T1, typename T2>
-auto operator<(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator<(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
-    assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] < b[i];
+    // Check the sizes.
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] < B[i];
     return result;
 }
 
 /// @brief Lesser-than equal comparison operator.
-/// @param a the first matrix.
-/// @param b the first matrix.
+/// @param A the first matrix.
+/// @param B the second matrix.
 /// @returns matrix with logical values: true if the first element lesser-than
 /// equal the second, false otherwise.
 template <typename T1, typename T2>
-auto operator<=(const malg::MatrixBase<T1> &a, const malg::MatrixBase<T2> &b)
+auto operator<=(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
 {
-    assert((a.rows() == b.rows()) && (a.cols() == b.cols()));
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] <= b[i];
+    // Check the sizes.
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] <= B[i];
     return result;
 }
 
 /// @brief Lesser-than comparison operator.
-/// @param a the matrix.
+/// @param A the matrix.
 /// @param b the scalar.
 /// @returns matrix with logical values: true if the first element lesser-than
 /// the second, false otherwise.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-auto operator<(const malg::MatrixBase<T1> &a, const T2 &b)
+auto operator<(const malg::MatrixBase<T1> &A, const T2 &b)
 {
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] < b;
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] < b;
     return result;
 }
 
 /// @brief Lesser-than equal comparison operator.
-/// @param a the matrix.
+/// @param A the matrix.
 /// @param b the scalar.
 /// @returns matrix with logical values: true if the first element lesser-than
 /// equal the second, false otherwise.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2> || malg::is_complex_v<T2>, T2>>
-auto operator<=(const malg::MatrixBase<T1> &a, const T2 &b)
+auto operator<=(const malg::MatrixBase<T1> &A, const T2 &b)
 {
-    malg::Matrix<bool> result(a.rows(), a.cols(), false);
-    for (std::size_t i = 0; i < a.size(); ++i)
-        result[i] = a[i] <= b;
+    malg::Matrix<bool> result(A.rows(), A.cols(), false);
+    for (std::size_t i = 0; i < A.size(); ++i)
+        result[i] = A[i] <= b;
     return result;
 }
 
@@ -568,7 +601,9 @@ auto operator<=(const malg::MatrixBase<T1> &a, const T2 &b)
 template <typename T1, typename T2>
 inline constexpr auto operator+(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output vector.
@@ -603,7 +638,9 @@ inline auto operator+(const malg::Vector<T1> &a, const T2 &b)
 template <typename T1, typename T2>
 inline auto &operator+=(malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     // Perform the operation.
     for (std::size_t i = 0; i < a.size(); ++i)
         a[i] = a[i] + b[i];
@@ -634,7 +671,9 @@ inline auto operator+=(const malg::Vector<T1> &a, const T2 &b)
 template <typename T1, typename T2>
 inline auto operator-(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output vector.
@@ -669,7 +708,9 @@ inline auto operator-(const malg::Vector<T1> &a, const T2 &b)
 template <typename T1, typename T2>
 inline auto &operator-=(malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     // Perform the operation.
     for (std::size_t i = 0; i < a.size(); ++i)
         a[i] = a[i] - b[i];
@@ -700,7 +741,9 @@ inline auto operator-=(const malg::Vector<T1> &a, const T2 &b)
 template <typename T1, typename T2>
 inline auto operator*(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output vector.
@@ -806,7 +849,9 @@ namespace malg
 template <typename T1, typename T2>
 inline constexpr auto dot(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
     // Declare the output vector.
@@ -877,7 +922,9 @@ inline auto element_wise_function(const malg::MatrixBase<T> &A, Function fun)
 template <typename T1, typename T2, typename Function>
 inline auto element_wise_binary_function(const malg::Vector<T1> &a, const malg::Vector<T2> &b, Function fun)
 {
-    assert(a.size() == b.size());
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Vectors has different sizes.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_3_t<T1, T2, decltype(fun(std::declval<T1>(), std::declval<T2>()))>>;
     // Create the resulting vector.
@@ -897,8 +944,11 @@ inline auto element_wise_binary_function(const malg::Vector<T1> &a, const malg::
 template <typename T1, typename T2, typename Function>
 inline auto element_wise_binary_function(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B, Function fun)
 {
-    assert(A.rows() == B.rows());
-    assert(A.cols() == B.cols());
+    // Check the sizes.
+    if (A.rows() != B.rows())
+        throw std::invalid_argument("Matrices has different number of rows.");
+    if (A.cols() != B.cols())
+        throw std::invalid_argument("Matrices has different number of colmuns.");
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_3_t<T1, T2, decltype(fun(std::declval<T1>(), std::declval<T2>()))>>;
     // Create the resulting matrix.
@@ -1017,6 +1067,16 @@ inline auto vector_length(malg::MatrixBase<T> &A, std::size_t c, std::size_t r_s
     return std::sqrt(accum);
 }
 
+/// @brief Computes the element-wise product of the two matrices.
+/// @param A the first matrix.
+/// @param B the second matrix.
+/// @returns the element-wise product of the two matrices.
+template <typename T1, typename T2>
+auto element_wise_product(const malg::MatrixBase<T1> &A, const malg::MatrixBase<T2> &B)
+{
+    return element_wise_binary_function(A, B, [&](const T1 lhs, const T1 rhs) { return lhs * rhs; });
+}
+
 /// @brief Computes the linear combination of matrices.
 /// @param A the first matrix.
 /// @param a the first scalar.
@@ -1026,7 +1086,7 @@ inline auto vector_length(malg::MatrixBase<T> &A, std::size_t c, std::size_t r_s
 template <typename T1, typename T2, typename T3, typename T4>
 auto linear_combination(const malg::MatrixBase<T1> &A, const T2 &a, const malg::MatrixBase<T3> &B, const T4 &b)
 {
-    return element_wise_binary_function(A, B, [&](const T1 lhs, const T1 rhs) { lhs *a + rhs *b; });
+    return element_wise_binary_function(A, B, [&](const T1 lhs, const T1 rhs) { return lhs * a + rhs * b; });
 }
 
 /// @brief Sums the element of the vector.
@@ -1262,7 +1322,8 @@ auto sub_norm(const malg::MatrixBase<T> &A)
     using data_type_t = std::remove_const_t<malg::is_complex_t<T>>;
     if (A.empty())
         return data_type_t(0.);
-    assert(malg::utility::is_square(A));
+    if (!malg::utility::is_square(A))
+        throw std::invalid_argument("Matrix A is not square.");
     data_type_t accum = 0;
     for (std::size_t r = 1; r < A.rows(); ++r) {
         for (std::size_t c = 0; c < r; ++c) {

@@ -9,7 +9,7 @@
 #include "malg/vector.hpp"
 
 #include <initializer_list>
-#include <cassert>
+#include <algorithm>
 #include <vector>
 
 namespace malg
@@ -80,16 +80,20 @@ public:
 
     /// @brief Construct a new Matrix object.
     /// @param data
-    constexpr Matrix(const std::initializer_list<std::initializer_list<T>> &data) noexcept
+    constexpr Matrix(const std::initializer_list<std::initializer_list<T>> &data)
         : MatrixBase<T>(),
           _data()
     {
+        // Check the number of rows.
+        if (data.size() <= 0)
+            throw std::invalid_argument("The input list has no rows.");
+        // Check the number of columns.
+        if (data.begin()->size() <= 0)
+            throw std::invalid_argument("The input list has no columns.");
         // Get the number of rows.
         this->_rows = data.size();
-        assert(this->rows() > 0);
         // Get the number of columns.
-        this->_cols = (*data.begin()).size();
-        assert(this->cols() > 0);
+        this->_cols = data.begin()->size();
         // Initialize the vector.
         _data = Vector<T>(this->rows() * this->cols());
         // Get an interator for the data.
@@ -184,9 +188,10 @@ public:
     /// @param rows the new number of rows.
     /// @param cols the new number of columns.
     /// @return a reference to this matrix.
-    constexpr auto &reshape(std::size_t rows, std::size_t cols) noexcept
+    constexpr auto &reshape(std::size_t rows, std::size_t cols)
     {
-        assert(this->size() == (rows * cols));
+        if (this->size() != (rows * cols))
+            throw std::invalid_argument("The new shape has a different number of elements.");
         this->_rows = rows;
         this->_cols = cols;
         return *this;
@@ -198,12 +203,23 @@ public:
     /// @return a reference to this matrix.
     constexpr auto &resize(std::size_t rows, std::size_t cols) noexcept
     {
-        malg::Matrix<T> m(rows, cols, static_cast<T>(0));
-        for (std::size_t r = 0; r < std::min(this->rows(), rows); ++r)
-            for (std::size_t c = 0; c < std::min(this->cols(), cols); ++c)
-                m(r, c) = this->at(r, c);
-        // Move the data.
-        _data = std::move(m._data);
+        if ((this->rows() == rows) && (this->cols() == cols))
+            return *this;
+#ifdef ROW_MAJOR
+        if (this->cols() == cols) {
+#else
+        if (this->rows() == rows) {
+#endif
+            // Resize the data.
+            _data.resize(rows * cols);
+        } else {
+            malg::Matrix<T> m(rows, cols, static_cast<T>(0));
+            for (std::size_t r = 0; r < std::min(this->rows(), rows); ++r)
+                for (std::size_t c = 0; c < std::min(this->cols(), cols); ++c)
+                    m(r, c) = this->at(r, c);
+            // Move the data.
+            _data = std::move(m._data);
+        }
         // Set the new rows and columns.
         this->_rows = rows;
         this->_cols = cols;
@@ -314,12 +330,16 @@ public:
     /// @param data
     constexpr auto &operator=(const std::initializer_list<std::initializer_list<T>> &data) noexcept
     {
+        // Check the number of rows.
+        if (data.size() <= 0)
+            return *this;
+        // Check the number of columns.
+        if (data.begin()->size() <= 0)
+            return *this;
         // Get the number of rows.
         this->_rows = data.size();
-        assert(this->rows() > 0);
         // Get the number of columns.
-        this->_cols = (*data.begin()).size();
-        assert(this->cols() > 0);
+        this->_cols = data.begin()->size();
         // Initialize the vector.
         _data = Vector<T>(this->rows() * this->cols());
         // Get an interator for the data.
@@ -404,7 +424,7 @@ public:
         return _data[(col * this->rows()) + row];
 #endif
     }
-    
+
     /// @brief A constant iterator poiting to the beginning of the internal data.
     /// @return the iterator.
     constexpr inline auto begin() const noexcept
@@ -425,7 +445,6 @@ public:
     {
         return _data.end();
     }
-
 
     /// @brief Iterator poiting to the end of the internal data.
     /// @return the iterator.

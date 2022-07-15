@@ -1,6 +1,6 @@
 /// @file stepper_rk4.hpp
 /// @brief Simplification of the code available at:
-/// https://github.com/headmyshoulder/odeint-v2
+///     https://github.com/headmyshoulder/odeint-v2
 
 #pragma once
 
@@ -10,37 +10,28 @@ namespace malg::control::solver
 template <class State, class Time>
 class stepper_rk4 {
 public:
-    using order_type     = unsigned short;
-    using time_type      = Time;
-    using container_type = State;
-    using value_type     = typename State::value_type;
+    using order_type_t = unsigned short;
+    using time_type_t  = Time;
+    using state_type_t = State;
+    using value_type_t = typename State::value_type;
 
-    stepper_rk4(const State &x_init)
-        : m_dxdt(x_init),
-          m_dxt(x_init),
-          m_dxm(x_init),
-          m_dxh(x_init),
-          m_xt(x_init)
+    stepper_rk4()
+        : m_dxdt(),
+          m_dxt(),
+          m_dxm(),
+          m_dxh(),
+          m_xt()
     {
         // Nothing to do.
     }
 
-    constexpr inline order_type order_step() const
+    constexpr inline order_type_t order_step() const
     {
         return 4;
     }
 
     template <class System>
-    constexpr inline void do_step(System &system, State &x, Time t, Time dt)
-    {
-        // dt * dxdt = k1
-        system(x, m_dxdt, t);
-        this->do_step(system, x, m_dxdt, t, dt);
-    }
-
-private:
-    template <class System>
-    constexpr inline void do_step(System &system, State &x, const State &dxdt, const Time t, const Time dt)
+    void do_step(System &system, State &x, const State &dxdt, Time t, Time dt)
     {
         const Time val1 = static_cast<Time>(1.0);
         const Time dh   = static_cast<Time>(0.5) * dt;
@@ -71,6 +62,16 @@ private:
         // x += dt/6 * ( m_dxdt + m_dxt + val2*m_dxm )
         it_algebra::scale_sum_inplace(x.begin(), x.end(), dt6, dxdt.begin(), dt3, m_dxt.begin(), dt3, m_dxm.begin(), dt6, m_dxh.begin());
     }
+
+    template <class System>
+    void do_step(System &system, State &x, Time t, Time dt)
+    {
+        // dt * dxdt = k1
+        system(x, m_dxdt, t);
+        this->do_step(system, x, m_dxdt, t, dt);
+    }
+
+private:
 
     State m_dxdt;
     State m_dxt;

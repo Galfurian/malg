@@ -1,6 +1,6 @@
 /// @file it_algebra.hpp
 /// @brief Simplification of the code available at:
-/// https://github.com/headmyshoulder/odeint-v2
+///     https://github.com/headmyshoulder/odeint-v2
 
 #pragma once
 
@@ -27,6 +27,16 @@ constexpr inline void abs(OutIt y_first, OutIt y_last) noexcept
         (*y_first) = std::abs(*y_first);
         ++y_first;
     }
+}
+
+// computes sum(abs(y))
+template <class T, class OutIt>
+constexpr inline T accumulate_abs(OutIt y_first, OutIt y_last) noexcept
+{
+    T ret = T(0);
+    while (y_first != y_last)
+        ret += std::abs(*y_first++);
+    return ret;
 }
 
 // computes y = a1 * x1

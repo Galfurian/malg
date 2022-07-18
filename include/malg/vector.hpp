@@ -107,22 +107,28 @@ public:
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
     constexpr Vector(Vector<T> &&other) noexcept
-        : _data(std::move(other._data)),
-          _size(other._size)
+        : _data(),
+          _size()
     {
-        other._data = nullptr;
-        other._size = 0;
+        if (this != &other) {
+            this->deallocate();
+            std::swap(_data, other._data);
+            std::swap(_size, other._size);
+        }
     }
 
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
     template <typename T2>
-    constexpr Vector(Vector<T2> &other) noexcept
-        : _data(std::move(other._data)),
-          _size(other._size)
+    constexpr Vector(Vector<T2> &&other) noexcept
+        : _data(),
+          _size()
     {
-        other._data = nullptr;
-        other._size = 0;
+        if (this != &other) {
+            this->deallocate();
+            std::swap(_data, other._data);
+            std::swap(_size, other._size);
+        }
     }
 
     /// @brief Destroy the Vector object.
@@ -222,11 +228,11 @@ public:
     /// @returns this vector.
     inline constexpr auto &operator=(Vector<T> &&other) noexcept
     {
-        this->deallocate();
-        _data       = std::move(other._data);
-        _size       = other._size;
-        other._data = nullptr;
-        other._size = 0;
+        if (this != &other) {
+            this->deallocate();
+            std::swap(_data, other._data);
+            std::swap(_size, other._size);
+        }
         return *this;
     }
 
@@ -236,11 +242,11 @@ public:
     template <typename T2>
     inline constexpr auto &operator=(Vector<T2> &&other) noexcept
     {
-        this->deallocate();
-        _data       = std::move(other._data);
-        _size       = other._size;
-        other._data = nullptr;
-        other._size = 0;
+        if (this != &other) {
+            this->deallocate();
+            std::swap(_data, other._data);
+            std::swap(_size, other._size);
+        }
         return *this;
     }
 

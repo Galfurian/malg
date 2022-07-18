@@ -15,8 +15,8 @@ public:
     using state_type_t = State;
     using value_type_t = typename State::value_type;
 
-    stepper_euler()
-        : m_dxdt()
+    stepper_euler(std::size_t state_size)
+        : m_dxdt(state_size)
     {
         // Nothing to do.
     }
@@ -33,8 +33,9 @@ public:
     /// @param t
     /// @param dt
     template <class System>
-    constexpr void do_step(System &system, State &x, const State &dxdt, Time t, Time dt) noexcept
+    constexpr void do_step(System &system, State &x, State &dxdt, Time t, Time dt) noexcept
     {
+        system(x, dxdt, t);
         it_algebra::increment(x.begin(), x.end(), dxdt.begin(), dt);
     }
 
@@ -46,7 +47,6 @@ public:
     template <class System>
     constexpr void do_step(System &system, State &x, Time t, Time dt) noexcept
     {
-        system(x, m_dxdt, t);
         this->do_step(system, x, m_dxdt, t, dt);
     }
 

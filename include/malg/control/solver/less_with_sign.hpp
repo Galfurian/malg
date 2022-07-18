@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace solver
+namespace malg::control::solver
 {
 
 /// @brief Returns (t1 < t2) if (dt > 0) and (t1 > t2) if (dt < 0) with epsilon accuracy.
@@ -29,4 +29,4 @@ inline bool less_eq_with_sign(T t1, T t2, T dt)
     return (dt > 0) ? t1 <= t2 : t2 <= t1;
 }
 
-} // namespace solver
+} // namespace malg::control::solver

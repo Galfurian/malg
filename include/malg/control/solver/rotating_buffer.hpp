@@ -6,7 +6,7 @@
 
 #include <cstddef>
 
-namespace solver::detail
+namespace malg::control::solver::detail
 {
 
 template <class T, std::size_t N>
@@ -55,4 +55,4 @@ private:
     std::size_t m_first;
 };
 
-} // namespace solver::detail
+} // namespace malg::control::solver::detail

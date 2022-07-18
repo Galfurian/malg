@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-namespace solver
+namespace malg::control::solver
 {
 
 template <class State, class Time, int Iterations = 2>
@@ -17,10 +17,10 @@ public:
     using state_type_t = State;
     using value_type_t = typename State::value_type;
 
-    stepper_adaptive_rk4(value_type_t tollerance = 0.0001)
-        : _stepper1(),
-          _stepper2(),
-          _state(),
+    stepper_adaptive_rk4(std::size_t state_size, value_type_t tollerance = 0.0001)
+        : _stepper1(state_size),
+          _stepper2(state_size),
+          _state(state_size),
           _tollerance(tollerance),
           _time_delta(1e-12),
           _time(.0),
@@ -131,4 +131,4 @@ private:
     unsigned _iterations;
 };
 
-} // namespace solver
+} // namespace malg::control::solver

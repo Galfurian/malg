@@ -15,12 +15,12 @@ public:
     using state_type_t = State;
     using value_type_t = typename State::value_type;
 
-    stepper_rk4()
-        : m_dxdt(),
-          m_dxt(),
-          m_dxm(),
-          m_dxh(),
-          m_xt()
+    stepper_rk4(std::size_t state_size)
+        : m_dxdt(state_size),
+          m_dxt(state_size),
+          m_dxm(state_size),
+          m_dxh(state_size),
+          m_xt(state_size)
     {
         // Nothing to do.
     }

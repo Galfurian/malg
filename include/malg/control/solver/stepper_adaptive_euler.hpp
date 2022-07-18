@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-namespace solver
+namespace malg::control::solver
 {
 
 template <class State, class Time>
@@ -17,10 +17,10 @@ public:
     using state_type_t = State;
     using value_type_t = typename State::value_type;
 
-    stepper_adaptive_euler(value_type_t tollerance = 0.0001)
-        : _stepper1(),
-          _stepper2(),
-          _state(),
+    stepper_adaptive_euler(std::size_t state_size, value_type_t tollerance = 0.0001)
+        : _stepper1(state_size),
+          _stepper2(state_size),
+          _state(state_size),
           _tollerance(tollerance),
           _time_delta(1e-12),
           _time(.0)
@@ -97,4 +97,4 @@ private:
     time_type_t _time;
 };
 
-} // namespace solver
+} // namespace malg::control::solver

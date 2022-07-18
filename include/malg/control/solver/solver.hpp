@@ -16,6 +16,9 @@
 namespace malg::control::solver
 {
 
+namespace detail
+{
+
 template <class Stepper, class System, class Observer>
 inline constexpr void integrate_one_step_const(
     Stepper &stepper,
@@ -85,13 +88,13 @@ unsigned integrate_adaptive(
     stepper.initialize(state, start_time, time_delta);
     while (less_with_sign(stepper.current_time(), end_time, stepper.current_time_step())) {
         // Make sure we don't go beyond the end_time.
-        while (less_eq_with_sign(static_cast<Stepper::time_type_t>(stepper.current_time() + stepper.current_time_step()), end_time, stepper.current_time_step())) {
+        while (less_eq_with_sign(static_cast<typename Stepper::time_type_t>(stepper.current_time() + stepper.current_time_step()), end_time, stepper.current_time_step())) {
             stepper.do_step(system);
             observer(stepper.current_state(), stepper.current_time());
             ++iteration;
         }
         // Calculate time step to arrive exactly at end time.
-        stepper.initialize(stepper.current_state(), stepper.current_time(), static_cast<Stepper::time_type_t>(end_time - stepper.current_time()));
+        stepper.initialize(stepper.current_state(), stepper.current_time(), static_cast<typename Stepper::time_type_t>(end_time - stepper.current_time()));
     }
     observer(stepper.current_state(), stepper.current_time());
     // Overwrite state with the final point.

@@ -7,6 +7,8 @@
 #include "malg/control/control.hpp"
 #include "malg/io.hpp"
 
+#include <stopwatch/stopwatch.hpp>
+
 using Time   = double;
 using State  = malg::Vector<double>;
 using Input  = malg::Vector<double>;
@@ -49,38 +51,91 @@ public:
     /// @param x the current state.
     /// @param dxdt the final state.
     /// @param t the current time.
-    inline constexpr void operator()(const State &x, State &dxdt, Time t) noexcept
+    inline void operator()(const State &x, State &dxdt, Time t)
     {
+        u[0] = 1.5 * std::sin(2 * M_PI * t);
+
         dxdt = malg::dot(sys.A, x) + malg::dot(sys.B, u);
-        y    = malg::dot(sys.C, x) + malg::dot(sys.D, u);
     }
 };
 
 /// @brief The dc motor itself.
 struct ObserverPrint {
-    void operator()(const State &x, const Time &t)
+    void operator()(const State &x, Time t)
     {
         std::cout << std::fixed << std::setprecision(4) << t << " " << x[0] << " " << x[1] << "\n";
     }
 };
 
+/// @brief The dc motor itself.
+struct NoObserver {
+    void operator()(const State &, Time)
+    {
+        // Nothing to do.
+    }
+};
+
+template <typename T>
+constexpr inline T compute_samples(Time time_start, Time time_end, Time time_delta, Time sampling = 1.0)
+{
+    return static_cast<T>(((time_end - time_start) / time_delta) * sampling);
+}
+
 int main(int, char *[])
 {
-    Model rlc;
-    State x{ .0, .0 };
-    Time time_start = 0.0;
-    Time time_end   = 1.0;
-    Time dt         = 0.0001;
+    {
+        Model system;
+        State state{ .0, .0 };
+        Time time_start    = 0.0;
+        Time time_end      = 1.0;
+        Time time_delta    = 0.0001;
+        const auto samples = compute_samples<std::size_t>(time_start, time_end, time_delta);
+        unsigned steps     = 0;
 
-    malg::control::solver::stepper_euler<State, Time> stepper(x);
-    ObserverPrint observer;
+        malg::control::solver::stepper_euler<State, Time> stepper(state.size());
+        NoObserver observer;
+        stopwatch::Stopwatch sw;
 
-    std::cout << std::fixed << std::setprecision(4);
-    for (Time t = time_start; t < time_end; t += dt) {
-        rlc.u[0] = 1.5 * std::sin(2 * M_PI * t);
-        stepper.do_step(rlc, x, t, dt);
-        std::cout << t << " " << rlc.u[0] << " -> " << rlc.y[0] << "\n";
+        std::cout << std::fixed << std::setprecision(5);
+        std::cout << "Fixed step simulation.\n";
+        std::cout << "Total time points " << samples << "\n";
+        std::cout << "Starting simulation.\n";
+
+        sw.start();
+        steps = malg::control::solver::integrate_const(stepper, observer, system, state, time_start, time_end, time_delta);
+        sw.stop();
+
+        std::cout << "Terminating simulation.\n";
+        std::cout << "Final state " << state << "\n";
+        std::cout << "Elapsed time " << sw << "\n";
+        std::cout << "Integration steps " << steps << "\n\n";
     }
+    {
+        Model system;
+        State state{ .0, .0 };
+        Time time_start    = 0.0;
+        Time time_end      = 1.0;
+        Time time_delta    = 0.0001;
+        const auto samples = compute_samples<std::size_t>(time_start, time_end, time_delta);
+        unsigned steps     = 0;
 
+        malg::control::solver::stepper_adaptive_rk4<State, Time, 2> stepper(state.size());
+        NoObserver observer;
+        stopwatch::Stopwatch sw;
+
+        std::cout << std::fixed << std::setprecision(5);
+        std::cout << "Variable step simulation.\n";
+        std::cout << "Fixed step total time points " << samples << "\n";
+        std::cout << "Starting simulation.\n";
+
+        sw.start();
+        steps = malg::control::solver::integrate_adaptive(stepper, observer, system, state, time_start, time_end, time_delta);
+        sw.stop();
+
+        std::cout << "Terminating simulation.\n";
+        std::cout << "Final state " << state << "\n";
+        std::cout << "Elapsed time " << sw << "\n";
+        std::cout << "Integration steps " << steps << "\n\n";
+    }
     return 0;
 }

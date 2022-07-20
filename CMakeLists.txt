@@ -120,7 +120,7 @@ if(MALG_DOCUMENTATION)
             ${doxygenawesome_SOURCE_DIR}/doxygen-awesome-darkmode-toggle.js
         )
 
-        doxygen_add_docs(${PROJECT_NAME}_documentation
+        doxygen_add_docs(malg_documentation
             include/malg/control/control.hpp
             include/malg/complex_math.hpp
             include/malg/eigen.hpp

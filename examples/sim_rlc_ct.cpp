@@ -3,27 +3,37 @@
 /// @brief Discretizes a continuous-time state-space description of an RLC
 /// circut and simulates it.
 
-#include "malg/control/solver/solver.hpp"
 #include "malg/control/control.hpp"
 #include "malg/io.hpp"
 
 #include <stopwatch/stopwatch.hpp>
+#include <solver/detail/observer.hpp>
+#include <solver/stepper/stepper_adaptive_euler.hpp>
+#include <solver/stepper/stepper_adaptive_rk4.hpp>
+#include <solver/stepper/stepper_euler.hpp>
+#include <solver/stepper/stepper_rk4.hpp>
+#include <solver/solver.hpp>
 
-using Time   = double;
-using State  = malg::Vector<double>;
-using Input  = malg::Vector<double>;
-using Output = malg::Vector<double>;
+#ifdef MALG_ENABLE_PLOT
+#include <matplot/matplot.h>
+#endif
+
+using Time     = double;
+using Variable = double;
+using State    = malg::Vector<Variable>;
+using Input    = malg::Vector<Variable>;
+using Output   = malg::Vector<Variable>;
 
 class Model {
 public:
     /// Resistance value.
-    double R0;
+    Variable R0;
     /// Inductance value.
-    double L0;
+    Variable L0;
     /// Capacitance value.
-    double C0;
+    Variable C0;
     /// Continous time state-space model.
-    malg::control::StateSpace<double> sys;
+    malg::control::StateSpace<Variable> sys;
     /// Input matrix.
     Input u;
     /// Output matrix.
@@ -33,7 +43,7 @@ public:
     /// @param _R0 resistance value.
     /// @param _L0 inductance value.
     /// @param _C0 capacitance value.
-    Model(double _R0 = 100, double _L0 = 0.01, double _C0 = 0.001)
+    Model(Variable _R0 = 1, Variable _L0 = 0.5, Variable _C0 = 0.5)
         : R0(_R0),
           L0(_L0),
           C0(_C0),
@@ -41,8 +51,14 @@ public:
           u(1),
           y(1)
     {
-        sys.A = { { 0., 1. }, { -1. / (L0 * C0), -R0 / L0 } };
-        sys.B = { { 0. }, { 1. / (L0 * C0) } };
+        sys.A = {
+            { -R0 / L0, 1. / L0 },
+            { 1. / C0, 0 }
+        };
+        sys.B = {
+            { 1. / L0 },
+            { 0. }
+        };
         sys.C = { { 1., 0. } };
         sys.D = { { 0. } };
     }
@@ -67,6 +83,20 @@ struct ObserverPrint {
     }
 };
 
+template <std::size_t DECIMATION>
+struct ObserverSave : public solver::detail::DecimationObserver<DECIMATION> {
+    std::vector<Variable> time, x0, x1;
+    ObserverSave() = default;
+    inline void operator()(const State &x, const Time &t) noexcept
+    {
+        if (this->observe()) {
+            time.emplace_back(t);
+            x0.emplace_back(x[0]);
+            x1.emplace_back(x[1]);
+        }
+    }
+};
+
 /// @brief The dc motor itself.
 struct NoObserver {
     void operator()(const State &, Time)
@@ -83,59 +113,114 @@ constexpr inline T compute_samples(Time time_start, Time time_end, Time time_del
 
 int main(int, char *[])
 {
-    {
-        Model system;
-        State state{ .0, .0 };
-        Time time_start    = 0.0;
-        Time time_end      = 1.0;
-        Time time_delta    = 0.0001;
-        const auto samples = compute_samples<std::size_t>(time_start, time_end, time_delta);
-        unsigned steps     = 0;
+    Model model;
+    const State x0{ .0, .0 };
+    State x;
+    const Time time_start = 0.0;
+    const Time time_end   = 1.0;
+    const Time time_delta = 0.0001;
+    const auto samples    = compute_samples<std::size_t>(time_start, time_end, time_delta);
+    std::size_t steps     = 0;
 
-        malg::control::solver::stepper_euler<State, Time> stepper(state.size());
-        NoObserver observer;
-        stopwatch::Stopwatch sw;
+    solver::stepper_adaptive_euler<State, Time> adaptive_euler;
+    solver::stepper_adaptive_rk4<State, Time> adaptive_rk4;
+    solver::stepper_euler<State, Time> euler;
+    solver::stepper_rk4<State, Time> rk4;
 
-        std::cout << std::fixed << std::setprecision(5);
-        std::cout << "Fixed step simulation.\n";
-        std::cout << "Total time points " << samples << "\n";
-        std::cout << "Starting simulation.\n";
+#ifdef MALG_ENABLE_PLOT
+    const auto downsamples = compute_samples<std::size_t>(time_start, time_end, time_delta, time_delta);
 
-        sw.start();
-        steps = malg::control::solver::integrate_const(stepper, observer, system, state, time_start, time_end, time_delta);
-        sw.stop();
+    ObserverSave<0> observer_adaptive_euler;
+    ObserverSave<0> observer_adaptive_rk4;
+    ObserverSave<downsamples> observer_euler;
+    ObserverSave<downsamples> observer_rk4;
+#else
+    NoObserver observer_adaptive_euler;
+    NoObserver observer_adaptive_rk4;
+    NoObserver observer_euler;
+    NoObserver observer_rk4;
+#endif
 
-        std::cout << "Terminating simulation.\n";
-        std::cout << "Final state " << state << "\n";
-        std::cout << "Elapsed time " << sw << "\n";
-        std::cout << "Integration steps " << steps << "\n\n";
-    }
-    {
-        Model system;
-        State state{ .0, .0 };
-        Time time_start    = 0.0;
-        Time time_end      = 1.0;
-        Time time_delta    = 0.0001;
-        const auto samples = compute_samples<std::size_t>(time_start, time_end, time_delta);
-        unsigned steps     = 0;
+    stopwatch::Stopwatch sw;
 
-        malg::control::solver::stepper_adaptive_rk4<State, Time, 2> stepper(state.size());
-        NoObserver observer;
-        stopwatch::Stopwatch sw;
+    std::cout << std::fixed << std::setprecision(5);
+    std::cout << "Total time points " << samples << "\n";
 
-        std::cout << std::fixed << std::setprecision(5);
-        std::cout << "Variable step simulation.\n";
-        std::cout << "Fixed step total time points " << samples << "\n";
-        std::cout << "Starting simulation.\n";
+    x = x0;
+    std::cout << "Starting simulation (Adaptive Euler).\n";
+    sw.start();
+    steps = solver::integrate_adaptive(adaptive_euler, observer_adaptive_euler, model, x, time_start, time_end, time_delta);
+    sw.stop();
+    std::cout << "Terminating simulation.\n";
+    std::cout << "Elapsed time " << sw << "\n";
+    std::cout << "Integration steps " << steps << "\n\n";
 
-        sw.start();
-        steps = malg::control::solver::integrate_adaptive(stepper, observer, system, state, time_start, time_end, time_delta);
-        sw.stop();
+    x = x0;
+    std::cout << "Starting simulation (Adaptive RK4).\n";
+    sw.start();
+    steps = solver::integrate_adaptive(adaptive_rk4, observer_adaptive_rk4, model, x, time_start, time_end, time_delta);
+    sw.stop();
+    std::cout << "Terminating simulation.\n";
+    std::cout << "Elapsed time " << sw << "\n";
+    std::cout << "Integration steps " << steps << "\n\n";
 
-        std::cout << "Terminating simulation.\n";
-        std::cout << "Final state " << state << "\n";
-        std::cout << "Elapsed time " << sw << "\n";
-        std::cout << "Integration steps " << steps << "\n\n";
-    }
+    x = x0;
+    std::cout << "Starting simulation (Euler).\n";
+    sw.start();
+    steps = solver::integrate_fixed(euler, observer_euler, model, x, time_start, time_end, time_delta);
+    sw.stop();
+    std::cout << "Terminating simulation.\n";
+    std::cout << "Elapsed time " << sw << "\n";
+    std::cout << "Integration steps " << steps << "\n\n";
+
+    x = x0;
+    std::cout << "Starting simulation (RK4).\n";
+    sw.start();
+    steps = solver::integrate_fixed(rk4, observer_rk4, model, x, time_start, time_end, time_delta);
+    sw.stop();
+    std::cout << "Terminating simulation.\n";
+    std::cout << "Elapsed time " << sw << "\n";
+    std::cout << "Integration steps " << steps << "\n\n";
+
+#ifdef MALG_ENABLE_PLOT
+    auto colors      = matplot::palette::accent(8);
+    auto color_index = 0u;
+    matplot::line_handle lh;
+    matplot::hold(matplot::on);
+    lh = matplot::plot(observer_adaptive_euler.time, observer_adaptive_euler.x0);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+    lh = matplot::plot(observer_adaptive_rk4.time, observer_adaptive_rk4.x0);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+    lh = matplot::plot(observer_euler.time, observer_euler.x0);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+    lh = matplot::plot(observer_rk4.time, observer_rk4.x0);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+    lh = matplot::plot(observer_adaptive_euler.time, observer_adaptive_euler.x1);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+    lh = matplot::plot(observer_adaptive_rk4.time, observer_adaptive_rk4.x1);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+    lh = matplot::plot(observer_euler.time, observer_euler.x1);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+    lh = matplot::plot(observer_rk4.time, observer_rk4.x1);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+    matplot::legend(
+        { "Adaptive Euler.x0",
+          "Adaptive RK4.x0",
+          "Euler.x0",
+          "RK4.x0",
+          "Adaptive Euler.x1",
+          "Adaptive RK4.x1",
+          "Euler.x1",
+          "RK4.x1" });
+    matplot::show();
+#endif
     return 0;
 }

@@ -7,6 +7,7 @@
 #include "malg/io.hpp"
 
 #include <stopwatch/stopwatch.hpp>
+
 #include <solver/detail/observer.hpp>
 #include <solver/stepper/stepper_adaptive_euler.hpp>
 #include <solver/stepper/stepper_adaptive_rk4.hpp>

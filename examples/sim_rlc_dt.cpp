@@ -6,49 +6,114 @@
 #include "malg/control/control.hpp"
 #include "malg/io.hpp"
 
-using Time   = double;
-using State  = malg::Vector<double>;
-using Input  = malg::Vector<double>;
-using Output = malg::Vector<double>;
+#include <stopwatch/stopwatch.hpp>
+
+#ifdef MALG_ENABLE_PLOT
+#include <matplot/matplot.h>
+#endif
+
+using Time     = double;
+using Variable = double;
+using State    = malg::Vector<double>;
+using Input    = malg::Vector<double>;
+using Output   = malg::Vector<double>;
+
+template <typename T>
+constexpr inline T compute_samples(Time time_start, Time time_end, Time time_delta, Time sampling = 1.0)
+{
+    return static_cast<T>(((time_end - time_start) / time_delta) * sampling);
+}
 
 int main(int, char *[])
 {
     // Define the model's variables.
-    double R0 = 100;
-    double L0 = 0.01;
-    double C0 = 0.001;
+    Variable R0 = 1;
+    Variable L0 = 0.5;
+    Variable C0 = 0.5;
 
     // Define the time variables.
-    Time time_start = 0.0;
-    Time time_end   = 1.0;
-    Time dt         = 0.0001;
+    const Time time_start     = 0.0;
+    const Time time_end       = 2.0;
+    const Time time_delta     = 0.001;
+    const std::size_t samples = compute_samples<std::size_t>(time_start, time_end, time_delta);
+    std::size_t steps = 0;
 
     // Define the state-space model.
-    malg::control::StateSpace<double> sys{
-        { { 0., 1. }, { -1. / (L0 * C0), -R0 / L0 } },
-        { { 0. }, { 1. / (L0 * C0) } },
-        { { 1., 0. } },
-        { { 0. } }
+    malg::control::StateSpace<Variable> sys;
+    sys.A = {
+        { -R0 / L0, -1. / L0 },
+        { 1. / C0, 0 }
+    };
+    sys.B = {
+        { 1. / L0 },
+        { 0. }
+    };
+    sys.C = {
+        { 0., 1. }
+    };
+    sys.D = {
+        { 0. }
     };
 
     // Discretize the systme.
-    auto dsys = malg::control::c2d(sys, dt);
+    auto dsys = malg::control::c2d(sys, time_delta);
+
+#ifdef MALG_ENABLE_PLOT
+    std::vector<Variable> time, u0, x0, x1;
+#endif
 
     // == Simulate ============================================================
     Input u{ .0 };     // Input matrix.
     State x{ .0, .0 }; // State matrix.
     Output y{ .0 };    // Output matrix.
 
-    // Simulation
-    std::cout << std::fixed << std::setprecision(4);
-    for (Time t = time_start; t < time_end; t += dt) {
-        u[0] = 1.5 * std::sin(2 * M_PI * t);
+    stopwatch::Stopwatch sw;
+
+    std::cout << std::fixed << std::setprecision(5);
+    std::cout << "Total time points " << samples << "\n";
+
+    std::cout << "Starting simulation.\n";
+    sw.start();
+
+    for (Time t = time_start; t < time_end; t += time_delta, ++steps) {
+        u[0] = 3.3 * std::sin(2 * M_PI * t);
 
         x = malg::dot(dsys.A, x) + malg::dot(dsys.B, u);
         y = malg::dot(dsys.C, x) + malg::dot(dsys.D, u);
 
+#ifdef MALG_ENABLE_PLOT
+        time.emplace_back(t);
+        u0.emplace_back(u[0]);
+        x0.emplace_back(x[0]);
+        x1.emplace_back(x[1]);
+#else
         std::cout << t << " " << u[0] << " -> " << y[0] << "\n";
+#endif
     }
+    std::cout << "Terminating simulation.\n";
+    std::cout << "Elapsed time " << sw << "\n";
+    std::cout << "Integration steps " << steps << "\n\n";
 
+#ifdef MALG_ENABLE_PLOT
+    auto colors      = matplot::palette::accent(3);
+    auto color_index = 0u;
+    matplot::line_handle lh;
+    matplot::hold(matplot::on);
+
+    lh = matplot::plot(time, u0);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+
+    lh = matplot::plot(time, x0);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+
+    lh = matplot::plot(time, x1);
+    lh->line_width(3);
+    lh->color(matplot::to_array(colors[color_index++]));
+
+    matplot::legend({ "u0", "x0", "x1" });
+    matplot::show();
+#endif
     return 0;
 }

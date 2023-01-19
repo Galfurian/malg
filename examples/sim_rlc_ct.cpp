@@ -59,8 +59,12 @@ public:
             { 1. / L0 },
             { 0. }
         };
-        sys.C = { { 1., 0. } };
-        sys.D = { { 0. } };
+        sys.C = {
+            { 1., 0. }
+        };
+        sys.D = {
+            { 0. }
+        };
     }
 
     /// @brief DC motor behaviour.
@@ -111,21 +115,29 @@ constexpr inline T compute_samples(Time time_start, Time time_end, Time time_del
 int main(int, char *[])
 {
     Model model;
-    State x0{ .0, .0 }, x;
+
+    // Initial and runtime states.
+    const State x0{ .0, .0 };
+    State x;
+
+    // Simulation parameters.
     const Time time_start = 0.0;
     const Time time_end   = 1.0;
     const Time time_delta = 0.0001;
     const auto samples    = compute_samples<std::size_t>(time_start, time_end, time_delta);
 
-    solver::stepper_adaptive<State, Time, solver::stepper_euler<State, Time>, 4> adaptive_euler(time_delta);
-    solver::stepper_adaptive<State, Time, solver::stepper_rk4<State, Time>, 4> adaptive_rk4(time_delta);
-    solver::stepper_euler<State, Time> euler;
-    solver::stepper_rk4<State, Time> rk4;
+    // Setup the solvers.
+    const auto Error      = solver::ErrorFormula::Mixed;
+    const auto Iterations = 3;
+    using Euler           = solver::stepper_euler<State, Time>;
+    using Rk4             = solver::stepper_rk4<State, Time>;
+    using AdaptiveEuler   = solver::stepper_adaptive<Euler, Iterations, Error>;
+    using AdaptiveRk4     = solver::stepper_adaptive<Rk4, Iterations, Error>;
 
-    std::size_t steps_adaptive_euler;
-    std::size_t steps_adaptive_rk4;
-    std::size_t steps_euler;
-    std::size_t steps_rk4;
+    AdaptiveEuler adaptive_euler(time_delta);
+    AdaptiveRk4 adaptive_rk4(time_delta);
+    Euler euler;
+    Rk4 rk4;
 
 #ifdef MALG_ENABLE_PLOT
     ObserverSave obs_adaptive_euler;
@@ -147,33 +159,33 @@ int main(int, char *[])
     std::cout << "Simulating with `Adaptive Euler`...\n";
     x = x0;
     sw.start();
-    steps_adaptive_euler = solver::integrate_adaptive(adaptive_euler, obs_adaptive_euler, model, x, time_start, time_end, time_delta);
+    solver::integrate_adaptive(adaptive_euler, obs_adaptive_euler, model, x, time_start, time_end, time_delta);
     sw.round();
 
     std::cout << "Simulating with `Adaptive RK4`...\n";
     x = x0;
     sw.start();
-    steps_adaptive_rk4 = solver::integrate_adaptive(adaptive_rk4, obs_adaptive_rk4, model, x, time_start, time_end, time_delta);
+    solver::integrate_adaptive(adaptive_rk4, obs_adaptive_rk4, model, x, time_start, time_end, time_delta);
     sw.round();
 
     std::cout << "Simulating with `Euler`...\n";
     x = x0;
     sw.start();
-    steps_euler = solver::integrate_fixed(euler, obs_euler, model, x, time_start, time_end, time_delta);
+    solver::integrate_fixed(euler, obs_euler, model, x, time_start, time_end, time_delta);
     sw.round();
 
     std::cout << "Simulating with `RK4`...\n";
     x = x0;
     sw.start();
-    steps_rk4 = solver::integrate_fixed(rk4, obs_rk4, model, x, time_start, time_end, time_delta);
+    solver::integrate_fixed(rk4, obs_rk4, model, x, time_start, time_end, time_delta);
     sw.round();
 
     std::cout << "\n";
     std::cout << "Integration steps and elapsed times:\n";
-    std::cout << "    Adaptive Euler took " << std::setw(12) << steps_adaptive_euler << " steps, for a total of " << sw.partials()[0] << "\n";
-    std::cout << "    Adaptive RK4   took " << std::setw(12) << steps_adaptive_rk4 << " steps, for a total of " << sw.partials()[1] << "\n";
-    std::cout << "    Euler          took " << std::setw(12) << steps_euler << " steps, for a total of " << sw.partials()[2] << "\n";
-    std::cout << "    RK4            took " << std::setw(12) << steps_rk4 << " steps, for a total of " << sw.partials()[3] << "\n";
+    std::cout << "    Adaptive Euler took " << std::setw(12) << adaptive_euler.steps() << " steps, for a total of " << sw[0] << "\n";
+    std::cout << "    Adaptive RK4   took " << std::setw(12) << adaptive_rk4.steps() << " steps, for a total of " << sw[1] << "\n";
+    std::cout << "    Euler          took " << std::setw(12) << euler.steps() << " steps, for a total of " << sw[2] << "\n";
+    std::cout << "    RK4            took " << std::setw(12) << rk4.steps() << " steps, for a total of " << sw[3] << "\n";
 
 #ifdef MALG_ENABLE_PLOT
     auto colors = matplot::palette::accent(4);

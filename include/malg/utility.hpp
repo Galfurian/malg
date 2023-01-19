@@ -79,7 +79,7 @@ constexpr inline auto zeros(std::size_t rows, std::size_t cols)
 /// @param size the size of the vector.
 /// @returns the newly created vector.
 template <typename T>
-constexpr inline auto zeros(std::size_t size) noexcept
+constexpr inline auto zeros(std::size_t size)
 {
     if (size == 0)
         throw std::invalid_argument("You must provide a size greather than zero.");
@@ -92,7 +92,7 @@ constexpr inline auto zeros(std::size_t size) noexcept
 /// @param cols the number of columns.
 /// @returns the newly created matrix.
 template <typename T>
-constexpr inline auto ones(std::size_t rows, std::size_t cols) noexcept
+constexpr inline auto ones(std::size_t rows, std::size_t cols)
 {
     if (rows == 0)
         throw std::invalid_argument("You must provide a number of rows greather than zero.");
@@ -106,7 +106,7 @@ constexpr inline auto ones(std::size_t rows, std::size_t cols) noexcept
 /// @param size the size of the vector.
 /// @returns the newly created vector.
 template <typename T>
-constexpr inline auto ones(std::size_t size) noexcept
+constexpr inline auto ones(std::size_t size)
 {
     if (size == 0)
         throw std::invalid_argument("You must provide a size greather than zero.");
@@ -266,7 +266,7 @@ constexpr inline auto extract(const MatrixBase<T> &matrix,
                               std::size_t start_row    = 0,
                               std::size_t end_row      = -1,
                               std::size_t start_column = 0,
-                              std::size_t end_column   = -1) noexcept
+                              std::size_t end_column   = -1)
 {
     if (start_row >= end_row)
         throw std::invalid_argument("The starting row must be lower than the ending row.");
@@ -292,7 +292,7 @@ template <typename T>
 constexpr inline auto extract_column(const MatrixBase<T> &matrix,
                                      std::size_t column,
                                      std::size_t start_row = 0,
-                                     std::size_t end_row   = -1) noexcept
+                                     std::size_t end_row   = -1)
 {
     if (start_row >= end_row)
         throw std::invalid_argument("The starting row must be lower than the ending row.");
@@ -316,7 +316,7 @@ template <typename T>
 constexpr inline auto extract_row(const MatrixBase<T> &matrix,
                                   std::size_t row,
                                   std::size_t start_column = 0,
-                                  std::size_t end_column   = -1) noexcept
+                                  std::size_t end_column   = -1)
 {
     if (row >= matrix.rows())
         throw std::invalid_argument("The selected row is outsize the matrix.");
@@ -363,7 +363,7 @@ constexpr inline void swap_cols(MatrixBase<T> &matrix, std::size_t i, std::size_
 /// @param row the row that must be removed.
 /// @returns a reference to the input matrix with the row removed.
 template <typename T>
-constexpr inline auto &remove_row(Matrix<T> &matrix, std::size_t row) noexcept
+constexpr inline auto &remove_row(Matrix<T> &matrix, std::size_t row)
 {
     if (row >= matrix.rows())
         throw std::invalid_argument("The selected row is outsize the matrix.");
@@ -381,7 +381,7 @@ constexpr inline auto &remove_row(Matrix<T> &matrix, std::size_t row) noexcept
 /// @param column the column that must be removed.
 /// @returns a reference to the input matrix with the column removed.
 template <typename T>
-constexpr inline auto &remove_column(Matrix<T> &matrix, std::size_t column) noexcept
+constexpr inline auto &remove_column(Matrix<T> &matrix, std::size_t column)
 {
     if (column >= matrix.cols())
         throw std::invalid_argument("The selected column is outsize the matrix.");
@@ -499,7 +499,7 @@ constexpr inline auto is_constant(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the two arrays are equal within the given tolerance.
 /// @returns false otherwise.
 template <typename T>
-constexpr inline auto all_close(const Vector<T> &a, const Vector<T> &b, double tolerance = 0.0001) noexcept
+constexpr inline auto all_close(const Vector<T> &a, const Vector<T> &b, double tolerance = 0.0001)
 {
     // Check the sizes.
     if (a.size() != b.size())
@@ -517,7 +517,7 @@ constexpr inline auto all_close(const Vector<T> &a, const Vector<T> &b, double t
 /// @returns true if the two arrays are equal within the given tolerance.
 /// @returns false otherwise.
 template <typename T>
-constexpr inline auto all_close(const MatrixBase<T> &A, const MatrixBase<T> &B, double tolerance = 0.0001) noexcept
+constexpr inline auto all_close(const MatrixBase<T> &A, const MatrixBase<T> &B, double tolerance = 0.0001)
 {
     // Check the sizes.
     if (A.rows() != B.rows())

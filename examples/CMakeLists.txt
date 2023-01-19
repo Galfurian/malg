@@ -50,6 +50,11 @@ add_executable(malg_example_rlc_ct sim_rlc_ct.cpp)
 target_link_libraries(malg_example_rlc_ct PUBLIC malg)
 target_include_directories(malg_example_rlc_ct PUBLIC ${stopwatch_SOURCE_DIR}/include ${stunning_chainsaw_SOURCE_DIR}/include)
 
+# Add the example.
+add_executable(malg_fixed_vs_variable fixed_vs_variable.cpp)
+target_link_libraries(malg_fixed_vs_variable PUBLIC malg)
+target_include_directories(malg_fixed_vs_variable PUBLIC ${stopwatch_SOURCE_DIR}/include)
+
 
 # Add matplot++ if required.
 if(MALG_ENABLE_PLOT)

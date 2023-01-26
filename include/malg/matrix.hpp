@@ -59,7 +59,7 @@ public:
           _data(rows * cols)
     {
         auto it = data.begin();
-        for (std::size_t r = 0, c; r < this->rows(); ++r)
+        for (std::size_t r = 0, c = 0; r < this->rows(); ++r)
             for (c = 0; c < this->cols(); ++c, ++it)
                 this->at(r, c) = *it;
     }
@@ -73,7 +73,7 @@ public:
           _data(rows * cols)
     {
         auto it = data.begin();
-        for (std::size_t r = 0, c; r < this->rows(); ++r)
+        for (std::size_t r = 0, c = 0; r < this->rows(); ++r)
             for (c = 0; c < this->cols(); ++c, ++it)
                 this->at(r, c) = *it;
     }

@@ -22,7 +22,7 @@ template <typename T>
 inline auto transpose(const MatrixBase<T> &A)
 {
     Matrix<std::remove_const_t<T>> result(A.cols(), A.rows(), 0.0);
-    for (std::size_t r = 0, c; r < A.rows(); ++r)
+    for (std::size_t r = 0, c = 0; r < A.rows(); ++r)
         for (c = 0; c < A.cols(); ++c)
             result(c, r) = A(r, c);
     return result;
@@ -57,7 +57,7 @@ template <typename T>
 inline auto hermitian_transpose(const MatrixBase<std::complex<T>> &A)
 {
     Matrix<std::remove_const_t<T>> result(A.cols(), A.rows(), 0.0);
-    for (std::size_t r = 0, c; r < A.rows(); ++r)
+    for (std::size_t r = 0, c = 0; r < A.rows(); ++r)
         for (c = 0; c < A.cols(); ++c)
             result(c, r) = std::conj(A(r, c));
     return result;
@@ -70,7 +70,7 @@ template <typename T>
 inline auto conjugate_transpose(const MatrixBase<std::complex<T>> &matrix)
 {
     Matrix<std::complex<std::remove_const_t<T>>> result(matrix.cols(), matrix.rows(), 0.);
-    for (std::size_t r = 0, c; r < matrix.rows(); ++r)
+    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r)
         for (c = 0; c < matrix.cols(); ++c)
             result(c, r) = std::conj(matrix(r, c));
     return result;
@@ -149,7 +149,7 @@ inline auto determinant(const MatrixBase<CT> &matrix)
     // We need to create a temporary.
     Matrix<T> A(matrix);
     // Create the indexing variables.
-    std::size_t c, r, k;
+    std::size_t c, r = 0, k;
     // Initialize the determinant, and create both pivot and ratio variable.
     T det = static_cast<T>(1.), pivot, ratio;
     // We convert the temporary to upper triangular form.
@@ -366,7 +366,7 @@ template <typename T>
 inline auto exp(const MatrixBase<T> &A)
 {
     Matrix<std::remove_const_t<T>> result(A.cols(), A.rows(), 0.0);
-    for (std::size_t r = 0, c; r < A.rows(); ++r)
+    for (std::size_t r = 0, c = 0; r < A.rows(); ++r)
         for (c = 0; c < A.cols(); ++c)
             result(c, r) = std::exp(A(r, c));
     return result;

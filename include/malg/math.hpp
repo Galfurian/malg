@@ -1143,7 +1143,7 @@ inline auto min(const Matrix<T> &a)
     if (a.empty())
         return Vector<data_type_t>();
     Vector<data_type_t> values(a.cols(), data_type_t(0.));
-    for (std::size_t c = 0, r, min_val_pos; c < a.cols(); ++c) {
+    for (std::size_t c = 0, r = 0, min_val_pos; c < a.cols(); ++c) {
         for (min_val_pos = 0, r = 1; r < a.rows(); ++r)
             if (a(r, c) < a(min_val_pos, c))
                 min_val_pos = r;
@@ -1178,7 +1178,7 @@ inline auto max(const Matrix<T> &a)
     if (a.empty())
         return Vector<data_type_t>();
     Vector<data_type_t> values(a.cols(), data_type_t(0.));
-    for (std::size_t c = 0, r, max_val_pos; c < a.cols(); ++c) {
+    for (std::size_t c = 0, r = 0, max_val_pos; c < a.cols(); ++c) {
         for (max_val_pos = 0, r = 1; r < a.rows(); ++r)
             if (a(r, c) > a(max_val_pos, c))
                 max_val_pos = r;

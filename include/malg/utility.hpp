@@ -185,7 +185,7 @@ constexpr inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
     // Resize the matrix by adding rows for B.
     C.resize(A.rows() + B.rows(), A.cols());
     // Append B to C.
-    for (std::size_t r = 0, c; r < B.rows(); ++r)
+    for (std::size_t r = 0, c = 0; r < B.rows(); ++r)
         for (c = 0; c < B.cols(); ++c)
             C(r + A.rows(), c) = B(r, c);
     return C;
@@ -594,7 +594,7 @@ constexpr inline auto is_lower_triangular(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
-    for (std::size_t r = 0, c; r < matrix.rows(); ++r)
+    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r)
         for (c = r + 1; c < matrix.cols(); ++c)
             if (matrix(r, c))
                 return false;
@@ -610,7 +610,7 @@ constexpr inline auto is_upper_triangular(const MatrixBase<T> &matrix) noexcept
 {
     if (!is_square(matrix))
         return false;
-    for (std::size_t r = 0, c; r < matrix.rows(); ++r)
+    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r)
         for (c = 0; c < r; ++c)
             if (matrix(r, c))
                 return false;
@@ -736,13 +736,11 @@ constexpr inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limi
         return Matrix<std::size_t>(0UL, 0UL);
     }
     if ((n > 0) && (n < index.size())) {
-        std::ptrdiff_t _start = static_cast<std::ptrdiff_t>(*index.begin()),
-                       _n     = static_cast<std::ptrdiff_t>(n),
-                       _size  = static_cast<std::ptrdiff_t>(index.size());
+        std::size_t start = static_cast<std::size_t>(*index.begin());
         if (first_last)
-            index = std::vector<size_t>(_start + 0, _start + _n);
+            index = std::vector<size_t>(start + 0UL, start + n);
         else
-            index = std::vector<size_t>(_start + _size - _n, _start + _size);
+            index = std::vector<size_t>(start + index.size() - n, start + index.size());
     }
     // Prepare the array for the indexes. If the input is a row-vector, return the indexes as a row-vector.
     if (utility::is_row_vector(A))

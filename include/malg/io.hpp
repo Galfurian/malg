@@ -54,7 +54,7 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::Vector<T> &rhs)
 template <typename T>
 inline std::ostream &operator<<(std::ostream &lhs, const malg::MatrixBase<T> &rhs)
 {
-    std::size_t r, c;
+    std::size_t r = 0, c = 0;
     // Get the longhest value.
     auto length = __get_longhest_value(rhs, lhs.precision());
     // Print the matrix.
@@ -93,7 +93,7 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::Vector<T> &rhs)
 template <typename T>
 inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &rhs)
 {
-    std::size_t r, c;
+    std::size_t r = 0, c = 0;
     // Get the longhest value.
     auto length = __get_longhest_value(rhs, lhs.precision());
     // Print the matrix size.
@@ -145,7 +145,7 @@ inline std::ifstream &operator>>(std::ifstream &lhs, malg::Vector<T> &rhs)
 template <typename T>
 inline std::ifstream &operator>>(std::ifstream &lhs, malg::Matrix<T> &rhs)
 {
-    std::size_t rows, cols, r, c;
+    std::size_t rows, cols, r = 0, c = 0;
     char type;
     // Read the type.
     lhs >> type;
@@ -259,7 +259,7 @@ inline std::string to_matlab(const char *name, const malg::MatrixBase<T> &m)
 {
     std::stringstream ss;
     ss << name << " = [";
-    for (std::size_t r = 0, c; r < m.rows(); ++r) {
+    for (std::size_t r = 0, c = 0; r < m.rows(); ++r) {
         ss << "[";
         for (c = 0; c < m.cols(); ++c) {
             if constexpr (malg::is_complex_v<T>) {
@@ -309,7 +309,7 @@ inline std::string to_cpp(const char *name, const char *type, const malg::Matrix
 {
     std::stringstream ss;
     ss << "malg::Matrix<" << type << "> " << name << " = {";
-    for (std::size_t r = 0, c; r < m->rows(); ++r) {
+    for (std::size_t r = 0, c = 0; r < m->rows(); ++r) {
         ss << "{";
         for (c = 0; c < m->cols(); ++c) {
             if constexpr (malg::is_complex_v<T>) {

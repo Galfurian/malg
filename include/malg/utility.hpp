@@ -736,10 +736,13 @@ constexpr inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limi
         return Matrix<std::size_t>(0UL, 0UL);
     }
     if ((n > 0) && (n < index.size())) {
+        std::ptrdiff_t _start = static_cast<std::ptrdiff_t>(*index.begin()),
+                       _n     = static_cast<std::ptrdiff_t>(n),
+                       _size  = static_cast<std::ptrdiff_t>(index.size());
         if (first_last)
-            index = std::vector<size_t>(index.begin() + 0UL, index.begin() + n);
+            index = std::vector<size_t>(_start + 0, _start + _n);
         else
-            index = std::vector<size_t>(index.begin() + index.size() - n, index.begin() + index.size());
+            index = std::vector<size_t>(_start + _size - _n, _start + _size);
     }
     // Prepare the array for the indexes. If the input is a row-vector, return the indexes as a row-vector.
     if (utility::is_row_vector(A))
@@ -754,7 +757,7 @@ constexpr inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limi
 /// @param max the maximum value.
 /// @return the random matrix.
 template <typename T, typename T2>
-constexpr inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2 max) noexcept
+inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2 max) noexcept
 {
     if constexpr (malg::is_complex_v<T>) {
         // First, we extract the underlying datatype for the complex value.
@@ -803,7 +806,7 @@ constexpr inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2
 /// @param max the maximum value.
 /// @return the random vector.
 template <typename T, typename T2>
-constexpr inline auto rand_vector(std::size_t size, T2 min, T2 max) noexcept
+inline auto rand_vector(std::size_t size, T2 min, T2 max) noexcept
 {
     if constexpr (malg::is_complex_v<T>) {
         // First, we extract the underlying datatype for the complex value.

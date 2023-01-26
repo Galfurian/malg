@@ -1055,7 +1055,7 @@ inline auto projection(const malg::Vector<T1> &a, const malg::Vector<T2> &b)
 /// @param r_end the ending row.
 /// @returns the mangnitude of the column vector.
 template <typename T>
-inline auto vector_length(malg::MatrixBase<T> &A, std::size_t c, std::size_t r_start = 0, std::size_t r_end = -1)
+inline auto vector_length(malg::MatrixBase<T> &A, std::size_t c, std::size_t r_start = 0, std::size_t r_end = std::numeric_limits<std::size_t>::max())
 {
     std::remove_const_t<malg::is_complex_t<T>> accum = 0;
     for (std::size_t r = r_start; r < std::min(r_end, A.rows()); r++) {

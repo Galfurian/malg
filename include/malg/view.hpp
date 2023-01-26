@@ -46,7 +46,7 @@ public:
     /// @param end_row the final row.
     /// @param start_col the starating column.
     /// @param end_col the final column.
-    constexpr View(MatrixType *matrix, std::size_t start_row = 0, std::size_t end_row = -1, std::size_t start_col = 0, std::size_t end_col = -1) noexcept
+    constexpr View(MatrixType *matrix, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max(), std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max()) noexcept
         : _matrix(matrix),
           _row{ start_row, end_row },
           _col{ start_col, end_col }

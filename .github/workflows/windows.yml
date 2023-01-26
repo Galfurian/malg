@@ -1,0 +1,26 @@
+name: Main
+on:
+  push:
+    branches-ignore:
+      - 'releases/**'
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+jobs:
+  test:
+    name: Build
+    runs-on: windows-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+      - name: Build
+        run: |
+	      cmake -B build -DMALG_BUILD_TESTS=ON -DMALG_WARNINGS_AS_ERRORS=ON
+          cmake --build build --parallel 2
+      - name: Test
+        run: |
+		  ctest -C Debug --test-dir build --no-tests=error --verbose

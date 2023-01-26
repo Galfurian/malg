@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <complex>
+#include <limits>
 #include <random>
 
 namespace malg::utility
@@ -264,9 +265,9 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
 template <typename T>
 constexpr inline auto extract(const MatrixBase<T> &matrix,
                               std::size_t start_row    = 0,
-                              std::size_t end_row      = -1,
+                              std::size_t end_row      = std::numeric_limits<std::size_t>::max(),
                               std::size_t start_column = 0,
-                              std::size_t end_column   = -1)
+                              std::size_t end_column   = std::numeric_limits<std::size_t>::max())
 {
     if (start_row >= end_row)
         throw std::invalid_argument("The starting row must be lower than the ending row.");
@@ -292,7 +293,7 @@ template <typename T>
 constexpr inline auto extract_column(const MatrixBase<T> &matrix,
                                      std::size_t column,
                                      std::size_t start_row = 0,
-                                     std::size_t end_row   = -1)
+                                     std::size_t end_row   = std::numeric_limits<std::size_t>::max())
 {
     if (start_row >= end_row)
         throw std::invalid_argument("The starting row must be lower than the ending row.");
@@ -316,7 +317,7 @@ template <typename T>
 constexpr inline auto extract_row(const MatrixBase<T> &matrix,
                                   std::size_t row,
                                   std::size_t start_column = 0,
-                                  std::size_t end_column   = -1)
+                                  std::size_t end_column   = std::numeric_limits<std::size_t>::max())
 {
     if (row >= matrix.rows())
         throw std::invalid_argument("The selected row is outsize the matrix.");
@@ -337,7 +338,7 @@ constexpr inline auto extract_row(const MatrixBase<T> &matrix,
 /// @param start_column the starting column.
 /// @param end_column the ending column.
 template <typename T>
-constexpr inline void swap_rows(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_column = 0, std::size_t end_column = -1) noexcept
+constexpr inline void swap_rows(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_column = 0, std::size_t end_column = std::numeric_limits<std::size_t>::max()) noexcept
 {
     end_column = std::min(end_column, matrix.cols());
     for (std::size_t c = start_column; c < end_column; ++c)
@@ -351,7 +352,7 @@ constexpr inline void swap_rows(MatrixBase<T> &matrix, std::size_t i, std::size_
 /// @param start_row the starting row.
 /// @param end_row the ending row.
 template <typename T>
-constexpr inline void swap_cols(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_row = 0, std::size_t end_row = -1) noexcept
+constexpr inline void swap_cols(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max()) noexcept
 {
     end_row = std::min(matrix.rows(), end_row);
     for (std::size_t r = start_row; r < end_row; ++r)
@@ -677,7 +678,7 @@ constexpr inline T accumulate(T *first, T *last, T init) noexcept
 /// @param end_col the final column.
 /// @return the generated view.
 template <typename MatrixType>
-constexpr inline auto view(MatrixType &A, std::size_t start_row = 0, std::size_t end_row = -1, std::size_t start_col = 0, std::size_t end_col = -1) noexcept
+constexpr inline auto view(MatrixType &A, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max(), std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max()) noexcept
 {
     return View(&A, start_row, end_row, start_col, end_col);
 }
@@ -689,7 +690,7 @@ constexpr inline auto view(MatrixType &A, std::size_t start_row = 0, std::size_t
 /// @param end_col the final column.
 /// @return the generated view.
 template <typename MatrixType>
-constexpr inline auto row(MatrixType &A, std::size_t row, std::size_t start_col = 0, std::size_t end_col = -1) noexcept
+constexpr inline auto row(MatrixType &A, std::size_t row, std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max()) noexcept
 {
     return View(&A, row, row + 1, start_col, end_col);
 }
@@ -701,7 +702,7 @@ constexpr inline auto row(MatrixType &A, std::size_t row, std::size_t start_col 
 /// @param end_row the final row.
 /// @return the generated view.
 template <typename MatrixType>
-constexpr inline auto col(MatrixType &A, std::size_t col, std::size_t start_row = 0, std::size_t end_row = -1) noexcept
+constexpr inline auto col(MatrixType &A, std::size_t col, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max()) noexcept
 {
     return View(&A, start_row, end_row, col, col + 1);
 }
@@ -727,7 +728,7 @@ constexpr inline auto flatnonzero(const Matrix<T> &A)
 /// @param first_last If true it returns the fist n, otherwise the last n.
 /// @return A vector of indices.
 template <class T>
-constexpr inline auto find(const Matrix<T> &A, std::size_t n = -1, bool first_last = true)
+constexpr inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limits<std::size_t>::max(), bool first_last = true)
 {
     // Find all the indexes of nonzeros elements.
     std::vector<size_t> index = utility::flatnonzero(A);

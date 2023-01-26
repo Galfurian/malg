@@ -7,6 +7,8 @@
 #include "malg/matrix.hpp"
 #include "malg/linalg.hpp"
 
+#include <tuple>
+
 namespace malg::control
 {
 
@@ -203,7 +205,7 @@ inline auto poly(const Vector<T> &a)
 }
 
 /// @brief Reduce a polynomial coefficient vector to a minimum number of terms
-/// by stripping off any leading zeros. 
+/// by stripping off any leading zeros.
 /// @param a the input coefficient vector.
 /// @returns the reduced vector.
 template <typename T>

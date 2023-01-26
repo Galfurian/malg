@@ -51,7 +51,6 @@ jobs:
                     { pkgs: 'gcc-10 g++-10', cc: gcc-10, cxx: g++-10, os: ubuntu-22.04,  },
                     { pkgs: 'gcc-9 g++-9',   cc: gcc-9,  cxx: g++-9,  os: ubuntu-22.04,  },
                     { pkgs: 'gcc-8 g++-8',   cc: gcc-8,  cxx: g++-8,  os: ubuntu-20.04,  },
-                    { pkgs: 'gcc-7 g++-7',   cc: gcc-7,  cxx: g++-7,  os: ubuntu-20.04,  },
                     # clang
                     { pkgs: '',         cc: clang,    cxx: clang++,    os: ubuntu-latest, },
                     { pkgs: 'clang-14', cc: clang-14, cxx: clang++-14, os: ubuntu-22.04,  },

@@ -60,6 +60,9 @@ if(MALG_STRICT_WARNINGS)
     endif()
 endif(MALG_STRICT_WARNINGS)
 
+# Set the standard to c++17
+set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} -std=c++17)
+
 # -----------------------------------------------------------------------------
 # LIBRARY
 # -----------------------------------------------------------------------------

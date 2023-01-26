@@ -139,7 +139,7 @@ public:
 
     /// @brief Gives access to the data.
     /// @returns pointer to the data.
-    inline constexpr const auto data() const noexcept
+    inline constexpr const T *data() const noexcept
     {
         return _data;
     }
@@ -195,7 +195,7 @@ public:
     /// @brief Operator for accessing the vector.
     /// @param pos the position.
     /// @returns the reference to the accessed item.
-    inline constexpr const auto &operator[](std::size_t pos) const noexcept
+    inline constexpr const T &operator[](std::size_t pos) const noexcept
     {
         return _data[pos];
     }
@@ -252,7 +252,7 @@ public:
 
     /// @brief Provides a pointer to the begining of the vector.
     /// @returns the pointer.
-    inline constexpr const auto begin() const noexcept
+    inline constexpr const T *begin() const noexcept
     {
         return _data;
     }
@@ -266,7 +266,7 @@ public:
 
     /// @brief Provides a pointer to the end of the vector.
     /// @returns the pointer.
-    inline constexpr const auto end() const noexcept
+    inline constexpr const T *end() const noexcept
     {
         return &_data[_size];
     }

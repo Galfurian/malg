@@ -1,6 +1,6 @@
 # Matrix ALGebra library (MALG)
 
-[![Main](https://github.com/Galfurian/malg/actions/workflows/main.yml/badge.svg)](https://github.com/Galfurian/malg/actions/workflows/main.yml)
+[![Ubuntu](https://github.com/Galfurian/malg/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/Galfurian/malg/actions/workflows/ubuntu.yml)
 
 Malg is a collection of classes and functions to perform vector/matrix algebra
 operations. It also contains a series of **control**-realted structure and

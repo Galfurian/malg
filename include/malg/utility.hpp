@@ -228,7 +228,7 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
     // Resize the matrix by adding cols for B.
     C.resize(A.rows(), A.cols() + B.cols());
     // Append B to C.
-    for (std::size_t c = 0, r; c < B.cols(); ++c)
+    for (std::size_t c = 0, r = 0; c < B.cols(); ++c)
         for (r = 0; r < B.rows(); ++r)
             C(r, c + A.cols()) = B(r, c);
     return C;

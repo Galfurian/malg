@@ -19,7 +19,7 @@
 /// @param precision the desired precision.
 /// @returns the number of characters for the longhest value.
 template <typename T>
-inline auto __get_longhest_value(T &data, std::size_t precision = 6)
+inline auto __get_longhest_value(T &data, std::streamsize precision = 6)
 {
     std::stringstream ss;
     ss.precision(precision);

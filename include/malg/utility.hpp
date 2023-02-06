@@ -255,6 +255,25 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
     return C;
 }
 
+/// @brief Horizontally stacks a matrix and a vector.
+/// @param A the matrix of size (Mx*).
+/// @param b the vector of size A.
+/// @returns the result of the stacking.
+template <typename T1, typename T2>
+constexpr inline auto concatenate(const Vector<T1> &a, const Vector<T2> &b)
+{
+    // Select the right type.
+    using T = malg::extract_common_type_t<T1, T2>;
+    // Create the output matrix.
+    Vector<T> c(a);
+    // Resize the matrix by adding the row for b.
+    c.resize(a.size() + b.size());
+    // Append b to C.
+    for (std::size_t i = 0; i < b.size(); ++i)
+        c[a.size() + i] = b[i];
+    return c;
+}
+
 /// @brief Extracs a sub-matrix.
 /// @param matrix the input matrix.
 /// @param start_row the starting row.

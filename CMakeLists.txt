@@ -23,11 +23,11 @@ endif()
 # OPTIONS
 # -----------------------------------------------------------------------------
 
-option(MALG_BUILD_EXAMPLES "Build malg examples" OFF)
-option(MALG_BUILD_TESTS "Build malg tests" OFF)
-option(MALG_STRICT_WARNINGS "Enable strict compiler warnings for malg" ON)
-option(MALG_WARNINGS_AS_ERRORS "Treat all warnings as errors for malg" OFF)
-option(MALG_ENABLE_PLOT "Enable matplot++ plots for malg examples" OFF)
+option(MALG_BUILD_EXAMPLES "Build examples" OFF)
+option(MALG_BUILD_TESTS "Build tests" OFF)
+option(MALG_STRICT_WARNINGS "Enable strict compiler warnings" ON)
+option(MALG_WARNINGS_AS_ERRORS "Treat all warnings as errors" OFF)
+option(MALG_ENABLE_PLOT "Enable matplot++ plots for examples" OFF)
 
 # -----------------------------------------------------------------------------
 # COMPILATION FLAGS
@@ -60,9 +60,6 @@ if(MALG_STRICT_WARNINGS)
     endif()
 endif(MALG_STRICT_WARNINGS)
 
-# Set the standard to c++17
-set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} -std=c++17)
-
 # -----------------------------------------------------------------------------
 # LIBRARY
 # -----------------------------------------------------------------------------
@@ -74,6 +71,8 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include)
 # Set compilation flags.
 target_compile_options(${PROJECT_NAME} INTERFACE ${MALG_COMPILE_OPTIONS})
+# Set compiler flags.
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 # -----------------------------------------------------------------------------
 # EXAMPLES

@@ -767,6 +767,50 @@ constexpr inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limi
     return Matrix<std::size_t>(index.size(), 1UL, index);
 }
 
+/// @brief Compares the two matrices.
+/// @param A the first matrix.
+/// @param B the second matrix.
+/// @return
+///      0 if they are the same,
+///     -i if the i-th element of A is smaller than the i-th element of B,
+///      i if the i-th element of A is greather than the i-th element of B.
+template <typename T>
+constexpr inline long compare(const malg::MatrixBase<T> &A, const malg::MatrixBase<T> &B)
+{
+    // Check the sizes.
+    if (A.size() != B.size())
+        throw std::invalid_argument("Matrices has different size.");
+    for (std::size_t i = 0; i < A.size(); ++i) {
+        if (A[i] < B[i])
+            return -static_cast<long>(i);
+        if (A[i] > B[i])
+            return static_cast<long>(i);
+    }
+    return 0;
+}
+
+/// @brief Compares the two vectors.
+/// @param a the first vector.
+/// @param b the second vector.
+/// @return
+///      0 if they are the same,
+///     -i if the i-th element of a is smaller than the i-th element of b,
+///      i if the i-th element of a is greather than the i-th element of b.
+template <typename T>
+constexpr inline long compare(const malg::Vector<T> &a, const malg::Vector<T> &b)
+{
+    // Check the sizes.
+    if (a.size() != b.size())
+        throw std::invalid_argument("Matrices has different size.");
+    for (std::size_t i = 0; i < a.size(); ++i) {
+        if (a[i] < b[i])
+            return -static_cast<long>(i);
+        if (a[i] > b[i])
+            return static_cast<long>(i);
+    }
+    return 0;
+}
+
 /// @brief Generates a random matrix.
 /// @param rows the number of rows.
 /// @param cols the number of columns.

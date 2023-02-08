@@ -25,6 +25,10 @@ protected:
 public:
     /// The data types of the element of the matrix.
     using value_type = T;
+    /// The data types for iterating the element of the vector.
+    using iterator = T *;
+    /// The data types for iterating the element of the vector.
+    using const_iterator = const T *;
 
     /// @brief Construct a new Matrix Base object.
     constexpr MatrixBase() noexcept
@@ -48,14 +52,14 @@ public:
 
     /// @brief Get the number of rows of the matrix.
     /// @returns the number of rows.
-    inline virtual std::size_t rows() const noexcept
+    inline constexpr virtual std::size_t rows() const noexcept
     {
         return _rows;
     }
 
     /// @brief Get the number of columns of the matrix.
     /// @returns the number of columns.
-    inline virtual std::size_t cols() const noexcept
+    inline constexpr virtual std::size_t cols() const noexcept
     {
         return _cols;
     }
@@ -77,11 +81,11 @@ public:
 
     /// @brief Returns a pointer to the internal data.
     /// @return the pointer.
-    virtual T *data() = 0;
+    virtual iterator data() = 0;
 
     /// @brief Returns a constant pointer to the internal data.
     /// @return the constant pointer.
-    virtual const T *data() const = 0;
+    virtual const_iterator data() const = 0;
 
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.

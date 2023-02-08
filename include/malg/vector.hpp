@@ -23,6 +23,10 @@ class Vector {
 public:
     /// The data types of the element of the vector.
     using value_type = T;
+    /// The data types for iterating the element of the vector.
+    using iterator = T *;
+    /// The data types for iterating the element of the vector.
+    using const_iterator = const T *;
 
     /// @brief Construct a new Vector object.
     constexpr Vector() noexcept
@@ -139,21 +143,21 @@ public:
 
     /// @brief Gives access to the data.
     /// @returns pointer to the data.
-    inline constexpr const T *data() const noexcept
+    inline constexpr const_iterator data() const noexcept
     {
         return _data;
     }
 
     /// @brief Gives access to the data.
     /// @returns pointer to the data.
-    inline constexpr auto data() noexcept
+    inline constexpr iterator data() noexcept
     {
         return _data;
     }
 
     /// @brief Returns the dimension of the vector.
     /// @returns the dimension of the vector.
-    inline constexpr auto size() const noexcept
+    inline constexpr std::size_t size() const noexcept
     {
         return _size;
     }
@@ -161,7 +165,7 @@ public:
     /// @brief Checks if the vector is empty.
     /// @returns true if it is empty.
     /// @returns false otherwise.
-    inline constexpr auto empty() const noexcept
+    inline constexpr bool empty() const noexcept
     {
         return _size == 0;
     }
@@ -252,30 +256,44 @@ public:
 
     /// @brief Provides a pointer to the begining of the vector.
     /// @returns the pointer.
-    inline constexpr const T *begin() const noexcept
+    inline constexpr const_iterator begin() const noexcept
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the begining of the vector.
     /// @returns the pointer.
-    inline constexpr auto begin() noexcept
+    inline constexpr const_iterator cbegin() const noexcept
+    {
+        return _data;
+    }
+
+    /// @brief Provides a pointer to the begining of the vector.
+    /// @returns the pointer.
+    inline constexpr iterator begin() noexcept
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the end of the vector.
     /// @returns the pointer.
-    inline constexpr const T *end() const noexcept
+    inline constexpr const_iterator end() const noexcept
     {
-        return &_data[_size];
+        return _data + _size;
     }
 
     /// @brief Provides a pointer to the end of the vector.
     /// @returns the pointer.
-    inline constexpr auto end() noexcept
+    inline constexpr const_iterator cend() const noexcept
     {
-        return &_data[_size];
+        return _data + _size;
+    }
+
+    /// @brief Provides a pointer to the end of the vector.
+    /// @returns the pointer.
+    inline constexpr iterator end() noexcept
+    {
+        return _data + _size;
     }
 
 private:

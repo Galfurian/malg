@@ -23,13 +23,21 @@ class View;
 /// @brief Matrix structure.
 template <typename T>
 class Matrix : public MatrixBase<T> {
-public:
+private:
     /// The internal data.
     Vector<T> _data;
+    /// Rows of the matrix.
+    using MatrixBase<T>::_rows;
+    /// Columns of the matrix.
+    using MatrixBase<T>::_cols;
 
 public:
     /// The data types of the element of the matrix.
     using value_type = T;
+    /// The data types for iterating the element of the vector.
+    using iterator = MatrixBase<T>::iterator;
+    /// The data types for iterating the element of the vector.
+    using const_iterator = MatrixBase<T>::const_iterator;
 
     /// @brief Construct a new Matrix object.
     constexpr Matrix() noexcept
@@ -59,8 +67,8 @@ public:
           _data(rows * cols)
     {
         auto it = data.begin();
-        for (std::size_t r = 0, c = 0; r < this->rows(); ++r)
-            for (c = 0; c < this->cols(); ++c, ++it)
+        for (std::size_t r = 0, c = 0; r < _rows; ++r)
+            for (c = 0; c < _cols; ++c, ++it)
                 this->at(r, c) = *it;
     }
 
@@ -73,8 +81,8 @@ public:
           _data(rows * cols)
     {
         auto it = data.begin();
-        for (std::size_t r = 0, c = 0; r < this->rows(); ++r)
-            for (c = 0; c < this->cols(); ++c, ++it)
+        for (std::size_t r = 0, c = 0; r < _rows; ++r)
+            for (c = 0; c < _cols; ++c, ++it)
                 this->at(r, c) = *it;
     }
 
@@ -95,12 +103,12 @@ public:
         // Get the number of columns.
         this->_cols = data.begin()->size();
         // Initialize the vector.
-        _data = Vector<T>(this->rows() * this->cols());
+        _data = Vector<T>(_rows * _cols);
         // Get an interator for the data.
         auto r_it = data.begin();
-        for (std::size_t r = 0, c = 0; r < this->rows(); ++r, ++r_it) {
+        for (std::size_t r = 0, c = 0; r < _rows; ++r, ++r_it) {
             auto c_it = (*r_it).begin();
-            for (c = 0; c < this->cols(); ++c, ++c_it) {
+            for (c = 0; c < _cols; ++c, ++c_it) {
                 this->at(r, c) = *c_it;
             }
         }
@@ -112,7 +120,7 @@ public:
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
     {
-        for (std::size_t i = 0; i < (this->rows() * this->cols()); ++i)
+        for (std::size_t i = 0; i < (_rows * _cols); ++i)
             _data[i] = rhs[i];
     }
 
@@ -122,7 +130,7 @@ public:
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
     {
-        for (std::size_t i = 0; i < (this->rows() * this->cols()); ++i)
+        for (std::size_t i = 0; i < (_rows * _cols); ++i)
             _data[i] = rhs[i];
     }
 
@@ -132,7 +140,7 @@ public:
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
     {
-        for (std::size_t i = 0; i < (this->rows() * this->cols()); ++i)
+        for (std::size_t i = 0; i < (_rows * _cols); ++i)
             _data[i] = rhs[i];
     }
 
@@ -142,7 +150,7 @@ public:
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
     {
-        for (std::size_t i = 0; i < (this->rows() * this->cols()); ++i)
+        for (std::size_t i = 0; i < (_rows * _cols); ++i)
             _data[i] = rhs[i];
     }
 
@@ -172,14 +180,14 @@ public:
 
     /// @brief Returns a pointer to the internal data.
     /// @return the pointer.
-    constexpr inline T *data() noexcept override
+    constexpr inline iterator data() noexcept override
     {
         return _data.data();
     }
 
     /// @brief Returns a constant pointer to the internal data.
     /// @return the constant pointer.
-    constexpr inline const T *data() const noexcept override
+    constexpr inline const_iterator data() const noexcept override
     {
         return _data.data();
     }
@@ -203,19 +211,19 @@ public:
     /// @return a reference to this matrix.
     constexpr auto &resize(std::size_t rows, std::size_t cols) noexcept
     {
-        if ((this->rows() == rows) && (this->cols() == cols))
+        if ((_rows == rows) && (_cols == cols))
             return *this;
 #ifdef ROW_MAJOR
-        if (this->cols() == cols) {
+        if (_cols == cols) {
 #else
-        if (this->rows() == rows) {
+        if (_rows == rows) {
 #endif
             // Resize the data.
             _data.resize(rows * cols);
         } else {
             malg::Matrix<T> m(rows, cols, static_cast<T>(0));
-            for (std::size_t r = 0; r < std::min(this->rows(), rows); ++r)
-                for (std::size_t c = 0; c < std::min(this->cols(), cols); ++c)
+            for (std::size_t r = 0; r < std::min(_rows, rows); ++r)
+                for (std::size_t c = 0; c < std::min(_cols, cols); ++c)
                     m(r, c) = this->at(r, c);
             // Move the data.
             _data = std::move(m._data);
@@ -240,8 +248,8 @@ public:
             this->_rows = rhs.rows();
             this->_cols = rhs.cols();
             // Copy the content.
-            for (std::size_t r = 0; r < this->rows(); ++r)
-                for (std::size_t c = 0; c < this->cols(); ++c)
+            for (std::size_t r = 0; r < _rows; ++r)
+                for (std::size_t c = 0; c < _cols; ++c)
                     this->at(r, c) = rhs(r, c);
         }
         return *this;
@@ -261,8 +269,8 @@ public:
             this->_rows = rhs.rows();
             this->_cols = rhs.cols();
             // Copy the content.
-            for (std::size_t r = 0; r < this->rows(); ++r)
-                for (std::size_t c = 0; c < this->cols(); ++c)
+            for (std::size_t r = 0; r < _rows; ++r)
+                for (std::size_t c = 0; c < _cols; ++c)
                     this->at(r, c) = rhs(r, c);
         }
         return *this;
@@ -281,8 +289,8 @@ public:
             this->_rows = rhs.rows();
             this->_cols = rhs.cols();
             // Copy the content.
-            for (std::size_t r = 0; r < this->rows(); ++r)
-                for (std::size_t c = 0; c < this->cols(); ++c)
+            for (std::size_t r = 0; r < _rows; ++r)
+                for (std::size_t c = 0; c < _cols; ++c)
                     this->at(r, c) = rhs(r, c);
         }
         return *this;
@@ -304,8 +312,8 @@ public:
             this->_rows = rhs.rows();
             this->_cols = rhs.cols();
             // Copy the content.
-            for (std::size_t r = 0; r < this->rows(); ++r)
-                for (std::size_t c = 0; c < this->cols(); ++c)
+            for (std::size_t r = 0; r < _rows; ++r)
+                for (std::size_t c = 0; c < _cols; ++c)
                     this->at(r, c) = rhs(r, c);
         }
         return *this;
@@ -341,12 +349,12 @@ public:
         // Get the number of columns.
         this->_cols = data.begin()->size();
         // Initialize the vector.
-        _data = Vector<T>(this->rows() * this->cols());
+        _data = Vector<T>(_rows * _cols);
         // Get an interator for the data.
         auto r_it = data.begin();
-        for (std::size_t r = 0, c = 0; r < this->rows(); ++r, ++r_it) {
+        for (std::size_t r = 0, c = 0; r < _rows; ++r, ++r_it) {
             auto c_it = (*r_it).begin();
-            for (c = 0; c < this->cols(); ++c, ++c_it) {
+            for (c = 0; c < _cols; ++c, ++c_it) {
                 this->at(r, c) = *c_it;
             }
         }
@@ -406,9 +414,9 @@ public:
     constexpr inline T &at(std::size_t row, std::size_t col) noexcept override
     {
 #ifdef ROW_MAJOR
-        return _data[(row * this->cols()) + col];
+        return _data[(row * _cols) + col];
 #else
-        return _data[(col * this->rows()) + row];
+        return _data[(col * _rows) + row];
 #endif
     }
 
@@ -419,9 +427,9 @@ public:
     constexpr inline const T &at(std::size_t row, std::size_t col) const noexcept override
     {
 #ifdef ROW_MAJOR
-        return _data[(row * this->cols()) + col];
+        return _data[(row * _cols) + col];
 #else
-        return _data[(col * this->rows()) + row];
+        return _data[(col * _rows) + row];
 #endif
     }
 

@@ -134,8 +134,14 @@ int main(int, char *[])
     using AdaptiveEuler   = solver::stepper_adaptive<Euler, Iterations, Error>;
     using AdaptiveRk4     = solver::stepper_adaptive<Rk4, Iterations, Error>;
 
-    AdaptiveEuler adaptive_euler(time_delta);
-    AdaptiveRk4 adaptive_rk4(time_delta);
+    AdaptiveEuler adaptive_euler;
+    adaptive_euler.set_tollerance(1e-02);
+    adaptive_euler.set_min_delta(1e-09);
+    adaptive_euler.set_max_delta(1e-02);
+    AdaptiveRk4 adaptive_rk4;
+    adaptive_rk4.set_tollerance(1e-02);
+    adaptive_rk4.set_min_delta(1e-09);
+    adaptive_rk4.set_max_delta(1e-02);
     Euler euler;
     Rk4 rk4;
 

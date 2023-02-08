@@ -52,14 +52,14 @@ public:
 
     /// @brief Get the number of rows of the matrix.
     /// @returns the number of rows.
-    inline constexpr virtual std::size_t rows() const noexcept
+    inline virtual std::size_t rows() const noexcept
     {
         return _rows;
     }
 
     /// @brief Get the number of columns of the matrix.
     /// @returns the number of columns.
-    inline constexpr virtual std::size_t cols() const noexcept
+    inline virtual std::size_t cols() const noexcept
     {
         return _cols;
     }

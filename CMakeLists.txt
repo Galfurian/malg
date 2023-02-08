@@ -72,7 +72,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/inclu
 # Set compilation flags.
 target_compile_options(${PROJECT_NAME} INTERFACE ${MALG_COMPILE_OPTIONS})
 # Set compiler flags.
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 # -----------------------------------------------------------------------------
 # EXAMPLES

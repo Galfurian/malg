@@ -35,9 +35,9 @@ public:
     /// The data types of the element of the matrix.
     using value_type = T;
     /// The data types for iterating the element of the vector.
-    using iterator = MatrixBase<T>::iterator;
+    using iterator = typename MatrixBase<T>::iterator;
     /// The data types for iterating the element of the vector.
-    using const_iterator = MatrixBase<T>::const_iterator;
+    using const_iterator = typename MatrixBase<T>::const_iterator;
 
     /// @brief Construct a new Matrix object.
     constexpr Matrix() noexcept

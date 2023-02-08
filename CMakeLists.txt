@@ -86,7 +86,6 @@ if(MALG_BUILD_EXAMPLES)
     include(FetchContent)
 
     # Retrieve the stopwatch.
-    message(STATUS "Retrieving `stopwatch`...")
     FetchContent_Declare(stopwatch
         GIT_REPOSITORY "https://github.com/Galfurian/stopwatch.git"
         GIT_TAG main
@@ -96,6 +95,7 @@ if(MALG_BUILD_EXAMPLES)
 
     FetchContent_GetProperties(stopwatch)
     if(NOT stopwatch_POPULATED)
+        message(STATUS "Retrieving `stopwatch`...")
         # Ensures the named dependencies have been populated.
         FetchContent_MakeAvailable(stopwatch)
         # Hide fetchcontent variables, otherwise with ccmake it's a mess.
@@ -106,7 +106,6 @@ if(MALG_BUILD_EXAMPLES)
     endif()
     
     # Retrieve the stunning_chainsaw.
-    message(STATUS "Retrieving `stunning_chainsaw`...")
     FetchContent_Declare(stunning_chainsaw
         GIT_REPOSITORY "https://github.com/Galfurian/stunning-chainsaw.git"
         GIT_TAG main
@@ -116,6 +115,7 @@ if(MALG_BUILD_EXAMPLES)
 
     FetchContent_GetProperties(stunning_chainsaw)
     if(NOT stunning_chainsaw_POPULATED)
+        message(STATUS "Retrieving `stunning_chainsaw`...")
         # Ensures the named dependencies have been populated.
         FetchContent_MakeAvailable(stunning_chainsaw)
         # Hide fetchcontent variables, otherwise with ccmake it's a mess.
@@ -284,8 +284,6 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
     
-    message(STATUS "Retrieving `doxygen-awesome-css`...")
-
     # = RETIVAL ===============================================================
     # Include fetch content.
     include(FetchContent)
@@ -299,6 +297,7 @@ if(DOXYGEN_FOUND)
     FetchContent_GetProperties(doxygenawesome)
     # If not populated, make the content available.
     if(NOT doxygenawesome_POPULATED)
+        message(STATUS "Retrieving `doxygen-awesome-css`...")
         # Ensures the named dependencies have been populated.
         FetchContent_MakeAvailable(doxygenawesome)
         # Hide fetchcontent variables, otherwise with ccmake it's a mess.

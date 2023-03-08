@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include<cstddef>
+#include <cstddef>
 
 /// @brief If NOT commented, the matrices works in row-major. Otherwise, they
 /// work in column-major.

@@ -99,7 +99,7 @@ inline auto c2d(const StateSpace<T> &sys, T sample_time)
 /// @param u the current input.
 /// @returns a tuple containing the next state, and the output.
 template <typename T>
-inline auto simulate_step(
+inline std::pair<Vector<T>, Vector<T>> simulate_step(
     const DiscreteStateSpace<T> &sys,
     const Vector<T> &x,
     const Vector<T> &u)

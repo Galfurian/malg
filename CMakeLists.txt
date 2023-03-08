@@ -61,6 +61,13 @@ if(MALG_STRICT_WARNINGS)
 endif(MALG_STRICT_WARNINGS)
 
 # -----------------------------------------------------------------------------
+# DIPENDENCIES
+# -----------------------------------------------------------------------------
+
+# We need this in order to import external projects.
+include(FetchContent)
+
+# -----------------------------------------------------------------------------
 # LIBRARY
 # -----------------------------------------------------------------------------
 
@@ -80,20 +87,16 @@ target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 if(MALG_BUILD_EXAMPLES)
 
-    # = FETCH =================================================================
-
-    # We need this in order to import external projects.
-    include(FetchContent)
-
-    # Retrieve the stopwatch.
+    # Record the options that describe how to populate the specified content.
     FetchContent_Declare(stopwatch
         GIT_REPOSITORY "https://github.com/Galfurian/stopwatch.git"
         GIT_TAG main
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
     )
-
+    # Retrieve the properties related to the content.
     FetchContent_GetProperties(stopwatch)
+    # If not populated, make the content available.
     if(NOT stopwatch_POPULATED)
         message(STATUS "Retrieving `stopwatch`...")
         # Ensures the named dependencies have been populated.
@@ -105,15 +108,16 @@ if(MALG_BUILD_EXAMPLES)
         )
     endif()
     
-    # Retrieve the stunning_chainsaw.
+    # Record the options that describe how to populate the specified content.
     FetchContent_Declare(stunning_chainsaw
         GIT_REPOSITORY "https://github.com/Galfurian/stunning-chainsaw.git"
         GIT_TAG main
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
     )
-
+    # Retrieve the properties related to the content.
     FetchContent_GetProperties(stunning_chainsaw)
+    # If not populated, make the content available.
     if(NOT stunning_chainsaw_POPULATED)
         message(STATUS "Retrieving `stunning_chainsaw`...")
         # Ensures the named dependencies have been populated.
@@ -145,6 +149,15 @@ if(MALG_BUILD_EXAMPLES)
     # Set the linked libraries.
     target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${PROJECT_NAME} stopwatch)
     
+    # Add the example.
+    add_executable(${PROJECT_NAME}_pendulum examples/pendulum.cpp)
+    # Set compilation flags.
+    target_compile_options(${PROJECT_NAME}_pendulum PUBLIC ${MALG_COMPILE_OPTIONS})
+    # Inlcude header directories.
+    target_include_directories(${PROJECT_NAME}_pendulum PUBLIC ${stopwatch_SOURCE_DIR}/include ${stunning_chainsaw_SOURCE_DIR}/include)
+    # Set the linked libraries.
+    target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC ${PROJECT_NAME} stopwatch stunning_chainsaw)
+    
     # Add matplot++ if required.
     if(MALG_ENABLE_PLOT)
 
@@ -153,9 +166,11 @@ if(MALG_BUILD_EXAMPLES)
         # Link libraries.
         target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC Matplot++::matplot)
         target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC Matplot++::matplot)
+        target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC Matplot++::matplot)
         # Set the definition
         target_compile_definitions(${PROJECT_NAME}_sim_rlc_ct PUBLIC MALG_ENABLE_PLOT)
         target_compile_definitions(${PROJECT_NAME}_sim_rlc_dt PUBLIC MALG_ENABLE_PLOT)
+        target_compile_definitions(${PROJECT_NAME}_pendulum PUBLIC MALG_ENABLE_PLOT)
 
     endif()
 
@@ -284,9 +299,6 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
     
-    # = RETIVAL ===============================================================
-    # Include fetch content.
-    include(FetchContent)
     # Record the options that describe how to populate the specified content.
     FetchContent_Declare(
         doxygenawesome

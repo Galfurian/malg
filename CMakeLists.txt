@@ -8,7 +8,7 @@
 # -----------------------------------------------------------------------------
 # Set the minimum CMake version, the project name and default build type.
 # -----------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
 # Set the project name.
 project(malg CXX)
@@ -20,52 +20,35 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # -----------------------------------------------------------------------------
-# OPTIONS
-# -----------------------------------------------------------------------------
-
-option(MALG_BUILD_EXAMPLES "Build examples" OFF)
-option(MALG_BUILD_TESTS "Build tests" OFF)
-option(MALG_STRICT_WARNINGS "Enable strict compiler warnings" ON)
-option(MALG_WARNINGS_AS_ERRORS "Treat all warnings as errors" OFF)
-option(MALG_ENABLE_PLOT "Enable matplot++ plots for examples" OFF)
-
-# -----------------------------------------------------------------------------
-# COMPILATION FLAGS
-# -----------------------------------------------------------------------------
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # Disable warnings that suggest using MSVC-specific safe functions
-    set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} -D_CRT_SECURE_NO_WARNINGS)
-
-    if(MALG_WARNINGS_AS_ERRORS)
-        set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} /WX)
-    endif(MALG_WARNINGS_AS_ERRORS)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    if(MALG_WARNINGS_AS_ERRORS)
-        set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} -Werror)
-    endif(MALG_WARNINGS_AS_ERRORS)
-endif()
-
-if(MALG_STRICT_WARNINGS)
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        # Mark system headers as external for MSVC explicitly
-        # https://devblogs.microsoft.com/cppblog/broken-warnings-theory
-        set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} /experimental:external)
-        set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} /external:I ${CMAKE_BINARY_DIR})
-        set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} /external:anglebrackets)
-        set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} /external:W0)
-        set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} /W4)
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        set(MALG_COMPILE_OPTIONS ${MALG_COMPILE_OPTIONS} -Wall -Wextra -Wconversion -pedantic)
-    endif()
-endif(MALG_STRICT_WARNINGS)
-
-# -----------------------------------------------------------------------------
-# DIPENDENCIES
+# ENABLE FETCH CONTENT
 # -----------------------------------------------------------------------------
 
 # We need this in order to import external projects.
 include(FetchContent)
+# Hide fetchcontent variables.
+mark_as_advanced(FORCE
+    FETCHCONTENT_QUIET
+    FETCHCONTENT_BASE_DIR
+    FETCHCONTENT_FULLY_DISCONNECTED
+    FETCHCONTENT_UPDATES_DISCONNECTED
+)
+
+# -----------------------------------------------------------------------------
+# OPTIONS
+# -----------------------------------------------------------------------------
+
+option(STRICT_WARNINGS "Enable strict compiler warnings" ON)
+option(WARNINGS_AS_ERRORS "Treat all warnings as errors" OFF)
+option(BUILD_EXAMPLES "Build examples" OFF)
+option(BUILD_TESTS "Build tests" OFF)
+
+option(ENABLE_PLOT "Enable matplot++ plots for examples" OFF)
+
+# -----------------------------------------------------------------------------
+# DEPENDENCY (SYSTEM LIBRARIES)
+# -----------------------------------------------------------------------------
+
+find_package(Doxygen)
 
 # -----------------------------------------------------------------------------
 # LIBRARY
@@ -76,16 +59,43 @@ add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 # Inlcude header directories and set the library.
 target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include)
-# Set compilation flags.
-target_compile_options(${PROJECT_NAME} INTERFACE ${MALG_COMPILE_OPTIONS})
-# Set compiler flags.
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+
+# -----------------------------------------------------------------------------
+# COMPILATION FLAGS
+# -----------------------------------------------------------------------------
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # Disable warnings that suggest using MSVC-specific safe functions
+    target_compile_definitions(${PROJECT_NAME} INTERFACE _CRT_SECURE_NO_WARNINGS)
+    if(WARNINGS_AS_ERRORS)
+        target_compile_options(${PROJECT_NAME} INTERFACE /WX)
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    if(WARNINGS_AS_ERRORS)
+        target_compile_options(${PROJECT_NAME} INTERFACE -Werror)
+    endif()
+endif()
+
+if(STRICT_WARNINGS)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        # Mark system headers as external for MSVC explicitly
+        # https://devblogs.microsoft.com/cppblog/broken-warnings-theory
+        target_compile_options(${PROJECT_NAME} INTERFACE /experimental:external)
+        target_compile_options(${PROJECT_NAME} INTERFACE /external:I ${CMAKE_BINARY_DIR})
+        target_compile_options(${PROJECT_NAME} INTERFACE /external:anglebrackets)
+        target_compile_options(${PROJECT_NAME} INTERFACE /external:W0)
+
+        target_compile_options(${PROJECT_NAME} INTERFACE /W4)
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        target_compile_options(${PROJECT_NAME} INTERFACE -Wall -Wextra -Wconversion -pedantic)
+    endif()
+endif()
 
 # -----------------------------------------------------------------------------
 # EXAMPLES
 # -----------------------------------------------------------------------------
 
-if(MALG_BUILD_EXAMPLES)
+if(BUILD_EXAMPLES)
 
     # Record the options that describe how to populate the specified content.
     FetchContent_Declare(stopwatch
@@ -103,29 +113,28 @@ if(MALG_BUILD_EXAMPLES)
         FetchContent_MakeAvailable(stopwatch)
         # Hide fetchcontent variables, otherwise with ccmake it's a mess.
         mark_as_advanced(FORCE
-            FETCHCONTENT_QUIET FETCHCONTENT_BASE_DIR FETCHCONTENT_FULLY_DISCONNECTED FETCHCONTENT_UPDATES_DISCONNECTED
-            FETCHCONTENT_UPDATES_DISCONNECTED_STOPWATCH FETCHCONTENT_SOURCE_DIR_STOPWATCH
+            FETCHCONTENT_UPDATES_DISCONNECTED_STOPWATCH
+            FETCHCONTENT_SOURCE_DIR_STOPWATCH
         )
     endif()
-    
     # Record the options that describe how to populate the specified content.
-    FetchContent_Declare(stunning_chainsaw
-        GIT_REPOSITORY "https://github.com/Galfurian/stunning-chainsaw.git"
+    FetchContent_Declare(chainsaw
+        GIT_REPOSITORY "https://github.com/Galfurian/chainsaw.git"
         GIT_TAG main
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
     )
     # Retrieve the properties related to the content.
-    FetchContent_GetProperties(stunning_chainsaw)
+    FetchContent_GetProperties(chainsaw)
     # If not populated, make the content available.
-    if(NOT stunning_chainsaw_POPULATED)
-        message(STATUS "Retrieving `stunning_chainsaw`...")
+    if(NOT chainsaw_POPULATED)
+        message(STATUS "Retrieving `chainsaw`...")
         # Ensures the named dependencies have been populated.
-        FetchContent_MakeAvailable(stunning_chainsaw)
+        FetchContent_MakeAvailable(chainsaw)
         # Hide fetchcontent variables, otherwise with ccmake it's a mess.
         mark_as_advanced(FORCE
-            FETCHCONTENT_QUIET FETCHCONTENT_BASE_DIR FETCHCONTENT_FULLY_DISCONNECTED FETCHCONTENT_UPDATES_DISCONNECTED
-            FETCHCONTENT_UPDATES_DISCONNECTED_STUNNING_CHAINSAW FETCHCONTENT_SOURCE_DIR_STUNNING_CHAINSAW
+            FETCHCONTENT_UPDATES_DISCONNECTED_CHAINSAW
+            FETCHCONTENT_SOURCE_DIR_CHAINSAW
         )
     endif()
 
@@ -134,16 +143,16 @@ if(MALG_BUILD_EXAMPLES)
     # Add the example.
     add_executable(${PROJECT_NAME}_sim_rlc_ct examples/sim_rlc_ct.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${COMPILE_OPTIONS})
     # Inlcude header directories.
-    target_include_directories(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${stopwatch_SOURCE_DIR}/include ${stunning_chainsaw_SOURCE_DIR}/include)
+    target_include_directories(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
     # Set the linked libraries.
-    target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${PROJECT_NAME} stopwatch stunning_chainsaw)
+    target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${PROJECT_NAME} stopwatch chainsaw)
     
     # Add the example.
     add_executable(${PROJECT_NAME}_sim_rlc_dt examples/sim_rlc_dt.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${COMPILE_OPTIONS})
     # Inlcude header directories.
     target_include_directories(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${stopwatch_SOURCE_DIR}/include)
     # Set the linked libraries.
@@ -152,14 +161,14 @@ if(MALG_BUILD_EXAMPLES)
     # Add the example.
     add_executable(${PROJECT_NAME}_pendulum examples/pendulum.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_pendulum PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_pendulum PUBLIC ${COMPILE_OPTIONS})
     # Inlcude header directories.
-    target_include_directories(${PROJECT_NAME}_pendulum PUBLIC ${stopwatch_SOURCE_DIR}/include ${stunning_chainsaw_SOURCE_DIR}/include)
+    target_include_directories(${PROJECT_NAME}_pendulum PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
     # Set the linked libraries.
-    target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC ${PROJECT_NAME} stopwatch stunning_chainsaw)
+    target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC ${PROJECT_NAME} stopwatch chainsaw)
     
     # Add matplot++ if required.
-    if(MALG_ENABLE_PLOT)
+    if(ENABLE_PLOT)
 
         # Find matplot++ library.
         find_package(Matplot++ CONFIG REQUIRED)
@@ -168,9 +177,9 @@ if(MALG_BUILD_EXAMPLES)
         target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC Matplot++::matplot)
         target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC Matplot++::matplot)
         # Set the definition
-        target_compile_definitions(${PROJECT_NAME}_sim_rlc_ct PUBLIC MALG_ENABLE_PLOT)
-        target_compile_definitions(${PROJECT_NAME}_sim_rlc_dt PUBLIC MALG_ENABLE_PLOT)
-        target_compile_definitions(${PROJECT_NAME}_pendulum PUBLIC MALG_ENABLE_PLOT)
+        target_compile_definitions(${PROJECT_NAME}_sim_rlc_ct PUBLIC ENABLE_PLOT)
+        target_compile_definitions(${PROJECT_NAME}_sim_rlc_dt PUBLIC ENABLE_PLOT)
+        target_compile_definitions(${PROJECT_NAME}_pendulum PUBLIC ENABLE_PLOT)
 
     endif()
 
@@ -180,7 +189,7 @@ endif()
 # TESTS
 # -----------------------------------------------------------------------------
 
-if(MALG_BUILD_TESTS)
+if(BUILD_TESTS)
 
     # CMake has support for adding tests to a project.
     enable_testing()
@@ -192,7 +201,7 @@ if(MALG_BUILD_TESTS)
     # Add the test.
     add_executable(${PROJECT_NAME}_test_math ${PROJECT_SOURCE_DIR}/tests/test_math.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_test_math PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_test_math PUBLIC ${COMPILE_OPTIONS})
     # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_math ${PROJECT_NAME})
     # Add the test.
@@ -205,7 +214,7 @@ if(MALG_BUILD_TESTS)
     # Add the test.
     add_executable(${PROJECT_NAME}_test_linalg ${PROJECT_SOURCE_DIR}/tests/test_linalg.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_test_linalg PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_test_linalg PUBLIC ${COMPILE_OPTIONS})
     # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_linalg ${PROJECT_NAME})
     # Add the test.
@@ -218,7 +227,7 @@ if(MALG_BUILD_TESTS)
     # Add the test.
     add_executable(${PROJECT_NAME}_test_view ${PROJECT_SOURCE_DIR}/tests/test_view.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_test_view PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_test_view PUBLIC ${COMPILE_OPTIONS})
     # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_view ${PROJECT_NAME})
     # Add the test.
@@ -231,7 +240,7 @@ if(MALG_BUILD_TESTS)
     # Add the test.
     add_executable(${PROJECT_NAME}_test_read_write_file ${PROJECT_SOURCE_DIR}/tests/test_read_write_file.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_test_read_write_file PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_test_read_write_file PUBLIC ${COMPILE_OPTIONS})
     # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_read_write_file ${PROJECT_NAME})
     # Add the test.
@@ -244,7 +253,7 @@ if(MALG_BUILD_TESTS)
     # Add the test.
     add_executable(${PROJECT_NAME}_test_control ${PROJECT_SOURCE_DIR}/tests/test_control.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_test_control PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_test_control PUBLIC ${COMPILE_OPTIONS})
     # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_control ${PROJECT_NAME})
     # Add the test.
@@ -257,7 +266,7 @@ if(MALG_BUILD_TESTS)
     # Add the test.
     add_executable(${PROJECT_NAME}_test_complex ${PROJECT_SOURCE_DIR}/tests/test_complex.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_test_complex PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_test_complex PUBLIC ${COMPILE_OPTIONS})
     # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_complex ${PROJECT_NAME})
     # Add the test.
@@ -270,7 +279,7 @@ if(MALG_BUILD_TESTS)
     # Add the test.
     add_executable(${PROJECT_NAME}_test_find ${PROJECT_SOURCE_DIR}/tests/test_find.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_test_find PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_test_find PUBLIC ${COMPILE_OPTIONS})
     # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_find ${PROJECT_NAME})
     # Add the test.
@@ -283,7 +292,7 @@ if(MALG_BUILD_TESTS)
     # Add the test.
     add_executable(${PROJECT_NAME}_test_memory ${PROJECT_SOURCE_DIR}/tests/test_memory.cpp)
     # Set compilation flags.
-    target_compile_options(${PROJECT_NAME}_test_memory PUBLIC ${MALG_COMPILE_OPTIONS})
+    target_compile_options(${PROJECT_NAME}_test_memory PUBLIC ${COMPILE_OPTIONS})
     # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_memory ${PROJECT_NAME})
     # Add the test.

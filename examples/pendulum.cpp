@@ -6,11 +6,11 @@
 
 #include <stopwatch/stopwatch.hpp>
 
-#include <solver/stepper/stepper_adaptive.hpp>
-#include <solver/stepper/stepper_euler.hpp>
-#include <solver/stepper/stepper_rk4.hpp>
-#include <solver/detail/observer.hpp>
-#include <solver/solver.hpp>
+#include <chainsaw/stepper/stepper_adaptive.hpp>
+#include <chainsaw/stepper/stepper_euler.hpp>
+#include <chainsaw/stepper/stepper_rk4.hpp>
+#include <chainsaw/detail/observer.hpp>
+#include <chainsaw/solver.hpp>
 
 #ifdef MALG_ENABLE_PLOT
 #include <matplot/matplot.h>
@@ -102,7 +102,7 @@ struct Model : public Parameter {
 } // namespace pendulum
 
 template <std::size_t DECIMATION = 0>
-struct ObserverSave : public solver::detail::DecimationObserver<DECIMATION> {
+struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
     std::vector<pendulum::Variable> time, angle, velocity;
     ObserverSave() = default;
     inline void operator()(const pendulum::State &x, const pendulum::Time &t) noexcept
@@ -129,10 +129,10 @@ int main(int, char *[])
     const Time time_end   = 40.0;
     const Time time_delta = 0.01;
     // Setup the adaptive solver.
-    using FStepper        = solver::stepper_rk4<State, Time>;
+    using FStepper        = chainsaw::stepper_rk4<State, Time>;
     const auto Iterations = 2;
-    const auto Error      = solver::ErrorFormula::Mixed;
-    using AStepper        = solver::stepper_adaptive<FStepper, Iterations, Error>;
+    const auto Error      = chainsaw::ErrorFormula::Mixed;
+    using AStepper        = chainsaw::stepper_adaptive<FStepper, Iterations, Error>;
     // Instantiate the solvers.
     FStepper fstepper;
     AStepper astepper;
@@ -144,8 +144,8 @@ int main(int, char *[])
     ObserverSave<0> fobserver;
     ObserverSave<0> aobserver;
 #elif 1
-    solver::detail::ObserverPrint<0> fobserver;
-    solver::detail::ObserverPrint<0> aobserver;
+    chainsaw::detail::ObserverPrint<0> fobserver;
+    chainsaw::detail::ObserverPrint<0> aobserver;
 #endif
 
     // Instantiate the stopwatch.
@@ -155,9 +155,9 @@ int main(int, char *[])
     
     // Start the simulation.
     sw.start();
-    solver::integrate_fixed(fstepper, fobserver, system, x = x0, time_start, time_end, time_delta);
+    chainsaw::integrate_fixed(fstepper, fobserver, system, x = x0, time_start, time_end, time_delta);
     sw.round();
-    solver::integrate_adaptive(astepper, aobserver, system, x = x0, time_start, time_end, time_delta);
+    chainsaw::integrate_adaptive(astepper, aobserver, system, x = x0, time_start, time_end, time_delta);
     sw.round();
 
     std::cout << "\n";

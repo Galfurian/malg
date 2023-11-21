@@ -59,6 +59,11 @@ add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 # Inlcude header directories and set the library.
 target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include)
+# 
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+# set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+# set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED On)
+# set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_EXTENSIONS Off)
 
 # -----------------------------------------------------------------------------
 # COMPILATION FLAGS

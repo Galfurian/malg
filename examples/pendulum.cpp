@@ -6,11 +6,11 @@
 
 #include <stopwatch/stopwatch.hpp>
 
+#include <chainsaw/detail/observer.hpp>
+#include <chainsaw/solver.hpp>
 #include <chainsaw/stepper/stepper_adaptive.hpp>
 #include <chainsaw/stepper/stepper_euler.hpp>
 #include <chainsaw/stepper/stepper_rk4.hpp>
-#include <chainsaw/detail/observer.hpp>
-#include <chainsaw/solver.hpp>
 
 #ifdef MALG_ENABLE_PLOT
 #include <matplot/matplot.h>
@@ -43,10 +43,13 @@ struct Parameter {
     /// @brief Gravitational force [N].
     const Variable g;
 
-    Parameter(Variable _m = 3.0,
-              Variable _l = 1.19,
-              Variable _b = 0.75,
-              Variable _g = 9.81)
+    explicit Parameter()
+        : Parameter(3.0, 1.19, 0.75, 9.81)
+    {
+        // Nothing to do.
+    }
+
+    explicit Parameter(Variable _m, Variable _l, Variable _b, Variable _g)
         : m(_m),
           l(_l),
           b(_b),
@@ -62,7 +65,7 @@ struct Model : public Parameter {
     /// Input matrix.
     Vector u;
 
-    Model(Parameter parameter = Parameter())
+    explicit Model(Parameter parameter)
         : Parameter(parameter),
           sys(),
           u(1, .0)
@@ -87,7 +90,7 @@ struct Model : public Parameter {
     /// @param x the current state.
     /// @param dxdt the final state.
     /// @param t the current time.
-    inline void operator()(const State &x, State &dxdt, Time t) noexcept
+    inline void operator()(const State &x, State &dxdt, Time t)
     {
 #if 1
         u[0] = (t < 5) ? 1 : 0;
@@ -105,7 +108,7 @@ template <std::size_t DECIMATION = 0>
 struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
     std::vector<pendulum::Variable> time, angle, velocity;
     ObserverSave() = default;
-    inline void operator()(const pendulum::State &x, const pendulum::Time &t) noexcept
+    inline void operator()(const pendulum::State &x, const pendulum::Time &t)
     {
         if (this->observe()) {
             time.emplace_back(t);
@@ -117,19 +120,20 @@ struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
 
 int main(int, char *[])
 {
-    using namespace pendulum;
+    // Instantiate the parameters.
+    pendulum::Parameter parameters;
     // Instantiate the model.
-    Model system;
+    pendulum::Model system(parameters);
     // Runtime state.
-    State x, dx;
+    pendulum::State x, dx;
     // Initial and runtime states.
-    const State x0{ .0, .0 };
+    const pendulum::State x0{ .0, .0 };
     // Simulation parameters.
-    const Time time_start = 0.0;
-    const Time time_end   = 40.0;
-    const Time time_delta = 0.01;
+    const pendulum::Time time_start = 0.0;
+    const pendulum::Time time_end   = 40.0;
+    const pendulum::Time time_delta = 0.01;
     // Setup the adaptive solver.
-    using FStepper        = chainsaw::stepper_rk4<State, Time>;
+    using FStepper        = chainsaw::stepper_rk4<pendulum::State, pendulum::Time>;
     const auto Iterations = 2;
     const auto Error      = chainsaw::ErrorFormula::Mixed;
     using AStepper        = chainsaw::stepper_adaptive<FStepper, Iterations, Error>;
@@ -152,7 +156,7 @@ int main(int, char *[])
     stopwatch::Stopwatch sw;
     std::cout << std::fixed;
     std::cout << "Simulating...\n";
-    
+
     // Start the simulation.
     sw.start();
     chainsaw::integrate_fixed(fstepper, fobserver, system, x = x0, time_start, time_end, time_delta);

@@ -51,12 +51,14 @@ int test_c2d()
     // Perform the discretization.
     auto dsys = malg::control::c2d(sys, 1e-03);
     // Set the tollerance.
-    feq::tolerance() = 1e-04;
+    malg::feq::tolerance() = 1e-04;
     // Check the operations.
-    if (!malg::all(dsys.A == ref_A))
+    if (!malg::all(dsys.A == ref_A)) {
         return 1;
-    if (!malg::all(dsys.B == ref_B))
+    }
+    if (!malg::all(dsys.B == ref_B)) {
         return 1;
+    }
     return 0;
 }
 
@@ -99,10 +101,13 @@ int test_acker()
     // Apply ackerman and compute the gain.
     auto K = malg::control::acker(sys.A, sys.B, poles);
     // Set the tollerance.
-    feq::tolerance() = 1e-04;
+    malg::feq::tolerance() = 1e-04;
     // Check the operations.
-    if (!malg::all(K == ref_K))
-        return 1;
+    if (!malg::all(K == ref_K)) {
+        {
+            return 1;
+        }
+    }
     return 0;
 }
 
@@ -121,16 +126,21 @@ int test_polyreduce()
     malg::Vector<int> ref_d = { 1, 0, 1, 0, 1, 1, 1 };
     malg::Vector<int> ref_e = { 1, 0 };
     // Check the operations.
-    if (!malg::all(malg::control::polyreduce(a) == ref_a))
+    if (!malg::all(malg::control::polyreduce(a) == ref_a)) {
         return 1;
-    if (!malg::all(malg::control::polyreduce(b) == ref_b))
+    }
+    if (!malg::all(malg::control::polyreduce(b) == ref_b)) {
         return 1;
-    if (!malg::all(malg::control::polyreduce(c) == ref_c))
+    }
+    if (!malg::all(malg::control::polyreduce(c) == ref_c)) {
         return 1;
-    if (!malg::all(malg::control::polyreduce(d) == ref_d))
+    }
+    if (!malg::all(malg::control::polyreduce(d) == ref_d)) {
         return 1;
-    if (!malg::all(malg::control::polyreduce(e) == ref_e))
+    }
+    if (!malg::all(malg::control::polyreduce(e) == ref_e)) {
         return 1;
+    }
     return 0;
 }
 
@@ -149,30 +159,39 @@ int test_poly()
     malg::Vector<double> ref_d = { 1, -10.5044355, -101.444433, 1251.43984, 1027.49399, -37680.6611, 74338.4234, 262291.876, -1195069.98, 1627862.7, -752486.363 };
     malg::Vector<double> ref_e = { 1, -20.0422528, 43.7125343, 1560.5739, -11639.3617, -302.944468, 275213.098, -1066030.37, 1436090.15, -187362.574, -678295.446 };
     // Set the tollerance, specifically for div.
-    feq::tolerance() = 1e-06;
+    malg::feq::tolerance() = 1e-06;
     // Check the operations.
-    if (!malg::all(malg::control::poly(a) == ref_a))
+    if (!malg::all(malg::control::poly(a) == ref_a)) {
         return 1;
-    if (!malg::all(malg::control::poly(b) == ref_b))
+    }
+    if (!malg::all(malg::control::poly(b) == ref_b)) {
         return 1;
-    if (!malg::all(malg::control::poly(c) == ref_c))
+    }
+    if (!malg::all(malg::control::poly(c) == ref_c)) {
         return 1;
-    if (!malg::all(malg::control::poly(d) == ref_d))
+    }
+    if (!malg::all(malg::control::poly(d) == ref_d)) {
         return 1;
-    if (!malg::all(malg::control::poly(e) == ref_e))
+    }
+    if (!malg::all(malg::control::poly(e) == ref_e)) {
         return 1;
+    }
     return 0;
 }
 
 int main(int, char *[])
 {
-    if (test_c2d())
+    if (test_c2d()) {
         return 1;
-    if (test_acker())
+    }
+    if (test_acker()) {
         return 1;
-    if (test_polyreduce())
+    }
+    if (test_polyreduce()) {
         return 1;
-    if (test_poly())
+    }
+    if (test_poly()) {
         return 1;
+    }
     return 0;
 }

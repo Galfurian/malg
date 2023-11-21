@@ -1,6 +1,6 @@
 #include "malg/utility.hpp"
-#include "malg/matrix.hpp"
 #include "malg/io.hpp"
+#include "malg/matrix.hpp"
 
 int main(int, char *[])
 {
@@ -14,12 +14,13 @@ int main(int, char *[])
     };
     auto indices = malg::utility::find(a < -5);
 #ifdef ROW_MAJOR
-    malg::Matrix<std::size_t> control{ { 14},{16},{21},{22},{23 } };
+    malg::Matrix<std::size_t> control{ { 14 }, { 16 }, { 21 }, { 22 }, { 23 } };
 #else
-    malg::Matrix<std::size_t> control{ { 9},{10},{16},{22},{26 } };
+    malg::Matrix<std::size_t> control{ { 9 }, { 10 }, { 16 }, { 22 }, { 26 } };
 #endif
     // Check the operations.
-    if (!malg::all(indices == control))
+    if (!malg::all(indices == control)) {
         return 1;
+    }
     return 0;
 }

@@ -9,17 +9,20 @@
 #include "malg/vector.hpp"
 #include "malg/view.hpp"
 
-#include <iostream>
 #include <fstream>
-#include <sstream>
 #include <iomanip>
+#include <iostream>
+#include <sstream>
+
+namespace malg::details
+{
 
 /// @brief Returns the longhest value inside the data.
 /// @param data the input data.
 /// @param precision the desired precision.
 /// @returns the number of characters for the longhest value.
 template <typename T>
-inline auto __get_longhest_value(T &data, std::streamsize precision = 6)
+inline auto get_longhest_value(T &data, std::streamsize precision)
 {
     std::stringstream ss;
     ss.precision(precision);
@@ -28,11 +31,14 @@ inline auto __get_longhest_value(T &data, std::streamsize precision = 6)
         ss.str("");
         ss << data[i];
         length = static_cast<int>(ss.str().length());
-        if (longhest < length)
+        if (longhest < length) {
             longhest = length;
+        }
     }
     return longhest;
 }
+
+} // namespace malg::details
 
 /// @brief Stream operator for Vector.
 template <typename T>
@@ -40,12 +46,13 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::Vector<T> &rhs)
 {
     std::size_t i;
     // Get the longhest value.
-    auto length = __get_longhest_value(rhs, lhs.precision());
+    auto length = malg::details::get_longhest_value(rhs, lhs.precision());
     // Print the vector.
     for (i = 0; i < rhs.size(); ++i) {
         lhs << std::setw(length) << rhs[i];
-        if (i < (rhs.size() - 1))
+        if (i < (rhs.size() - 1)) {
             lhs << " ";
+        }
     }
     return lhs;
 }
@@ -56,16 +63,18 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::MatrixBase<T> &rh
 {
     std::size_t r = 0, c = 0;
     // Get the longhest value.
-    auto length = __get_longhest_value(rhs, lhs.precision());
+    auto length = malg::details::get_longhest_value(rhs, lhs.precision());
     // Print the matrix.
     for (r = 0; r < rhs.rows(); ++r) {
         for (c = 0; c < rhs.cols(); ++c) {
             lhs << std::setw(length) << rhs(r, c);
-            if (c < (rhs.cols() - 1))
+            if (c < (rhs.cols() - 1)) {
                 lhs << " ";
+            }
         }
-        if (r < (rhs.rows() - 1))
+        if (r < (rhs.rows() - 1)) {
             lhs << "\n";
+        }
     }
     return lhs;
 }
@@ -76,14 +85,15 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::Vector<T> &rhs)
 {
     std::size_t i;
     // Get the longhest value.
-    auto length = __get_longhest_value(rhs, lhs.precision());
+    auto length = malg::details::get_longhest_value(rhs, lhs.precision());
     // Print the vector size.
     lhs << "V " << rhs.size() << "\n";
     // Print the vector.
     for (i = 0; i < rhs.size(); ++i) {
         lhs << std::setw(length) << rhs[i];
-        if (i < (rhs.size() - 1))
+        if (i < (rhs.size() - 1)) {
             lhs << " ";
+        }
     }
     lhs << "\n";
     return lhs;
@@ -95,18 +105,20 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &
 {
     std::size_t r = 0, c = 0;
     // Get the longhest value.
-    auto length = __get_longhest_value(rhs, lhs.precision());
+    auto length = malg::details::get_longhest_value(rhs, lhs.precision());
     // Print the matrix size.
     lhs << "M " << rhs.rows() << " " << rhs.cols() << "\n";
     // Print the matrix.
     for (r = 0; r < rhs.rows(); ++r) {
         for (c = 0; c < rhs.cols(); ++c) {
             lhs << std::setw(length) << rhs(r, c);
-            if (c < (rhs.cols() - 1))
+            if (c < (rhs.cols() - 1)) {
                 lhs << " ";
+            }
         }
-        if (r < (rhs.rows() - 1))
+        if (r < (rhs.rows() - 1)) {
             lhs << "\n";
+        }
     }
     lhs << "\n";
     return lhs;
@@ -136,8 +148,9 @@ inline std::ifstream &operator>>(std::ifstream &lhs, malg::Vector<T> &rhs)
     // Prepare the vector.
     rhs.resize(size);
     // Read the vector.
-    for (i = 0; i < rhs.size(); ++i)
+    for (i = 0; i < rhs.size(); ++i) {
         lhs >> rhs[i];
+    }
     return lhs;
 }
 
@@ -159,9 +172,11 @@ inline std::ifstream &operator>>(std::ifstream &lhs, malg::Matrix<T> &rhs)
     // Prepare the matrix.
     rhs.resize(rows, cols);
     // Read the matrix.
-    for (r = 0; r < rhs.rows(); ++r)
-        for (c = 0; c < rhs.cols(); ++c)
+    for (r = 0; r < rhs.rows(); ++r) {
+        for (c = 0; c < rhs.cols(); ++c) {
             lhs >> rhs(r, c);
+        }
+    }
     return lhs;
 }
 
@@ -243,8 +258,9 @@ inline std::string to_matlab(const char *name, const malg::Vector<T> &v)
     ss << name << " = [";
     for (std::size_t i = 0; i < v.size(); ++i) {
         ss << v[i];
-        if (i < (v.size() - 1))
+        if (i < (v.size() - 1)) {
             ss << " ";
+        }
     }
     ss << "]";
     return ss.str();
@@ -267,8 +283,9 @@ inline std::string to_matlab(const char *name, const malg::MatrixBase<T> &m)
             } else {
                 ss << m(r, c);
             }
-            if (c < (m.cols() - 1))
+            if (c < (m.cols() - 1)) {
                 ss << " ";
+            }
         }
         ss << "];";
     }
@@ -292,8 +309,9 @@ inline std::string to_cpp(const char *name, const char *type, const malg::Vector
         } else {
             ss << v->operator[](i);
         }
-        if (i < (v->size() - 1))
+        if (i < (v->size() - 1)) {
             ss << ", ";
+        }
     }
     ss << "}";
     return ss.str();
@@ -317,12 +335,14 @@ inline std::string to_cpp(const char *name, const char *type, const malg::Matrix
             } else {
                 ss << m->operator()(r, c);
             }
-            if (c < (m->cols() - 1))
+            if (c < (m->cols() - 1)) {
                 ss << ",";
+            }
         }
         ss << "}";
-        if (r < (m->rows() - 1))
+        if (r < (m->rows() - 1)) {
             ss << ",";
+        }
     }
     ss << "}";
     return ss.str();

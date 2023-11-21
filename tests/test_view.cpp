@@ -37,18 +37,22 @@ int test_view()
         { -1, 8, 10 }
     };
     // Check the operations.
-    if (!malg::all(ref1 == view1))
+    if (!malg::all(ref1 == view1)) {
         return 1;
-    if (!malg::all(ref2 == view2))
+    }
+    if (!malg::all(ref2 == view2)) {
         return 1;
-    if (!malg::all(ref3 == view3))
+    }
+    if (!malg::all(ref3 == view3)) {
         return 1;
+    }
     return 0;
 }
 
 int main(int, char *[])
 {
-    if (test_view())
+    if (test_view()) {
         return 1;
+    }
     return 0;
 }

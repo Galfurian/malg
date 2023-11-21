@@ -59,8 +59,7 @@ add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 # Inlcude header directories and set the library.
 target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include)
-# Set standard C++17
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+
 # -----------------------------------------------------------------------------
 # COMPILATION FLAGS
 # -----------------------------------------------------------------------------
@@ -149,8 +148,6 @@ if(BUILD_EXAMPLES)
     target_include_directories(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
     # Set the linked libraries.
     target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${PROJECT_NAME} stopwatch chainsaw)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_sim_rlc_ct PROPERTIES CXX_STANDARD 17)
     
     # Add the example.
     add_executable(${PROJECT_NAME}_sim_rlc_dt examples/sim_rlc_dt.cpp)
@@ -160,8 +157,6 @@ if(BUILD_EXAMPLES)
     target_include_directories(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${stopwatch_SOURCE_DIR}/include)
     # Set the linked libraries.
     target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${PROJECT_NAME} stopwatch)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_sim_rlc_dt PROPERTIES CXX_STANDARD 17)
     
     # Add the example.
     add_executable(${PROJECT_NAME}_pendulum examples/pendulum.cpp)
@@ -171,8 +166,6 @@ if(BUILD_EXAMPLES)
     target_include_directories(${PROJECT_NAME}_pendulum PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
     # Set the linked libraries.
     target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC ${PROJECT_NAME} stopwatch chainsaw)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_pendulum PROPERTIES CXX_STANDARD 17)
     
     # Add matplot++ if required.
     if(ENABLE_PLOT)
@@ -213,8 +206,6 @@ if(BUILD_TESTS)
     target_link_libraries(${PROJECT_NAME}_test_math ${PROJECT_NAME})
     # Add the test.
     add_test(${PROJECT_NAME}_test_math_run ${PROJECT_NAME}_test_math)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_test_math PROPERTIES CXX_STANDARD 17)
 
     # -------------------------------------
     # TEST
@@ -228,8 +219,6 @@ if(BUILD_TESTS)
     target_link_libraries(${PROJECT_NAME}_test_linalg ${PROJECT_NAME})
     # Add the test.
     add_test(${PROJECT_NAME}_test_linalg_run ${PROJECT_NAME}_test_linalg)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_test_linalg PROPERTIES CXX_STANDARD 17)
 
     # -------------------------------------
     # TEST
@@ -243,8 +232,6 @@ if(BUILD_TESTS)
     target_link_libraries(${PROJECT_NAME}_test_view ${PROJECT_NAME})
     # Add the test.
     add_test(${PROJECT_NAME}_test_view_run ${PROJECT_NAME}_test_view)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_test_view PROPERTIES CXX_STANDARD 17)
 
     # -------------------------------------
     # TEST
@@ -258,8 +245,6 @@ if(BUILD_TESTS)
     target_link_libraries(${PROJECT_NAME}_test_read_write_file ${PROJECT_NAME})
     # Add the test.
     add_test(${PROJECT_NAME}_test_read_write_file_run ${PROJECT_NAME}_test_read_write_file)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_test_read_write_file PROPERTIES CXX_STANDARD 17)
 
     # -------------------------------------
     # TEST
@@ -273,8 +258,6 @@ if(BUILD_TESTS)
     target_link_libraries(${PROJECT_NAME}_test_control ${PROJECT_NAME})
     # Add the test.
     add_test(${PROJECT_NAME}_test_control_run ${PROJECT_NAME}_test_control)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_test_control PROPERTIES CXX_STANDARD 17)
 
     # -------------------------------------
     # TEST
@@ -288,8 +271,6 @@ if(BUILD_TESTS)
     target_link_libraries(${PROJECT_NAME}_test_complex ${PROJECT_NAME})
     # Add the test.
     add_test(${PROJECT_NAME}_test_complex_run ${PROJECT_NAME}_test_complex)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_test_complex PROPERTIES CXX_STANDARD 17)
 
     # -------------------------------------
     # TEST
@@ -303,8 +284,6 @@ if(BUILD_TESTS)
     target_link_libraries(${PROJECT_NAME}_test_find ${PROJECT_NAME})
     # Add the test.
     add_test(${PROJECT_NAME}_test_find_run ${PROJECT_NAME}_test_find)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_test_find PROPERTIES CXX_STANDARD 17)
 
     # -------------------------------------
     # TEST
@@ -318,8 +297,6 @@ if(BUILD_TESTS)
     target_link_libraries(${PROJECT_NAME}_test_memory ${PROJECT_NAME})
     # Add the test.
     add_test(${PROJECT_NAME}_test_memory_run ${PROJECT_NAME}_test_memory)
-    # Set standard C++17
-    set_target_properties(${PROJECT_NAME}_test_memory PROPERTIES CXX_STANDARD 17)
 
 endif()
 

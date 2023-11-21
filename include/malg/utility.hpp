@@ -5,14 +5,15 @@
 #pragma once
 
 #include "malg/matrix_base.hpp"
-#include "malg/type_traits.hpp"
+#include "malg/feq.hpp"
 #include "malg/matrix.hpp"
+#include "malg/type_traits.hpp"
 #include "malg/vector.hpp"
 #include "malg/view.hpp"
-#include "malg/feq.hpp"
 
 #include <algorithm>
 #include <complex>
+#include <cstdint>
 #include <limits>
 #include <random>
 
@@ -22,13 +23,15 @@ namespace malg::utility
 /// @brief Find the basis for representing numbers on the computer.
 /// @returns the basis.
 template <typename T>
-constexpr inline auto basis() noexcept
+inline auto basis()
 {
     T x = 1, eins = 1, b = 1;
-    while ((x + eins) - x == eins)
+    while ((x + eins) - x == eins) {
         x *= 2;
-    while ((x + b) == x)
+    }
+    while ((x + b) == x) {
         b *= 2;
+    }
     return static_cast<int>((x + b) - x);
 }
 
@@ -38,16 +41,19 @@ constexpr inline auto basis() noexcept
 /// @param value value for the diagonal.
 /// @returns the generated matrix.
 template <typename T>
-constexpr inline auto eye(std::size_t rows, std::size_t cols, T value = T(1.))
+inline auto eye(std::size_t rows, std::size_t cols, T value)
 {
-    if (rows == 0)
+    if (rows == 0) {
         throw std::invalid_argument("You must provide a number of rows greather than zero.");
-    if (cols == 0)
+    }
+    if (cols == 0) {
         throw std::invalid_argument("You must provide a number of columns greather than zero.");
+    }
     using data_type = std::remove_const_t<T>;
     Matrix<data_type> m(rows, cols, data_type(0.));
-    for (std::size_t i = 0; i < std::min(rows, cols); ++i)
+    for (std::size_t i = 0; i < std::min(rows, cols); ++i) {
         m(i, i) = value;
+    }
     return m;
 }
 
@@ -56,9 +62,9 @@ constexpr inline auto eye(std::size_t rows, std::size_t cols, T value = T(1.))
 /// @param value value for the diagonal.
 /// @returns the identity matrix.
 template <typename T>
-constexpr inline auto identity(std::size_t N, T value = T(1.)) noexcept
+inline auto identity(std::size_t N, T value)
 {
-    return eye(N, N, value);
+    return utility::eye<T>(N, N, value);
 }
 
 /// @brief Creates a matrix with all zeros.
@@ -66,12 +72,14 @@ constexpr inline auto identity(std::size_t N, T value = T(1.)) noexcept
 /// @param cols the number of columns.
 /// @returns the newly created matrix.
 template <typename T>
-constexpr inline auto zeros(std::size_t rows, std::size_t cols)
+inline auto zeros(std::size_t rows, std::size_t cols)
 {
-    if (rows == 0)
+    if (rows == 0) {
         throw std::invalid_argument("You must provide a number of rows greather than zero.");
-    if (cols == 0)
+    }
+    if (cols == 0) {
         throw std::invalid_argument("You must provide a number of columns greather than zero.");
+    }
     using data_type = std::remove_const_t<T>;
     return Matrix<data_type>(rows, cols, 0);
 }
@@ -80,10 +88,11 @@ constexpr inline auto zeros(std::size_t rows, std::size_t cols)
 /// @param size the size of the vector.
 /// @returns the newly created vector.
 template <typename T>
-constexpr inline auto zeros(std::size_t size)
+inline auto zeros(std::size_t size)
 {
-    if (size == 0)
+    if (size == 0) {
         throw std::invalid_argument("You must provide a size greather than zero.");
+    }
     using data_type = std::remove_const_t<T>;
     return Vector<data_type>(size, 0);
 }
@@ -93,12 +102,14 @@ constexpr inline auto zeros(std::size_t size)
 /// @param cols the number of columns.
 /// @returns the newly created matrix.
 template <typename T>
-constexpr inline auto ones(std::size_t rows, std::size_t cols)
+inline auto ones(std::size_t rows, std::size_t cols)
 {
-    if (rows == 0)
+    if (rows == 0) {
         throw std::invalid_argument("You must provide a number of rows greather than zero.");
-    if (cols == 0)
+    }
+    if (cols == 0) {
         throw std::invalid_argument("You must provide a number of columns greather than zero.");
+    }
     using data_type = std::remove_const_t<T>;
     return Matrix<data_type>(rows, cols, 1);
 }
@@ -107,10 +118,11 @@ constexpr inline auto ones(std::size_t rows, std::size_t cols)
 /// @param size the size of the vector.
 /// @returns the newly created vector.
 template <typename T>
-constexpr inline auto ones(std::size_t size)
+inline auto ones(std::size_t size)
 {
-    if (size == 0)
+    if (size == 0) {
         throw std::invalid_argument("You must provide a size greather than zero.");
+    }
     using data_type = std::remove_const_t<T>;
     return Vector<data_type>(size, 1);
 }
@@ -119,13 +131,14 @@ constexpr inline auto ones(std::size_t size)
 /// @param A the matrix.
 /// @returns the diagonal elements.
 template <typename T>
-constexpr inline auto diag(const MatrixBase<T> &A) noexcept
+inline auto diag(const MatrixBase<T> &A)
 {
     using data_type  = std::remove_const_t<T>;
     std::size_t size = std::min(A.rows(), A.cols());
     Vector<data_type> result(size, data_type(0.));
-    for (std::size_t i = 0; i < size; ++i)
+    for (std::size_t i = 0; i < size; ++i) {
         result[i] = A(i, i);
+    }
     return result;
 }
 
@@ -133,12 +146,13 @@ constexpr inline auto diag(const MatrixBase<T> &A) noexcept
 /// @param a the vector.
 /// @returns the diagonal matrix.
 template <typename T>
-constexpr inline auto diag(const Vector<T> &a) noexcept
+inline auto diag(const Vector<T> &a)
 {
     using data_type = std::remove_const_t<T>;
     Matrix<data_type> matrix(a.size(), a.size(), data_type(0.));
-    for (std::size_t i = 0; i < a.size(); ++i)
+    for (std::size_t i = 0; i < a.size(); ++i) {
         matrix(i, i) = a[i];
+    }
     return matrix;
 }
 
@@ -147,12 +161,13 @@ constexpr inline auto diag(const Vector<T> &a) noexcept
 /// @param row_matrix if the output matrix should be a row matrix (true), or a column matrix (false).
 /// @returns the generated matrix.
 template <typename T>
-constexpr inline auto to_matrix(const Vector<T> &a, bool row_matrix) noexcept
+inline auto to_matrix(const Vector<T> &a, bool row_matrix)
 {
     using data_type = std::remove_const_t<T>;
     Matrix<data_type> matrix(row_matrix ? 1u : a.size(), row_matrix ? a.size() : 1u, data_type(0));
-    for (std::size_t i = 0; i < a.size(); ++i)
+    for (std::size_t i = 0; i < a.size(); ++i) {
         matrix[i] = a[i];
+    }
     return matrix;
 }
 
@@ -160,12 +175,13 @@ constexpr inline auto to_matrix(const Vector<T> &a, bool row_matrix) noexcept
 /// @param A the input matrix.
 /// @returns the vector.
 template <typename T>
-constexpr inline auto ravel(const MatrixBase<T> &A) noexcept
+inline auto ravel(const MatrixBase<T> &A)
 {
     using data_type = std::remove_const_t<T>;
     Vector<data_type> a(A.size());
-    for (std::size_t i = 0; i < a.size(); ++i)
+    for (std::size_t i = 0; i < a.size(); ++i) {
         a[i] = A[i];
+    }
     return a;
 }
 
@@ -174,10 +190,11 @@ constexpr inline auto ravel(const MatrixBase<T> &A) noexcept
 /// @param B the second (*xN) matrix.
 /// @returns the two matrices stacked into one.
 template <typename T1, typename T2>
-constexpr inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
+inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
 {
-    if (A.cols() != B.cols())
+    if (A.cols() != B.cols()) {
         throw std::invalid_argument("Vstack requires matrices with the same number of colmuns.");
+    }
     // Select the right type.
     using T = malg::extract_common_type_t<T1, T2>;
     // Create the output matrix.
@@ -185,9 +202,11 @@ constexpr inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
     // Resize the matrix by adding rows for B.
     C.resize(A.rows() + B.rows(), A.cols());
     // Append B to C.
-    for (std::size_t r = 0, c = 0; r < B.rows(); ++r)
-        for (c = 0; c < B.cols(); ++c)
+    for (std::size_t r = 0, c = 0; r < B.rows(); ++r) {
+        for (c = 0; c < B.cols(); ++c) {
             C(r + A.rows(), c) = B(r, c);
+        }
+    }
     return C;
 }
 
@@ -196,10 +215,11 @@ constexpr inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
 /// @param b the vector of size N.
 /// @returns the result of the stacking.
 template <typename T1, typename T2>
-constexpr inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b)
+inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b)
 {
-    if (A.cols() != b.size())
+    if (A.cols() != b.size()) {
         throw std::invalid_argument("The matrix must have the same number of columns as the size of the vector.");
+    }
     // Select the right type.
     using T = malg::extract_common_type_t<T1, T2>;
     // Create the output matrix.
@@ -207,8 +227,9 @@ constexpr inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b)
     // Resize the matrix by adding the row for b.
     C.resize(A.rows() + 1, A.cols());
     // Append b to C.
-    for (std::size_t i = 0; i < b.size(); ++i)
+    for (std::size_t i = 0; i < b.size(); ++i) {
         C(A.rows(), i) = b[i];
+    }
     return C;
 }
 
@@ -217,20 +238,23 @@ constexpr inline auto vstack(const MatrixBase<T1> &A, const Vector<T2> &b)
 /// @param B the second (Mx*) matrix.
 /// @returns the two matrices stacked into one.
 template <typename T1, typename T2>
-constexpr inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
+inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
 {
-    if (A.rows() != B.rows())
+    if (A.rows() != B.rows()) {
         throw std::invalid_argument("Hstack requires matrices with the same number of rows.");
+    }
     // Select the right type.
     using T = malg::extract_common_type_t<T1, T2>;
     // Create the output matrix.
-    Matrix<T> C = A;
+    Matrix<T> C(A);
     // Resize the matrix by adding cols for B.
     C.resize(A.rows(), A.cols() + B.cols());
     // Append B to C.
-    for (std::size_t c = 0, r = 0; c < B.cols(); ++c)
-        for (r = 0; r < B.rows(); ++r)
+    for (std::size_t c = 0, r = 0; c < B.cols(); ++c) {
+        for (r = 0; r < B.rows(); ++r) {
             C(r, c + A.cols()) = B(r, c);
+        }
+    }
     return C;
 }
 
@@ -239,10 +263,11 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
 /// @param b the vector of size A.
 /// @returns the result of the stacking.
 template <typename T1, typename T2>
-constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
+inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
 {
-    if (A.rows() != b.size())
+    if (A.rows() != b.size()) {
         throw std::invalid_argument("The matrix must have the same number of rows as the size of the vector.");
+    }
     // Select the right type.
     using T = malg::extract_common_type_t<T1, T2>;
     // Create the output matrix.
@@ -250,8 +275,9 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
     // Resize the matrix by adding the row for b.
     C.resize(A.rows(), A.cols() + 1);
     // Append b to C.
-    for (std::size_t i = 0; i < b.size(); ++i)
+    for (std::size_t i = 0; i < b.size(); ++i) {
         C(i, A.cols()) = b[i];
+    }
     return C;
 }
 
@@ -260,7 +286,7 @@ constexpr inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
 /// @param b the vector of size A.
 /// @returns the result of the stacking.
 template <typename T1, typename T2>
-constexpr inline auto concatenate(const Vector<T1> &a, const Vector<T2> &b)
+inline auto concatenate(const Vector<T1> &a, const Vector<T2> &b)
 {
     // Select the right type.
     using T = malg::extract_common_type_t<T1, T2>;
@@ -269,8 +295,9 @@ constexpr inline auto concatenate(const Vector<T1> &a, const Vector<T2> &b)
     // Resize the matrix by adding the row for b.
     c.resize(a.size() + b.size());
     // Append b to C.
-    for (std::size_t i = 0; i < b.size(); ++i)
+    for (std::size_t i = 0; i < b.size(); ++i) {
         c[a.size() + i] = b[i];
+    }
     return c;
 }
 
@@ -282,23 +309,27 @@ constexpr inline auto concatenate(const Vector<T1> &a, const Vector<T2> &b)
 /// @param end_column the ending column.
 /// @returns the extracted sub-matrix.
 template <typename T>
-constexpr inline auto extract(const MatrixBase<T> &matrix,
-                              std::size_t start_row    = 0,
-                              std::size_t end_row      = std::numeric_limits<std::size_t>::max(),
-                              std::size_t start_column = 0,
-                              std::size_t end_column   = std::numeric_limits<std::size_t>::max())
+inline auto extract(const MatrixBase<T> &matrix,
+                    std::size_t start_row    = 0,
+                    std::size_t end_row      = std::numeric_limits<std::size_t>::max(),
+                    std::size_t start_column = 0,
+                    std::size_t end_column   = std::numeric_limits<std::size_t>::max())
 {
-    if (start_row >= end_row)
+    if (start_row >= end_row) {
         throw std::invalid_argument("The starting row must be lower than the ending row.");
-    if (start_column >= end_column)
+    }
+    if (start_column >= end_column) {
         throw std::invalid_argument("The starting column must be lower than the ending column.");
+    }
     using data_type = std::remove_const_t<T>;
     end_row         = std::min(matrix.rows(), end_row);
     end_column      = std::min(matrix.cols(), end_column);
     Matrix<data_type> result(end_row - start_row, end_column - start_column, data_type(0.));
-    for (std::size_t r = start_row; r < end_row; ++r)
-        for (std::size_t c = start_column; c < end_column; ++c)
+    for (std::size_t r = start_row; r < end_row; ++r) {
+        for (std::size_t c = start_column; c < end_column; ++c) {
             result(r - start_row, c - start_column) = matrix(r, c);
+        }
+    }
     return result;
 }
 
@@ -309,20 +340,23 @@ constexpr inline auto extract(const MatrixBase<T> &matrix,
 /// @param end_row the ending row.
 /// @returns the extracted column as a vector.
 template <typename T>
-constexpr inline auto extract_column(const MatrixBase<T> &matrix,
-                                     std::size_t column,
-                                     std::size_t start_row = 0,
-                                     std::size_t end_row   = std::numeric_limits<std::size_t>::max())
+inline auto extract_column(const MatrixBase<T> &matrix,
+                           std::size_t column,
+                           std::size_t start_row = 0,
+                           std::size_t end_row   = std::numeric_limits<std::size_t>::max())
 {
-    if (start_row >= end_row)
+    if (start_row >= end_row) {
         throw std::invalid_argument("The starting row must be lower than the ending row.");
-    if (column >= matrix.cols())
+    }
+    if (column >= matrix.cols()) {
         throw std::invalid_argument("The selected column is outsize the matrix.");
+    }
     using data_type = std::remove_const_t<T>;
     end_row         = std::min(matrix.rows(), end_row);
     Vector<data_type> result(end_row - start_row, data_type(0.));
-    for (std::size_t r = start_row; r < end_row; ++r)
+    for (std::size_t r = start_row; r < end_row; ++r) {
         result[r - start_row] = matrix(r, column);
+    }
     return result;
 }
 
@@ -333,20 +367,23 @@ constexpr inline auto extract_column(const MatrixBase<T> &matrix,
 /// @param end_column the ending column.
 /// @returns the extracted row as a vector.
 template <typename T>
-constexpr inline auto extract_row(const MatrixBase<T> &matrix,
-                                  std::size_t row,
-                                  std::size_t start_column = 0,
-                                  std::size_t end_column   = std::numeric_limits<std::size_t>::max())
+inline auto extract_row(const MatrixBase<T> &matrix,
+                        std::size_t row,
+                        std::size_t start_column = 0,
+                        std::size_t end_column   = std::numeric_limits<std::size_t>::max())
 {
-    if (row >= matrix.rows())
+    if (row >= matrix.rows()) {
         throw std::invalid_argument("The selected row is outsize the matrix.");
-    if (start_column >= end_column)
+    }
+    if (start_column >= end_column) {
         throw std::invalid_argument("The starting column must be lower than the ending column.");
+    }
     using data_type = std::remove_const_t<T>;
     end_column      = std::min(matrix.cols(), end_column);
     Vector<data_type> result(end_column - start_column, data_type(0.));
-    for (std::size_t c = start_column; c < end_column; ++c)
+    for (std::size_t c = start_column; c < end_column; ++c) {
         result[c - start_column] = matrix(row, c);
+    }
     return result;
 }
 
@@ -357,11 +394,12 @@ constexpr inline auto extract_row(const MatrixBase<T> &matrix,
 /// @param start_column the starting column.
 /// @param end_column the ending column.
 template <typename T>
-constexpr inline void swap_rows(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_column = 0, std::size_t end_column = std::numeric_limits<std::size_t>::max()) noexcept
+inline void swap_rows(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_column = 0, std::size_t end_column = std::numeric_limits<std::size_t>::max())
 {
     end_column = std::min(end_column, matrix.cols());
-    for (std::size_t c = start_column; c < end_column; ++c)
+    for (std::size_t c = start_column; c < end_column; ++c) {
         std::swap(matrix(i, c), matrix(j, c));
+    }
 }
 
 /// @brief Swaps the values of the two columns.
@@ -371,11 +409,12 @@ constexpr inline void swap_rows(MatrixBase<T> &matrix, std::size_t i, std::size_
 /// @param start_row the starting row.
 /// @param end_row the ending row.
 template <typename T>
-constexpr inline void swap_cols(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max()) noexcept
+inline void swap_cols(MatrixBase<T> &matrix, std::size_t i, std::size_t j, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max())
 {
     end_row = std::min(matrix.rows(), end_row);
-    for (std::size_t r = start_row; r < end_row; ++r)
+    for (std::size_t r = start_row; r < end_row; ++r) {
         std::swap(matrix(r, i), matrix(r, j));
+    }
 }
 
 /// @brief Removes the given row from the matrix.
@@ -383,10 +422,11 @@ constexpr inline void swap_cols(MatrixBase<T> &matrix, std::size_t i, std::size_
 /// @param row the row that must be removed.
 /// @returns a reference to the input matrix with the row removed.
 template <typename T>
-constexpr inline auto &remove_row(Matrix<T> &matrix, std::size_t row)
+inline auto &remove_row(Matrix<T> &matrix, std::size_t row)
 {
-    if (row >= matrix.rows())
+    if (row >= matrix.rows()) {
         throw std::invalid_argument("The selected row is outsize the matrix.");
+    }
     for (std::size_t r = row; r < (matrix.rows() - 1); ++r) {
         for (std::size_t c = 0; c < matrix.cols(); ++c) {
             std::swap(matrix(r, c), matrix(r + 1, c));
@@ -401,10 +441,11 @@ constexpr inline auto &remove_row(Matrix<T> &matrix, std::size_t row)
 /// @param column the column that must be removed.
 /// @returns a reference to the input matrix with the column removed.
 template <typename T>
-constexpr inline auto &remove_column(Matrix<T> &matrix, std::size_t column)
+inline auto &remove_column(Matrix<T> &matrix, std::size_t column)
 {
-    if (column >= matrix.cols())
+    if (column >= matrix.cols()) {
         throw std::invalid_argument("The selected column is outsize the matrix.");
+    }
     for (std::size_t c = column; c < (matrix.cols() - 1); ++c) {
         for (std::size_t r = 0; r < matrix.rows(); ++r) {
             std::swap(matrix(r, c), matrix(r, c + 1));
@@ -419,7 +460,7 @@ constexpr inline auto &remove_column(Matrix<T> &matrix, std::size_t column)
 /// @returns true if the matrix is square.
 /// @returns false if the matrix is not square.
 template <typename T>
-constexpr inline auto is_square(const MatrixBase<T> &matrix) noexcept
+inline auto is_square(const MatrixBase<T> &matrix)
 {
     return matrix.rows() == matrix.cols();
 }
@@ -429,7 +470,7 @@ constexpr inline auto is_square(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is a column vector.
 /// @returns false if the matrix is not a column vector.
 template <typename T>
-constexpr inline auto is_column_vector(const MatrixBase<T> &matrix) noexcept
+inline auto is_column_vector(const MatrixBase<T> &matrix)
 {
     return matrix.cols() == 1;
 }
@@ -439,7 +480,7 @@ constexpr inline auto is_column_vector(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is a row vector.
 /// @returns false if the matrix is not a row vector.
 template <typename T>
-constexpr inline auto is_row_vector(const MatrixBase<T> &matrix) noexcept
+inline auto is_row_vector(const MatrixBase<T> &matrix)
 {
     return matrix.rows() == 1;
 }
@@ -449,14 +490,18 @@ constexpr inline auto is_row_vector(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is symmetric.
 /// @returns false if the matrix is not symmetric.
 template <typename T>
-constexpr inline auto is_symmetric(const MatrixBase<T> &matrix) noexcept
+inline auto is_symmetric(const MatrixBase<T> &matrix)
 {
-    if (!is_square(matrix))
+    if (!is_square(matrix)) {
         return false;
-    for (std::size_t i = 0; i < matrix.rows(); ++i)
-        for (std::size_t j = 0; j < matrix.cols(); ++j)
-            if (matrix(i, j) != matrix(j, i))
+    }
+    for (std::size_t i = 0; i < matrix.rows(); ++i) {
+        for (std::size_t j = 0; j < matrix.cols(); ++j) {
+            if (matrix(i, j) != matrix(j, i)) {
                 return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -465,14 +510,18 @@ constexpr inline auto is_symmetric(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is skew symmetric.
 /// @returns false if the matrix is not skew symmetric.
 template <typename T>
-constexpr inline auto is_skew_symmetric(const MatrixBase<T> &matrix) noexcept
+inline auto is_skew_symmetric(const MatrixBase<T> &matrix)
 {
-    if (!is_square(matrix))
+    if (!is_square(matrix)) {
         return false;
-    for (std::size_t i = 0; i < matrix.rows(); ++i)
-        for (std::size_t j = i + 1; j < matrix.cols(); ++j)
-            if (matrix(i, j) != -matrix(j, i))
+    }
+    for (std::size_t i = 0; i < matrix.rows(); ++i) {
+        for (std::size_t j = i + 1; j < matrix.cols(); ++j) {
+            if (matrix(i, j) != -matrix(j, i)) {
                 return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -481,14 +530,18 @@ constexpr inline auto is_skew_symmetric(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is diagonal.
 /// @returns false if the matrix is not diagonal.
 template <typename T>
-constexpr inline auto is_diagonal(const MatrixBase<T> &matrix) noexcept
+inline auto is_diagonal(const MatrixBase<T> &matrix)
 {
-    if (!is_square(matrix))
+    if (!is_square(matrix)) {
         return false;
-    for (std::size_t i = 0; i < matrix.rows(); ++i)
-        for (std::size_t j = 0; j < matrix.cols(); ++j)
-            if ((i != j) && (matrix(i, j) != 0))
+    }
+    for (std::size_t i = 0; i < matrix.rows(); ++i) {
+        for (std::size_t j = 0; j < matrix.cols(); ++j) {
+            if ((i != j) && (matrix(i, j) != 0)) {
                 return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -497,7 +550,7 @@ constexpr inline auto is_diagonal(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix contains all zeros.
 /// @returns false if the matrix does not contain all zeros.
 template <typename T>
-constexpr inline auto is_zero(const MatrixBase<T> &matrix) noexcept
+inline auto is_zero(const MatrixBase<T> &matrix)
 {
     return std::all_of(matrix.begin(), matrix.end(), [](const T &x) { return x == 0; });
 }
@@ -507,7 +560,7 @@ constexpr inline auto is_zero(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix contains the same value everywhere.
 /// @returns false if the matrix does not contain the same value everywhere.
 template <typename T>
-constexpr inline auto is_constant(const MatrixBase<T> &matrix) noexcept
+inline auto is_constant(const MatrixBase<T> &matrix)
 {
     return std::adjacent_find(matrix.begin(), matrix.end(), std::not_equal_to{}) == matrix.end();
 }
@@ -519,14 +572,17 @@ constexpr inline auto is_constant(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the two arrays are equal within the given tolerance.
 /// @returns false otherwise.
 template <typename T>
-constexpr inline auto all_close(const Vector<T> &a, const Vector<T> &b, double tolerance = 0.0001)
+inline auto all_close(const Vector<T> &a, const Vector<T> &b, double tolerance = 0.0001)
 {
     // Check the sizes.
-    if (a.size() != b.size())
+    if (a.size() != b.size()) {
         throw std::invalid_argument("Vectors has different sizes.");
-    for (std::size_t i = 0; i < a.size(); ++i)
-        if (std::abs(a[i] - b[i]) > tolerance)
+    }
+    for (std::size_t i = 0; i < a.size(); ++i) {
+        if (std::abs(a[i] - b[i]) > tolerance) {
             return false;
+        }
+    }
     return true;
 }
 
@@ -537,16 +593,20 @@ constexpr inline auto all_close(const Vector<T> &a, const Vector<T> &b, double t
 /// @returns true if the two arrays are equal within the given tolerance.
 /// @returns false otherwise.
 template <typename T>
-constexpr inline auto all_close(const MatrixBase<T> &A, const MatrixBase<T> &B, double tolerance = 0.0001)
+inline auto all_close(const MatrixBase<T> &A, const MatrixBase<T> &B, double tolerance = 0.0001)
 {
     // Check the sizes.
-    if (A.rows() != B.rows())
+    if (A.rows() != B.rows()) {
         throw std::invalid_argument("Matrices has different number of rows.");
-    if (A.cols() != B.cols())
+    }
+    if (A.cols() != B.cols()) {
         throw std::invalid_argument("Matrices has different number of colmuns.");
-    for (std::size_t i = 0; i < A.size(); ++i)
-        if (std::abs(A[i] - B[i]) > tolerance)
+    }
+    for (std::size_t i = 0; i < A.size(); ++i) {
+        if (std::abs(A[i] - B[i]) > tolerance) {
             return false;
+        }
+    }
     return true;
 }
 
@@ -555,10 +615,11 @@ constexpr inline auto all_close(const MatrixBase<T> &A, const MatrixBase<T> &B, 
 /// @returns true if the matrix is the identity matrix.
 /// @returns false if the matrix is not the identity matrix.
 template <typename T>
-constexpr inline auto is_identity(const MatrixBase<T> &matrix) noexcept
+inline auto is_identity(const MatrixBase<T> &matrix)
 {
-    if (!is_square(matrix))
+    if (!is_square(matrix)) {
         return false;
+    }
     return (matrix == utility::identity<T>(matrix.cols()));
 }
 
@@ -567,10 +628,11 @@ constexpr inline auto is_identity(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is orthogonal.
 /// @returns false if the matrix is not orthogonal.
 template <typename T>
-constexpr inline auto is_orthogonal(const MatrixBase<T> &matrix) noexcept
+inline auto is_orthogonal(const MatrixBase<T> &matrix)
 {
-    if (!is_square(matrix))
+    if (!is_square(matrix)) {
         return false;
+    }
     return (matrix * matrix.transpose() == utility::identity<T>(matrix.cols()));
 }
 
@@ -579,7 +641,7 @@ constexpr inline auto is_orthogonal(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is invertible.
 /// @returns false if the matrix is not invertible.
 template <typename T>
-constexpr inline auto is_invertible(const MatrixBase<T> &matrix) noexcept
+inline auto is_invertible(const MatrixBase<T> &matrix)
 {
     return matrix.determinant() != 0;
 }
@@ -589,7 +651,7 @@ constexpr inline auto is_invertible(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is linearly dependent.
 /// @returns false if the matrix is not linearly dependent.
 template <typename T>
-constexpr inline auto is_linearly_dependent(const MatrixBase<T> &matrix) noexcept
+inline auto is_linearly_dependent(const MatrixBase<T> &matrix)
 {
     return matrix.determinant() == 0;
 }
@@ -599,7 +661,7 @@ constexpr inline auto is_linearly_dependent(const MatrixBase<T> &matrix) noexcep
 /// @returns true if the matrix is linearly independent.
 /// @returns false if the matrix is not linearly independent.
 template <typename T>
-constexpr inline auto is_linearly_independent(const MatrixBase<T> &matrix) noexcept
+inline auto is_linearly_independent(const MatrixBase<T> &matrix)
 {
     return !matrix.is_linearly_dependent();
 }
@@ -609,14 +671,18 @@ constexpr inline auto is_linearly_independent(const MatrixBase<T> &matrix) noexc
 /// @returns true if the matrix is a lower triangular one.
 /// @returns false if the matrix is not a lower triangular one.
 template <typename T>
-constexpr inline auto is_lower_triangular(const MatrixBase<T> &matrix) noexcept
+inline auto is_lower_triangular(const MatrixBase<T> &matrix)
 {
-    if (!is_square(matrix))
+    if (!is_square(matrix)) {
         return false;
-    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r)
-        for (c = r + 1; c < matrix.cols(); ++c)
-            if (matrix(r, c))
+    }
+    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r) {
+        for (c = r + 1; c < matrix.cols(); ++c) {
+            if (matrix(r, c)) {
                 return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -625,14 +691,18 @@ constexpr inline auto is_lower_triangular(const MatrixBase<T> &matrix) noexcept
 /// @returns true if the matrix is a upper triangular one.
 /// @returns false if the matrix is not a upper triangular one.
 template <typename T>
-constexpr inline auto is_upper_triangular(const MatrixBase<T> &matrix) noexcept
+inline auto is_upper_triangular(const MatrixBase<T> &matrix)
 {
-    if (!is_square(matrix))
+    if (!is_square(matrix)) {
         return false;
-    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r)
-        for (c = 0; c < r; ++c)
-            if (matrix(r, c))
+    }
+    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r) {
+        for (c = 0; c < r; ++c) {
+            if (matrix(r, c)) {
                 return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -642,7 +712,7 @@ constexpr inline auto is_upper_triangular(const MatrixBase<T> &matrix) noexcept
 /// @param cols the new number of columns.
 /// @return the matrix **A** reshaped.
 template <typename T>
-constexpr inline auto &reshape(malg::Matrix<T> &A, std::size_t rows, std::size_t cols) noexcept
+inline auto &reshape(malg::Matrix<T> &A, std::size_t rows, std::size_t cols)
 {
     return A.reshape(rows, cols);
 }
@@ -653,7 +723,7 @@ constexpr inline auto &reshape(malg::Matrix<T> &A, std::size_t rows, std::size_t
 /// @param cols the new number of columns.
 /// @return the matrix **A** resized.
 template <typename T>
-constexpr inline auto &resize(malg::Matrix<T> &A, std::size_t rows, std::size_t cols) noexcept
+inline auto &resize(malg::Matrix<T> &A, std::size_t rows, std::size_t cols)
 {
     return A.resize(rows, cols);
 }
@@ -665,7 +735,7 @@ constexpr inline auto &resize(malg::Matrix<T> &A, std::size_t rows, std::size_t 
 /// @param init the initial value.
 /// @return the inner product of the two lists.
 template <typename T>
-constexpr inline T inner_product(T *first1, T *last1, T *first2, T init) noexcept
+inline T inner_product(T *first1, T *last1, T *first2, T init)
 {
     while (first1 != last1) {
         init = std::move(init) + (*first1) * (*first2);
@@ -680,7 +750,7 @@ constexpr inline T inner_product(T *first1, T *last1, T *first2, T init) noexcep
 /// @param init the initial value.
 /// @return the sums of the element of the list.
 template <class T>
-constexpr inline T accumulate(T *first, T *last, T init) noexcept
+inline T accumulate(T *first, T *last, T init)
 {
     while (first != last) {
         init = std::move(init) + (*first);
@@ -697,7 +767,7 @@ constexpr inline T accumulate(T *first, T *last, T init) noexcept
 /// @param end_col the final column.
 /// @return the generated view.
 template <typename MatrixType>
-constexpr inline auto view(MatrixType &A, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max(), std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max()) noexcept
+inline auto view(MatrixType &A, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max(), std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max())
 {
     return View(&A, start_row, end_row, start_col, end_col);
 }
@@ -709,7 +779,7 @@ constexpr inline auto view(MatrixType &A, std::size_t start_row = 0, std::size_t
 /// @param end_col the final column.
 /// @return the generated view.
 template <typename MatrixType>
-constexpr inline auto row(MatrixType &A, std::size_t row, std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max()) noexcept
+inline auto row(MatrixType &A, std::size_t row, std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max())
 {
     return View(&A, row, row + 1, start_col, end_col);
 }
@@ -721,7 +791,7 @@ constexpr inline auto row(MatrixType &A, std::size_t row, std::size_t start_col 
 /// @param end_row the final row.
 /// @return the generated view.
 template <typename MatrixType>
-constexpr inline auto col(MatrixType &A, std::size_t col, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max()) noexcept
+inline auto col(MatrixType &A, std::size_t col, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max())
 {
     return View(&A, start_row, end_row, col, col + 1);
 }
@@ -730,12 +800,14 @@ constexpr inline auto col(MatrixType &A, std::size_t col, std::size_t start_row 
 /// @param A the input matrix.
 /// @return an array containing the indices of the non-zero elements of A.
 template <class T>
-constexpr inline auto flatnonzero(const Matrix<T> &A)
+inline auto flatnonzero(const Matrix<T> &A)
 {
     std::vector<std::size_t> nonzero_indices{};
-    for (std::size_t i = 0; i < A.size(); ++i)
-        if (!feq::approximately_equal(A[i], 0.))
+    for (std::size_t i = 0; i < A.size(); ++i) {
+        if (!malg::feq::approximately_equal(A[i], 0.)) {
             nonzero_indices.emplace_back(i);
+        }
+    }
     return nonzero_indices;
 }
 
@@ -747,7 +819,7 @@ constexpr inline auto flatnonzero(const Matrix<T> &A)
 /// @param first_last If true it returns the fist n, otherwise the last n.
 /// @return A vector of indices.
 template <class T>
-constexpr inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limits<std::size_t>::max(), bool first_last = true)
+inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limits<std::size_t>::max(), bool first_last = true)
 {
     // Find all the indexes of nonzeros elements.
     std::vector<size_t> index = utility::flatnonzero(A);
@@ -756,14 +828,16 @@ constexpr inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limi
     }
     if ((n > 0) && (n < index.size())) {
         std::size_t start = static_cast<std::size_t>(*index.begin());
-        if (first_last)
+        if (first_last) {
             index = std::vector<size_t>(start + 0UL, start + n);
-        else
+        } else {
             index = std::vector<size_t>(start + index.size() - n, start + index.size());
+        }
     }
     // Prepare the array for the indexes. If the input is a row-vector, return the indexes as a row-vector.
-    if (utility::is_row_vector(A))
+    if (utility::is_row_vector(A)) {
         return Matrix<std::size_t>(1UL, index.size(), index);
+    }
     return Matrix<std::size_t>(index.size(), 1UL, index);
 }
 
@@ -775,16 +849,19 @@ constexpr inline auto find(const Matrix<T> &A, std::size_t n = std::numeric_limi
 ///     -i if the i-th element of A is smaller than the i-th element of B,
 ///      i if the i-th element of A is greather than the i-th element of B.
 template <typename T>
-constexpr inline long compare(const malg::MatrixBase<T> &A, const malg::MatrixBase<T> &B)
+inline int64_t compare(const malg::MatrixBase<T> &A, const malg::MatrixBase<T> &B)
 {
     // Check the sizes.
-    if (A.size() != B.size())
+    if (A.size() != B.size()) {
         throw std::invalid_argument("Matrices has different size.");
+    }
     for (std::size_t i = 0; i < A.size(); ++i) {
-        if (A[i] < B[i])
-            return -static_cast<long>(i);
-        if (A[i] > B[i])
-            return static_cast<long>(i);
+        if (A[i] < B[i]) {
+            return -static_cast<int64_t>(i);
+        }
+        if (A[i] > B[i]) {
+            return static_cast<int64_t>(i);
+        }
     }
     return 0;
 }
@@ -797,16 +874,19 @@ constexpr inline long compare(const malg::MatrixBase<T> &A, const malg::MatrixBa
 ///     -i if the i-th element of a is smaller than the i-th element of b,
 ///      i if the i-th element of a is greather than the i-th element of b.
 template <typename T>
-constexpr inline long compare(const malg::Vector<T> &a, const malg::Vector<T> &b)
+inline int64_t compare(const malg::Vector<T> &a, const malg::Vector<T> &b)
 {
     // Check the sizes.
-    if (a.size() != b.size())
+    if (a.size() != b.size()) {
         throw std::invalid_argument("Matrices has different size.");
+    }
     for (std::size_t i = 0; i < a.size(); ++i) {
-        if (a[i] < b[i])
-            return -static_cast<long>(i);
-        if (a[i] > b[i])
-            return static_cast<long>(i);
+        if (a[i] < b[i]) {
+            return -static_cast<int64_t>(i);
+        }
+        if (a[i] > b[i]) {
+            return static_cast<int64_t>(i);
+        }
     }
     return 0;
 }
@@ -817,12 +897,12 @@ constexpr inline long compare(const malg::Vector<T> &a, const malg::Vector<T> &b
 /// @param min the minimum value.
 /// @param max the maximum value.
 /// @return the random matrix.
-template <typename T, typename T2>
-inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2 max) noexcept
+template <typename T1, typename T2>
+inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2 max)
 {
-    if constexpr (malg::is_complex_v<T>) {
+    if constexpr (malg::is_complex_v<T1>) {
         // First, we extract the underlying datatype for the complex value.
-        using data_type_t = typename T::value_type;
+        using data_type_t = typename T1::value_type;
         // Then, we define the type of for the distribution.
         using distribution_t = std::conditional_t<
             std::is_floating_point_v<data_type_t>,
@@ -837,15 +917,16 @@ inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2 max) noex
         // Initialize the matrix.
         Matrix<std::complex<data_type_t>> m(rows, cols, std::complex<data_type_t>(0., 0.));
         // Generate the matrix.
-        for (std::size_t i = 0; i < m.size(); ++i)
+        for (std::size_t i = 0; i < m.size(); ++i) {
             m[i] = std::complex<data_type_t>(dist(rng), dist(rng));
+        }
         return m;
     } else {
         // We define the type of for the distribution.
         using distribution_t = std::conditional_t<
-            std::is_floating_point_v<T>,
-            std::uniform_real_distribution<T>,
-            std::uniform_int_distribution<T>>;
+            std::is_floating_point_v<T1>,
+            std::uniform_real_distribution<T1>,
+            std::uniform_int_distribution<T1>>;
         // Create the distribution.
         distribution_t dist(min, max);
         // Create the interface to the random number generator.
@@ -853,10 +934,11 @@ inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2 max) noex
         // Create the random number generator.
         std::mt19937 rng(dev());
         // Initialize the matrix.
-        Matrix<T> m(rows, cols, static_cast<T>(0));
+        Matrix<T1> m(rows, cols, static_cast<T1>(0));
         // Generate the matrix.
-        for (std::size_t i = 0; i < m.size(); ++i)
+        for (std::size_t i = 0; i < m.size(); ++i) {
             m[i] = dist(rng);
+        }
         return m;
     }
 }
@@ -866,12 +948,12 @@ inline auto rand_matrix(std::size_t rows, std::size_t cols, T2 min, T2 max) noex
 /// @param min the minimum value.
 /// @param max the maximum value.
 /// @return the random vector.
-template <typename T, typename T2>
-inline auto rand_vector(std::size_t size, T2 min, T2 max) noexcept
+template <typename T1, typename T2>
+inline auto rand_vector(std::size_t size, T2 min, T2 max)
 {
-    if constexpr (malg::is_complex_v<T>) {
+    if constexpr (malg::is_complex_v<T1>) {
         // First, we extract the underlying datatype for the complex value.
-        using data_type_t = typename T::value_type;
+        using data_type_t = typename T1::value_type;
         // Then, we define the type of for the distribution.
         using distribution_t = std::conditional_t<
             std::is_floating_point_v<data_type_t>,
@@ -884,17 +966,18 @@ inline auto rand_vector(std::size_t size, T2 min, T2 max) noexcept
         // Create the random number generator.
         std::mt19937 rng(dev());
         // Initialize the vector.
-        Vector<T> v(size, std::complex<data_type_t>(0., 0.));
+        Vector<T1> v(size, std::complex<data_type_t>(0., 0.));
         // Generate the vector.
-        for (std::size_t i = 0; i < v.size(); ++i)
+        for (std::size_t i = 0; i < v.size(); ++i) {
             v[i] = std::complex<data_type_t>(dist(rng), dist(rng));
+        }
         return v;
     } else {
         // We define the type of for the distribution.
         using distribution_t = std::conditional_t<
-            std::is_floating_point_v<T>,
-            std::uniform_real_distribution<T>,
-            std::uniform_int_distribution<T>>;
+            std::is_floating_point_v<T1>,
+            std::uniform_real_distribution<T1>,
+            std::uniform_int_distribution<T1>>;
         // Create the distribution.
         distribution_t dist(min, max);
         // Create the interface to the random number generator.
@@ -902,10 +985,11 @@ inline auto rand_vector(std::size_t size, T2 min, T2 max) noexcept
         // Create the random number generator.
         std::mt19937 rng(dev());
         // Initialize the vector.
-        Vector<T> v(size, T(0.));
+        Vector<T1> v(size, T1(0.));
         // Generate the vector.
-        for (std::size_t i = 0; i < v.size(); ++i)
+        for (std::size_t i = 0; i < v.size(); ++i) {
             v[i] = dist(rng);
+        }
         return v;
     }
 }

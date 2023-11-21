@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <limits>
 #include <cmath>
+#include <limits>
 
-namespace feq
+namespace malg::feq
 {
 
-static inline auto &tolerance() noexcept
+static inline auto &tolerance()
 {
     static double tol = std::numeric_limits<double>::epsilon();
     return tol;
@@ -22,7 +22,7 @@ static inline auto &tolerance() noexcept
 /// @returns true if they are approximately equal.
 /// @returns false otherwise.
 template <typename T1, typename T2>
-inline constexpr bool approximately_equal(T1 a, T2 b) noexcept
+inline bool approximately_equal(T1 a, T2 b)
 {
     return std::fabs(a - b) <= tolerance() * std::fmax(std::fabs(a), std::fabs(b));
 }

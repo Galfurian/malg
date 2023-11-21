@@ -8,11 +8,11 @@
 
 #include <stopwatch/stopwatch.hpp>
 
+#include <chainsaw/detail/observer.hpp>
+#include <chainsaw/solver.hpp>
 #include <chainsaw/stepper/stepper_adaptive.hpp>
 #include <chainsaw/stepper/stepper_euler.hpp>
 #include <chainsaw/stepper/stepper_rk4.hpp>
-#include <chainsaw/detail/observer.hpp>
-#include <chainsaw/solver.hpp>
 
 #ifdef MALG_ENABLE_PLOT
 #include <matplot/matplot.h>
@@ -43,7 +43,17 @@ public:
     /// @param _R0 resistance value.
     /// @param _L0 inductance value.
     /// @param _C0 capacitance value.
-    Model(Variable _R0 = 1, Variable _L0 = 0.5, Variable _C0 = 0.5)
+    explicit Model()
+        : Model(1, 0.5, 0.5)
+    {
+        // Nothing to do.
+    }
+
+    /// @brief Construct a new RLC.
+    /// @param _R0 resistance value.
+    /// @param _L0 inductance value.
+    /// @param _C0 capacitance value.
+    Model(Variable _R0, Variable _L0, Variable _C0)
         : R0(_R0),
           L0(_L0),
           C0(_C0),
@@ -91,7 +101,7 @@ template <std::size_t DECIMATION = 0>
 struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
     std::vector<Variable> time, x0, x1;
     ObserverSave() = default;
-    inline void operator()(const State &x, const Time &t) noexcept
+    inline void operator()(const State &x, const Time &t)
     {
         if (this->observe()) {
             time.emplace_back(t);
@@ -102,7 +112,7 @@ struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
 };
 
 template <typename T>
-constexpr inline T compute_samples(Time time_start, Time time_end, Time time_delta, Time sampling = 1.0)
+inline T compute_samples(Time time_start, Time time_end, Time time_delta, Time sampling)
 {
     return static_cast<T>(((time_end - time_start) / time_delta) * sampling);
 }
@@ -124,7 +134,7 @@ int main(int, char *[])
     const Time time_start = 0.0;
     const Time time_end   = 1.0;
     const Time time_delta = 0.0001;
-    const auto samples    = compute_samples<std::size_t>(time_start, time_end, time_delta);
+    const auto samples    = compute_samples<std::size_t>(time_start, time_end, time_delta, 1.0);
 
     // Setup the solvers.
     const auto Error      = chainsaw::ErrorFormula::Mixed;

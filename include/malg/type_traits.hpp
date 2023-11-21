@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <type_traits>
 #include <complex>
+#include <type_traits>
 
 namespace malg
 {
@@ -26,13 +26,13 @@ struct is_complex<std::complex<T>> : public std::true_type {
     using type = T; ///< An alias for T.
 };
 
-/// @brief Alias template for checking if a type is complex.
+/// @brief Alias template for checking if a type is complex.F
 /// @tparam T the type we are analyzing.
 /// @details
 /// is_complex_v< double               > -> false
 /// is_complex_v< std::complex<double> > -> true
 template <typename T>
-inline constexpr bool is_complex_v = is_complex<T>::value;
+inline const bool is_complex_v = is_complex<T>::value;
 
 /// @brief Alias template for extracting the internal type of a complex.
 /// @tparam T the type we are analyzing.

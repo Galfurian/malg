@@ -31,7 +31,7 @@ public:
     using const_iterator = const T *;
 
     /// @brief Construct a new Matrix Base object.
-    constexpr MatrixBase() noexcept
+    MatrixBase()
         : _rows(0),
           _cols(0)
     {
@@ -40,7 +40,7 @@ public:
     /// @brief Construct a new Matrix Base object.
     /// @param rows
     /// @param cols
-    constexpr MatrixBase(std::size_t rows, std::size_t cols) noexcept
+    MatrixBase(std::size_t rows, std::size_t cols)
         : _rows(rows),
           _cols(cols)
     {
@@ -52,21 +52,21 @@ public:
 
     /// @brief Get the number of rows of the matrix.
     /// @returns the number of rows.
-    inline virtual std::size_t rows() const noexcept
+    inline virtual std::size_t rows() const
     {
         return _rows;
     }
 
     /// @brief Get the number of columns of the matrix.
     /// @returns the number of columns.
-    inline virtual std::size_t cols() const noexcept
+    inline virtual std::size_t cols() const
     {
         return _cols;
     }
 
     /// @brief Returns the total size of the matrix.
     /// @returns the total size of the matrix.
-    inline virtual std::size_t size() const noexcept
+    inline virtual std::size_t size() const
     {
         return _rows * _cols;
     }
@@ -74,7 +74,7 @@ public:
     /// @brief Checks if the matrix is empty.
     /// @returns true if it is empty.
     /// @returns false otherwise.
-    inline virtual bool empty() const noexcept
+    inline virtual bool empty() const
     {
         return (_rows == 0) || (_cols == 0);
     }

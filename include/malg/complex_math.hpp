@@ -11,7 +11,7 @@
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2>
-inline constexpr auto operator+(const std::complex<T1> &lhs, const std::complex<T2> &rhs)
+inline auto operator+(const std::complex<T1> &lhs, const std::complex<T2> &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp += rhs;
@@ -23,7 +23,7 @@ inline constexpr auto operator+(const std::complex<T1> &lhs, const std::complex<
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2>, T2>>
-inline constexpr auto operator+(const std::complex<T1> &lhs, const T2 &rhs)
+inline auto operator+(const std::complex<T1> &lhs, const T2 &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp += rhs;
@@ -35,9 +35,9 @@ inline constexpr auto operator+(const std::complex<T1> &lhs, const T2 &rhs)
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T1>, T1>>
-inline constexpr auto operator+(const T1 &lhs, const std::complex<T2> &rhs)
+inline auto operator+(const T1 &lhs, const std::complex<T2> &rhs)
 {
-    std::complex<std::common_type_t<T1, T2>> tmp = lhs;
+    std::complex<std::common_type_t<T1, T2>> tmp(lhs);
     tmp += rhs;
     return tmp;
 }
@@ -47,7 +47,7 @@ inline constexpr auto operator+(const T1 &lhs, const std::complex<T2> &rhs)
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2>
-inline constexpr auto operator-(const std::complex<T1> &lhs, const std::complex<T2> &rhs)
+inline auto operator-(const std::complex<T1> &lhs, const std::complex<T2> &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp -= rhs;
@@ -59,7 +59,7 @@ inline constexpr auto operator-(const std::complex<T1> &lhs, const std::complex<
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2>, T2>>
-inline constexpr auto operator-(const std::complex<T1> &lhs, const T2 &rhs)
+inline auto operator-(const std::complex<T1> &lhs, const T2 &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp -= rhs;
@@ -71,7 +71,7 @@ inline constexpr auto operator-(const std::complex<T1> &lhs, const T2 &rhs)
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T1>, T1>>
-inline constexpr auto operator-(const T1 &lhs, const std::complex<T2> &rhs)
+inline auto operator-(const T1 &lhs, const std::complex<T2> &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp -= rhs;
@@ -83,7 +83,7 @@ inline constexpr auto operator-(const T1 &lhs, const std::complex<T2> &rhs)
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2>
-inline constexpr auto operator*(const std::complex<T1> &lhs, const std::complex<T2> &rhs)
+inline auto operator*(const std::complex<T1> &lhs, const std::complex<T2> &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp *= rhs;
@@ -95,7 +95,7 @@ inline constexpr auto operator*(const std::complex<T1> &lhs, const std::complex<
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2>, T2>>
-inline constexpr auto operator*(const std::complex<T1> &lhs, const T2 &rhs)
+inline auto operator*(const std::complex<T1> &lhs, const T2 &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp *= rhs;
@@ -107,7 +107,7 @@ inline constexpr auto operator*(const std::complex<T1> &lhs, const T2 &rhs)
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T1>, T1>>
-inline constexpr auto operator*(const T1 &lhs, const std::complex<T2> &rhs)
+inline auto operator*(const T1 &lhs, const std::complex<T2> &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp *= rhs;
@@ -119,7 +119,7 @@ inline constexpr auto operator*(const T1 &lhs, const std::complex<T2> &rhs)
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2>
-inline constexpr auto operator/(const std::complex<T1> &lhs, const std::complex<T2> &rhs)
+inline auto operator/(const std::complex<T1> &lhs, const std::complex<T2> &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp /= rhs;
@@ -131,7 +131,7 @@ inline constexpr auto operator/(const std::complex<T1> &lhs, const std::complex<
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T2>, T2>>
-inline constexpr auto operator/(const std::complex<T1> &lhs, const T2 &rhs)
+inline auto operator/(const std::complex<T1> &lhs, const T2 &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp /= rhs;
@@ -143,7 +143,7 @@ inline constexpr auto operator/(const std::complex<T1> &lhs, const T2 &rhs)
 /// @param rhs the fist value.
 /// @returns the result of the operation.
 template <typename T1, typename T2, typename = typename std::enable_if_t<std::is_arithmetic_v<T1>, T1>>
-inline constexpr auto operator/(const T1 &lhs, const std::complex<T2> &rhs)
+inline auto operator/(const T1 &lhs, const std::complex<T2> &rhs)
 {
     std::complex<std::common_type_t<T1, T2>> tmp = lhs;
     tmp /= rhs;

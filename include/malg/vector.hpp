@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <initializer_list>
-#include <cstdlib>
 #include <cassert>
+#include <cstdlib>
+#include <initializer_list>
 #include <utility>
 
 //#define MEM_TRACE
@@ -29,7 +29,7 @@ public:
     using const_iterator = const T *;
 
     /// @brief Construct a new Vector object.
-    constexpr Vector() noexcept
+    Vector()
         : _data(nullptr),
           _size(0)
     {
@@ -38,7 +38,7 @@ public:
 
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
-    constexpr Vector(std::size_t size) noexcept
+    explicit Vector(std::size_t size)
         : _data(nullptr),
           _size(0)
     {
@@ -48,69 +48,77 @@ public:
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
     /// @param value the vector will be initialized with it.
-    constexpr Vector(std::size_t size, T value) noexcept
+    Vector(std::size_t size, T value)
         : _data(nullptr),
           _size(0)
     {
-        if (this->allocate(size))
-            for (std::size_t i = 0; i < _size; ++i)
+        if (this->allocate(size)) {
+            for (std::size_t i = 0; i < _size; ++i) {
                 _data[i] = value;
+            }
+        }
     }
 
     /// @brief Construct a new Vector object.
     /// @param size dimension of the vector.
     /// @param data the initialization data.
-    constexpr Vector(std::size_t size, const std::initializer_list<T> &data) noexcept
+    Vector(std::size_t size, const std::initializer_list<T> &data)
         : _data(nullptr),
           _size(0)
     {
         assert(size == data.size());
         if (this->allocate(size)) {
             auto it = data.begin();
-            for (std::size_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i) {
                 _data[i] = *it++;
+            }
         }
     }
 
     /// @brief Construct a new Vector object.
     /// @param values list of values.
-    constexpr Vector(const std::initializer_list<T> &values) noexcept
+    Vector(const std::initializer_list<T> &values)
         : _data(nullptr),
           _size(0)
     {
         if (this->allocate(values.size())) {
             auto it = values.begin();
-            for (std::size_t i = 0; i < _size; ++i)
+            for (std::size_t i = 0; i < _size; ++i) {
                 _data[i] = *it++;
+            }
         }
     }
 
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
-    constexpr Vector(const Vector<T> &other) noexcept
+    Vector(const Vector<T> &other)
         : _data(nullptr),
           _size(0)
     {
-        if (this->allocate(other.size()))
-            for (std::size_t i = 0; i < _size; ++i)
+        if (this->allocate(other.size())) {
+            for (std::size_t i = 0; i < _size; ++i) {
                 _data[i] = other[i];
+            }
+        }
     }
 
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
     template <typename T2>
-    constexpr Vector(const Vector<T2> &other) noexcept
+    explicit Vector(const Vector<T2> &other)
         : _data(nullptr),
           _size(0)
     {
-        if (this->allocate(other.size()))
-            for (std::size_t i = 0; i < _size; ++i)
+        if (this->allocate(other.size())) {
+            for (std::size_t i = 0; i < _size; ++i) {
                 _data[i] = other[i];
+            }
+        }
     }
 
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
-    constexpr Vector(Vector<T> &&other) noexcept
+    Vector(Vector<T> &&other)
         : _data(),
           _size()
     {
@@ -124,7 +132,7 @@ public:
     /// @brief Copy construct a new Vector object.
     /// @param other the other vector.
     template <typename T2>
-    constexpr Vector(Vector<T2> &&other) noexcept
+    explicit Vector(Vector<T2> &&other)
         : _data(),
           _size()
     {
@@ -136,28 +144,28 @@ public:
     }
 
     /// @brief Destroy the Vector object.
-    ~Vector() noexcept
+    ~Vector()
     {
         this->deallocate();
     }
 
     /// @brief Gives access to the data.
     /// @returns pointer to the data.
-    inline constexpr const_iterator data() const noexcept
+    inline const_iterator data() const
     {
         return _data;
     }
 
     /// @brief Gives access to the data.
     /// @returns pointer to the data.
-    inline constexpr iterator data() noexcept
+    inline iterator data()
     {
         return _data;
     }
 
     /// @brief Returns the dimension of the vector.
     /// @returns the dimension of the vector.
-    inline constexpr std::size_t size() const noexcept
+    inline std::size_t size() const
     {
         return _size;
     }
@@ -165,7 +173,7 @@ public:
     /// @brief Checks if the vector is empty.
     /// @returns true if it is empty.
     /// @returns false otherwise.
-    inline constexpr bool empty() const noexcept
+    inline bool empty() const
     {
         return _size == 0;
     }
@@ -173,7 +181,7 @@ public:
     /// @brief Resizes the vector based on the size of the **other**.
     /// @param other the other vector.
     /// @return a reference to this vector.
-    inline constexpr auto &resize(const Vector &other) noexcept
+    inline auto &resize(const Vector &other)
     {
         this->allocate(other.size());
         return *this;
@@ -182,7 +190,7 @@ public:
     /// @brief Resizes the vector based on the given **size**.
     /// @param size the new size.
     /// @return a reference to this vector.
-    inline constexpr auto &resize(std::size_t size) noexcept
+    inline auto &resize(std::size_t size)
     {
         this->allocate(size);
         return *this;
@@ -191,7 +199,7 @@ public:
     /// @brief Operator for accessing the vector.
     /// @param pos the position.
     /// @returns the reference to the accessed item.
-    inline constexpr auto &operator[](std::size_t pos) noexcept
+    inline auto &operator[](std::size_t pos)
     {
         return _data[pos];
     }
@@ -199,7 +207,7 @@ public:
     /// @brief Operator for accessing the vector.
     /// @param pos the position.
     /// @returns the reference to the accessed item.
-    inline constexpr const T &operator[](std::size_t pos) const noexcept
+    inline const T &operator[](std::size_t pos) const
     {
         return _data[pos];
     }
@@ -207,11 +215,15 @@ public:
     /// @brief Assignment operator.
     /// @param other the other vector.
     /// @returns this vector.
-    inline constexpr auto &operator=(const Vector<T> &other) noexcept
+    inline auto &operator=(const Vector<T> &other)
     {
-        if (this->allocate(other.size()))
-            for (std::size_t i = 0; i < _size; ++i)
-                _data[i] = other[i];
+        if (this != &other) {
+            if (this->allocate(other.size())) {
+                for (std::size_t i = 0; i < _size; ++i) {
+                    _data[i] = other[i];
+                }
+            }
+        }
         return *this;
     }
 
@@ -219,18 +231,20 @@ public:
     /// @param other the other vector.
     /// @returns this vector.
     template <typename T2>
-    inline constexpr auto &operator=(const Vector<T2> &other) noexcept
+    inline auto &operator=(const Vector<T2> &other)
     {
-        if (this->allocate(other.size()))
-            for (std::size_t i = 0; i < _size; ++i)
+        if (this->allocate(other.size())) {
+            for (std::size_t i = 0; i < _size; ++i) {
                 _data[i] = other[i];
+            }
+        }
         return *this;
     }
 
     /// @brief Assignment operator.
     /// @param other the other vector.
     /// @returns this vector.
-    inline constexpr auto &operator=(Vector<T> &&other) noexcept
+    inline auto &operator=(Vector<T> &&other)
     {
         if (this != &other) {
             this->deallocate();
@@ -244,7 +258,7 @@ public:
     /// @param other the other vector.
     /// @returns this vector.
     template <typename T2>
-    inline constexpr auto &operator=(Vector<T2> &&other) noexcept
+    inline auto &operator=(Vector<T2> &&other)
     {
         if (this != &other) {
             this->deallocate();
@@ -256,48 +270,48 @@ public:
 
     /// @brief Provides a pointer to the begining of the vector.
     /// @returns the pointer.
-    inline constexpr const_iterator begin() const noexcept
+    inline const_iterator begin() const
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the begining of the vector.
     /// @returns the pointer.
-    inline constexpr const_iterator cbegin() const noexcept
+    inline const_iterator cbegin() const
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the begining of the vector.
     /// @returns the pointer.
-    inline constexpr iterator begin() noexcept
+    inline iterator begin()
     {
         return _data;
     }
 
     /// @brief Provides a pointer to the end of the vector.
     /// @returns the pointer.
-    inline constexpr const_iterator end() const noexcept
+    inline const_iterator end() const
     {
         return _data + _size;
     }
 
     /// @brief Provides a pointer to the end of the vector.
     /// @returns the pointer.
-    inline constexpr const_iterator cend() const noexcept
+    inline const_iterator cend() const
     {
         return _data + _size;
     }
 
     /// @brief Provides a pointer to the end of the vector.
     /// @returns the pointer.
-    inline constexpr iterator end() noexcept
+    inline iterator end()
     {
         return _data + _size;
     }
 
 private:
-    inline constexpr auto deallocate() noexcept
+    inline auto deallocate()
     {
         if (_size > 0) {
 #ifdef MEM_TRACE
@@ -311,13 +325,15 @@ private:
         return false;
     }
 
-    inline constexpr auto allocate(std::size_t size) noexcept
+    inline auto allocate(std::size_t size)
     {
-        if (size == 0)
+        if (size == 0) {
             return this->deallocate();
+        }
         // If the size is the same, we don't need to act.
-        if (size == _size)
+        if (size == _size) {
             return true;
+        }
         // Re-allocate the data.
         _data = static_cast<T *>(std::realloc(_data, sizeof(T) * size));
 #ifdef MEM_TRACE
@@ -328,13 +344,15 @@ private:
 #endif
         // If we are allocating more size, we clean the memory.
         if (size > _size) {
-            for (std::size_t i = _size; i < size; ++i)
+            for (std::size_t i = _size; i < size; ++i) {
                 _data[i] = T(0.);
+            }
         }
         // If it is the first time we allocate, clean all the data.
         else if (_size == 0) {
-            for (std::size_t i = 0; i < size; ++i)
+            for (std::size_t i = 0; i < size; ++i) {
                 _data[i] = T(0.);
+            }
         }
         // Set the size.
         _size = size;

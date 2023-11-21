@@ -20,7 +20,7 @@ struct Range {
     std::size_t stop;
 
     /// @brief Returns the [0, inf] index.
-    static constexpr inline Range all() noexcept
+    static inline Range all()
     {
         return { 0, static_cast<std::size_t>(-1) };
     }
@@ -46,7 +46,7 @@ public:
     /// @param end_row the final row.
     /// @param start_col the starating column.
     /// @param end_col the final column.
-    constexpr View(MatrixType *matrix, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max(), std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max()) noexcept
+    View(MatrixType *matrix, std::size_t start_row = 0, std::size_t end_row = std::numeric_limits<std::size_t>::max(), std::size_t start_col = 0, std::size_t end_col = std::numeric_limits<std::size_t>::max())
         : _matrix(matrix),
           _row{ start_row, end_row },
           _col{ start_col, end_col }
@@ -59,7 +59,7 @@ public:
     /// @param matrix the matrix.
     /// @param row the range for the rows.
     /// @param col the range for the columns.
-    constexpr View(MatrixType *matrix, Range row = Range::all(), Range col = Range::all()) noexcept
+    View(MatrixType *matrix, Range row = Range::all(), Range col = Range::all())
         : _matrix(matrix),
           _row{ row },
           _col{ col }
@@ -70,21 +70,21 @@ public:
 
     /// @brief Get the number of rows of the matrix.
     /// @returns the number of rows.
-    constexpr inline std::size_t rows() const noexcept override
+    inline std::size_t rows() const override
     {
         return std::min(_row.stop, _matrix->rows()) - _row.start;
     }
 
     /// @brief Get the number of columns of the matrix.
     /// @returns the number of columns.
-    constexpr inline std::size_t cols() const noexcept override
+    inline std::size_t cols() const override
     {
         return std::min(_col.stop, _matrix->cols()) - _col.start;
     }
 
     /// @brief Returns the total size of the matrix.
     /// @returns the total size of the matrix.
-    constexpr inline std::size_t size() const noexcept override
+    inline std::size_t size() const override
     {
         return this->rows() * this->cols();
     }
@@ -93,7 +93,7 @@ public:
     /// @param rhs the other matrix.
     /// @returns a reference to this matrix.
     template <typename T2>
-    constexpr inline auto &operator=(const MatrixBase<T2> &rhs) noexcept
+    inline auto &operator=(const MatrixBase<T2> &rhs)
     {
         assert(this->rows() == rhs.rows());
         assert(this->cols() == rhs.cols());
@@ -106,7 +106,7 @@ public:
     /// @brief Assign operator.
     /// @param rhs the other matrix.
     /// @returns a reference to this matrix.
-    constexpr inline auto &operator=(const View<MatrixType> &rhs) noexcept
+    inline auto &operator=(const View<MatrixType> &rhs)
     {
         assert(this->rows() == rhs.rows());
         assert(this->cols() == rhs.cols());
@@ -120,7 +120,7 @@ public:
     /// @param rhs the other matrix.
     /// @returns a reference to this matrix.
     template <typename T2>
-    constexpr inline auto &operator=(const View<T2> &rhs) noexcept
+    inline auto &operator=(const View<T2> &rhs)
     {
         assert(this->rows() == rhs.rows());
         assert(this->cols() == rhs.cols());
@@ -132,7 +132,7 @@ public:
 
     /// @brief Construct a new Matrix object.
     /// @param data
-    constexpr auto &operator=(const std::initializer_list<std::initializer_list<T>> &data) noexcept
+    auto &operator=(const std::initializer_list<std::initializer_list<T>> &data)
     {
         // Check the number of rows.
         if (0 == data.size()) {
@@ -166,14 +166,14 @@ public:
 
     /// @brief Returns a pointer to the internal data.
     /// @return the pointer.
-    constexpr inline T *data() noexcept override
+    inline T *data() override
     {
         return _matrix->data();
     }
 
     /// @brief Returns a constant pointer to the internal data.
     /// @return the constant pointer.
-    constexpr inline const T *data() const noexcept override
+    inline const T *data() const override
     {
         return _matrix->data();
     }
@@ -181,7 +181,7 @@ public:
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
     /// @returns the reference to the accessed item.
-    constexpr inline T &operator[](std::size_t pos) noexcept override
+    inline T &operator[](std::size_t pos) override
     {
 #ifdef ROW_MAJOR
         return this->at((pos / this->cols()), (pos % this->cols()));
@@ -193,7 +193,7 @@ public:
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
     /// @returns the reference to the accessed item.
-    constexpr inline const T &operator[](std::size_t pos) const noexcept override
+    inline const T &operator[](std::size_t pos) const override
     {
 #ifdef ROW_MAJOR
         return this->at((pos / this->cols()), (pos % this->cols()));
@@ -206,7 +206,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @returns the reference to the accessed item.
-    constexpr inline T &operator()(std::size_t row, std::size_t col) noexcept override
+    inline T &operator()(std::size_t row, std::size_t col) override
     {
         return this->at(row, col);
     }
@@ -215,7 +215,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @returns the const reference to the accessed item.
-    constexpr inline const T &operator()(std::size_t row, std::size_t col) const noexcept override
+    inline const T &operator()(std::size_t row, std::size_t col) const override
     {
         return this->at(row, col);
     }
@@ -224,7 +224,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @returns the reference to the accessed item.
-    constexpr inline T &at(std::size_t row, std::size_t col) noexcept override
+    inline T &at(std::size_t row, std::size_t col) override
     {
         return _matrix->at(_row.start + row, _col.start + col);
     }
@@ -233,20 +233,20 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @returns the const reference to the accessed item.
-    constexpr inline const T &at(std::size_t row, std::size_t col) const noexcept override
+    inline const T &at(std::size_t row, std::size_t col) const override
     {
         return _matrix->at(_row.start + row, _col.start + col);
     }
 };
 
 template <typename T>
-constexpr View<const Matrix<T>> Matrix<T>::operator()(Range row, Range col) const noexcept
+View<const Matrix<T>> Matrix<T>::operator()(Range row, Range col) const
 {
     return View(this, row, col);
 }
 
 template <typename T>
-constexpr View<Matrix<T>> Matrix<T>::operator()(Range row, Range col) noexcept
+View<Matrix<T>> Matrix<T>::operator()(Range row, Range col)
 {
     return View(this, row, col);
 }
@@ -266,9 +266,9 @@ public:
 
 public:
     /// @brief Creates a new cofactor view.
-    constexpr CofactorView(MatrixType *matrix,
-                           std::size_t excluded_row,
-                           std::size_t excluded_col) noexcept
+    CofactorView(MatrixType *matrix,
+                 std::size_t excluded_row,
+                 std::size_t excluded_col)
         : _matrix(matrix),
           _excluded_row(excluded_row),
           _excluded_col(excluded_col)
@@ -278,21 +278,21 @@ public:
 
     /// @brief Get the number of rows of the matrix.
     /// @returns the number of rows.
-    constexpr inline std::size_t rows() const noexcept override
+    inline std::size_t rows() const override
     {
         return _matrix->rows() - 1;
     }
 
     /// @brief Get the number of columns of the matrix.
     /// @returns the number of columns.
-    constexpr inline std::size_t cols() const noexcept override
+    inline std::size_t cols() const override
     {
         return _matrix->cols() - 1;
     }
 
     /// @brief Returns the total size of the matrix.
     /// @returns the total size of the matrix.
-    constexpr inline std::size_t size() const noexcept override
+    inline std::size_t size() const override
     {
         return this->rows() * this->cols();
     }
@@ -301,7 +301,7 @@ public:
     /// @param rhs the other matrix.
     /// @returns a reference to this matrix.
     template <typename T2>
-    constexpr inline auto &operator=(const MatrixBase<T2> &rhs) noexcept
+    inline auto &operator=(const MatrixBase<T2> &rhs)
     {
         assert(this->rows() == rhs.rows());
         assert(this->cols() == rhs.cols());
@@ -313,14 +313,14 @@ public:
 
     /// @brief Returns a pointer to the content.
     /// @returns the pointer.
-    constexpr inline T *data() noexcept override
+    inline T *data() override
     {
         return _matrix->data();
     }
 
     /// @brief Returns a constant pointer to the content.
     /// @returns the constant pointer.
-    constexpr inline const T *data() const noexcept override
+    inline const T *data() const override
     {
         return _matrix->data();
     }
@@ -328,7 +328,7 @@ public:
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
     /// @returns the reference to the accessed item.
-    constexpr inline T &operator[](std::size_t pos) noexcept override
+    inline T &operator[](std::size_t pos) override
     {
 #ifdef ROW_MAJOR
         return this->at((pos / this->rows()), (pos % this->rows()));
@@ -340,7 +340,7 @@ public:
     /// @brief Operator for accessing the matrix linearly.
     /// @param pos the liner position.
     /// @returns the reference to the accessed item.
-    constexpr inline const T &operator[](std::size_t pos) const noexcept override
+    inline const T &operator[](std::size_t pos) const override
     {
 #ifdef ROW_MAJOR
         return this->at((pos / this->rows()), (pos % this->rows()));
@@ -353,7 +353,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @returns the reference to the accessed item.
-    constexpr inline T &operator()(std::size_t row, std::size_t col) noexcept override
+    inline T &operator()(std::size_t row, std::size_t col) override
     {
         return this->at(row, col);
     }
@@ -362,7 +362,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @returns the const reference to the accessed item.
-    constexpr inline const T &operator()(std::size_t row, std::size_t col) const noexcept override
+    inline const T &operator()(std::size_t row, std::size_t col) const override
     {
         return this->at(row, col);
     }
@@ -371,7 +371,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @returns the reference to the accessed item.
-    constexpr inline T &at(std::size_t row, std::size_t col) noexcept override
+    inline T &at(std::size_t row, std::size_t col) override
     {
         return _matrix->at(row + (row >= _excluded_row), col + (col >= _excluded_col));
     }
@@ -380,7 +380,7 @@ public:
     /// @param row the accessed row.
     /// @param col the accessed column.
     /// @returns the const reference to the accessed item.
-    constexpr inline const T &at(std::size_t row, std::size_t col) const noexcept override
+    inline const T &at(std::size_t row, std::size_t col) const override
     {
         return _matrix->at(row + (row >= _excluded_row), col + (col >= _excluded_col));
     }

@@ -19,7 +19,7 @@ using Input    = malg::Vector<double>;
 using Output   = malg::Vector<double>;
 
 template <typename T>
-constexpr inline T compute_samples(Time time_start, Time time_end, Time time_delta, Time sampling = 1.0)
+inline T compute_samples(Time time_start, Time time_end, Time time_delta, Time sampling)
 {
     return static_cast<T>(((time_end - time_start) / time_delta) * sampling);
 }
@@ -35,8 +35,8 @@ int main(int, char *[])
     const Time time_start     = 0.0;
     const Time time_end       = 2.0;
     const Time time_delta     = 0.001;
-    const std::size_t samples = compute_samples<std::size_t>(time_start, time_end, time_delta);
-    std::size_t steps = 0;
+    const std::size_t samples = compute_samples<std::size_t>(time_start, time_end, time_delta, 1.0);
+    std::size_t steps         = 0;
 
     // Define the state-space model.
     malg::control::StateSpace<Variable> sys;

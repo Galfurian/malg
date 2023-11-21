@@ -80,8 +80,8 @@ inline auto c2d(const StateSpace<T> &sys, T sample_time)
     // Create the discrete time state-space model.
     DiscreteStateSpace<T> dsys;
     // Compute the discretized matrices.
-    dsys.A = linalg::expm(sys.A * sample_time);
-    dsys.B = linalg::inverse(sys.A) * (dsys.A - utility::identity<T>(sys.A.rows())) * sys.B;
+    dsys.A = linalg::expm(sys.A * sample_time, 1e-05);
+    dsys.B = linalg::inverse(sys.A) * (dsys.A - utility::identity<T>(sys.A.rows(), 1)) * sys.B;
     dsys.C = sys.C;
     dsys.D = sys.D;
     // Set the sampling period.
@@ -156,10 +156,11 @@ inline auto ctrb(const MatrixBase<T> &A, const MatrixBase<T> &B)
         throw std::runtime_error("ctrb: A and B matrices dimensions doesn't match.");
     }
     // Create the controllability matrix.
-    Matrix<T> result = B;
+    Matrix<T> result(B);
     // Construct the controllability matrix.
-    for (std::size_t i = 1; i < A.rows(); ++i)
+    for (std::size_t i = 1; i < A.rows(); ++i) {
         result = utility::hstack(result, linalg::powm(A, i) * B);
+    }
     return result;
 }
 
@@ -185,8 +186,9 @@ inline auto obsv(const MatrixBase<T> &A, const MatrixBase<T> &C)
     // Create the observability matrix.
     Matrix<T> result = C;
     // Construct the observability matrix.
-    for (std::size_t i = 1; i < A.rows(); ++i)
+    for (std::size_t i = 1; i < A.rows(); ++i) {
         result = utility::vstack(result, C * linalg::powm(A, i));
+    }
     return result;
 }
 
@@ -198,9 +200,11 @@ inline auto poly(const Vector<T> &a)
 {
     Vector<T> c(a.size() + 1);
     c[0] = 1;
-    for (std::size_t j = 0; j < a.size(); ++j)
-        for (std::size_t i = j + 1; i >= 1; --i)
+    for (std::size_t j = 0; j < a.size(); ++j) {
+        for (std::size_t i = j + 1; i >= 1; --i) {
             c[i] -= a[j] * c[i - 1];
+        }
+    }
     return c;
 }
 
@@ -212,14 +216,18 @@ template <typename T>
 inline auto polyreduce(const Vector<T> &a)
 {
     std::size_t i, j;
-    for (j = 0; j < a.size(); ++j)
-        if (a[j] != 0)
+    for (j = 0; j < a.size(); ++j) {
+        if (a[j] != 0) {
             break;
-    if (j == a.size())
+        }
+    }
+    if (j == a.size()) {
         return Vector<T>({ 0 });
+    }
     Vector<T> c(a.size() - j);
-    for (i = j; i < a.size(); ++i)
+    for (i = j; i < a.size(); ++i) {
         c[i - j] = a[i];
+    }
     return c;
 }
 
@@ -230,16 +238,19 @@ template <typename T>
 inline auto poly(const MatrixBase<T> &A)
 {
     // An empty matrix.
-    if ((A.size() == 0))
+    if ((A.size() == 0)) {
         return Vector<T>{ 1 };
+    }
 
     // A row/column vector.
     if ((A.rows() == 1) || (A.cols() == 1)) {
         Vector<T> c(A.size() + 1);
         c[0] = 1;
-        for (std::size_t j = 0; j < A.size(); ++j)
-            for (std::size_t i = j + 1; i >= 1; --i)
+        for (std::size_t j = 0; j < A.size(); ++j) {
+            for (std::size_t i = j + 1; i >= 1; --i) {
                 c[i] -= A[j] * c[i - 1];
+            }
+        }
         return c;
     }
     // If we are dealing with a matrix, A must be square.
@@ -248,11 +259,11 @@ inline auto poly(const MatrixBase<T> &A)
     }
     auto n = A.rows();
     Vector<T> c(n + 1);
-    Matrix<T> B = A;
+    Matrix<T> B(A);
     auto last_c = trace(B);
     c[0]        = 1;
     c[1]        = -last_c;
-    auto I      = utility::identity<T>(B.rows());
+    auto I      = utility::identity<T>(B.rows(), 1);
     for (std::size_t m = 2; m < (n + 1); ++m) {
         B      = A * (B - (I * last_c));
         last_c = trace(B) / static_cast<double>(m);

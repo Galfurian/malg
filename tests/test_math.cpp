@@ -1,7 +1,7 @@
 #include "malg/matrix.hpp"
+#include "malg/io.hpp"
 #include "malg/linalg.hpp"
 #include "malg/math.hpp"
-#include "malg/io.hpp"
 
 int test_int()
 {
@@ -50,16 +50,20 @@ int test_int()
         { 2.98660079, -4.03525548, 5.63094744, -3.59205073, 1.89608685 }
     };
     // Set the tollerance, specifically for div.
-    feq::tolerance() = 1e-06;
+    malg::feq::tolerance() = 1e-06;
     // Check the operations.
-    if (!malg::all((a + b) == sum))
+    if (!malg::all((a + b) == sum)) {
         return 1;
-    if (!malg::all((a - b) == sub))
+    }
+    if (!malg::all((a - b) == sub)) {
         return 1;
-    if (!malg::all((a * b) == mul))
+    }
+    if (!malg::all((a * b) == mul)) {
         return 1;
-    if (!malg::all(malg::linalg::div(a, b) == div))
+    }
+    if (!malg::all(malg::linalg::div(a, b) == div)) {
         return 1;
+    }
     return 0;
 }
 
@@ -110,16 +114,20 @@ int test_double()
         { -4.05907923, 15.0937256, -4.35863652, 8.57273315, 10.9560582 }
     };
     // Set the tollerance, specifically for div.
-    feq::tolerance() = 1e-06;
+    malg::feq::tolerance() = 1e-06;
     // Check the operations.
-    if (!malg::all((a + b) == sum))
+    if (!malg::all((a + b) == sum)) {
         return 1;
-    if (!malg::all((a - b) == sub))
+    }
+    if (!malg::all((a - b) == sub)) {
         return 1;
-    if (!malg::all((a * b) == mul))
+    }
+    if (!malg::all((a * b) == mul)) {
         return 1;
-    if (!malg::all(malg::linalg::div(a, b) == div))
+    }
+    if (!malg::all(malg::linalg::div(a, b) == div)) {
         return 1;
+    }
     return 0;
 }
 
@@ -172,26 +180,33 @@ int test_complex()
     };
 
     // Set the tollerance, specifically for div.
-    feq::tolerance() = 1e-06;
+    malg::feq::tolerance() = 1e-06;
     // Check the operations.
-    if (!malg::all((a + b) == sum))
+    if (!malg::all((a + b) == sum)) {
         return 1;
-    if (!malg::all((a - b) == sub))
+    }
+    if (!malg::all((a - b) == sub)) {
         return 1;
-    if (!malg::all((a * b) == mul))
+    }
+    if (!malg::all((a * b) == mul)) {
         return 1;
-    if (!malg::all(malg::linalg::div(a, b) == div))
+    }
+    if (!malg::all(malg::linalg::div(a, b) == div)) {
         return 1;
+    }
     return 0;
 }
 
 int main(int, char *[])
 {
-    if (test_int())
+    if (test_int()) {
         return 1;
-    if (test_double())
+    }
+    if (test_double()) {
         return 1;
-    if (test_complex())
+    }
+    if (test_complex()) {
         return 1;
+    }
     return 0;
 }

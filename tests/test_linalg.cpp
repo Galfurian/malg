@@ -78,17 +78,17 @@ int test_expm()
         { -5.29652557e+44, -3.11681346e+45, -1.71195886e+45, 2.98936395e+45, 1.15277277e+43 }
     };
     // Set the tollerance, specifically for div.
-    feq::tolerance() = 1e-06;
+    malg::feq::tolerance() = 1e-06;
     // Check the operations.
-    if (!malg::all(malg::linalg::expm(a) == ref_a))
+    if (!malg::all(malg::linalg::expm(a, 1e-05) == ref_a))
         return 1;
-    if (!malg::all(malg::linalg::expm(b) == ref_b))
+    if (!malg::all(malg::linalg::expm(b, 1e-05) == ref_b))
         return 1;
-    if (!malg::all(malg::linalg::expm(c) == ref_c))
+    if (!malg::all(malg::linalg::expm(c, 1e-05) == ref_c))
         return 1;
-    if (!malg::all(malg::linalg::expm(d) == ref_d))
+    if (!malg::all(malg::linalg::expm(d, 1e-05) == ref_d))
         return 1;
-    if (!malg::all(malg::linalg::expm(e) == ref_e))
+    if (!malg::all(malg::linalg::expm(e, 1e-05) == ref_e))
         return 1;
     return 0;
 }

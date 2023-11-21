@@ -5,9 +5,9 @@
 #pragma once
 
 #include "malg/utility.hpp"
-#include "malg/vector.hpp"
-#include "malg/matrix.hpp"
 #include "malg/math.hpp"
+#include "malg/matrix.hpp"
+#include "malg/vector.hpp"
 
 #include <algorithm>
 #include <complex>
@@ -22,9 +22,11 @@ template <typename T>
 inline auto transpose(const MatrixBase<T> &A)
 {
     Matrix<std::remove_const_t<T>> result(A.cols(), A.rows(), 0.0);
-    for (std::size_t r = 0, c = 0; r < A.rows(); ++r)
-        for (c = 0; c < A.cols(); ++c)
+    for (std::size_t r = 0, c = 0; r < A.rows(); ++r) {
+        for (c = 0; c < A.cols(); ++c) {
             result(c, r) = A(r, c);
+        }
+    }
     return result;
 }
 
@@ -32,7 +34,7 @@ inline auto transpose(const MatrixBase<T> &A)
 /// @param n the input value.
 /// @returns the factorial.
 template <typename T>
-inline constexpr T factorial(T n)
+inline T factorial(T n)
 {
     return (n <= 0) ? 1 : n * factorial<T>(n - 1);
 }
@@ -44,9 +46,10 @@ inline constexpr T factorial(T n)
 template <typename T>
 inline auto powm(const MatrixBase<T> &A, std::size_t N)
 {
-    auto R = utility::eye<std::remove_const_t<T>>(A.rows(), A.cols());
-    for (std::size_t k = 0; k < N; ++k)
+    auto R = utility::eye<std::remove_const_t<T>>(A.rows(), A.cols(), 1);
+    for (std::size_t k = 0; k < N; ++k) {
         R *= A;
+    }
     return R;
 }
 
@@ -57,9 +60,11 @@ template <typename T>
 inline auto hermitian_transpose(const MatrixBase<std::complex<T>> &A)
 {
     Matrix<std::remove_const_t<T>> result(A.cols(), A.rows(), 0.0);
-    for (std::size_t r = 0, c = 0; r < A.rows(); ++r)
-        for (c = 0; c < A.cols(); ++c)
+    for (std::size_t r = 0, c = 0; r < A.rows(); ++r) {
+        for (c = 0; c < A.cols(); ++c) {
             result(c, r) = std::conj(A(r, c));
+        }
+    }
     return result;
 }
 
@@ -70,9 +75,11 @@ template <typename T>
 inline auto conjugate_transpose(const MatrixBase<std::complex<T>> &matrix)
 {
     Matrix<std::complex<std::remove_const_t<T>>> result(matrix.cols(), matrix.rows(), 0.);
-    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r)
-        for (c = 0; c < matrix.cols(); ++c)
+    for (std::size_t r = 0, c = 0; r < matrix.rows(); ++r) {
+        for (c = 0; c < matrix.cols(); ++c) {
             result(c, r) = std::conj(matrix(r, c));
+        }
+    }
     return result;
 }
 
@@ -96,8 +103,9 @@ inline auto cofactor(const MatrixBase<T> &matrix, std::size_t p, std::size_t q)
             if ((row != p) && (col != q)) {
                 output(i, j++) = matrix(row, col);
                 // When the row is filled, increase row index and reset col index.
-                if (j == (matrix.cols() - 1))
+                if (j == (matrix.cols() - 1)) {
                     j = 0, ++i;
+                }
             }
         }
     }
@@ -111,8 +119,9 @@ inline auto cofactor(const MatrixBase<T> &matrix, std::size_t p, std::size_t q)
 template <typename CT>
 inline auto determinant(const MatrixBase<CT> &matrix)
 {
-    if (!malg::utility::is_square(matrix))
+    if (!malg::utility::is_square(matrix)) {
         throw std::invalid_argument("The input matrix is not square.");
+    }
     // Create an alias for the non-constant type.
     using T = std::remove_const_t<CT>;
     // Get the size of the matrix.
@@ -159,11 +168,13 @@ inline auto determinant(const MatrixBase<CT> &matrix)
         if (A(c, c) == 0.) {
             // Right now, I'm trying to find a place below the current
             k = c + 1;
-            while ((k < A.rows()) && (A(k, c) == 0.))
+            while ((k < A.rows()) && (A(k, c) == 0.)) {
                 k++;
+            }
             // If we did not find a non-zero value, we have a singular matrix.
-            if (k == A.rows())
+            if (k == A.rows()) {
                 break;
+            }
             // Swap the rows.
             utility::swap_rows(A, c, k);
             // Every time we swap rows, we need to change the sign to the
@@ -190,13 +201,15 @@ inline auto determinant(const MatrixBase<CT> &matrix)
 template <typename T>
 inline auto adjoint(const MatrixBase<T> &matrix)
 {
-    if (!malg::utility::is_square(matrix))
+    if (!malg::utility::is_square(matrix)) {
         throw std::invalid_argument("The input matrix is not square.");
+    }
     // Get the size of the matrix.
     const std::size_t N = matrix.cols();
     // Return 1.
-    if (N == 1)
+    if (N == 1) {
         return Matrix<std::remove_const_t<T>>(1, 1, 1);
+    }
     // Prepare the output matrix.
     Matrix<std::remove_const_t<T>> adj(N, N, 0);
     for (std::size_t i = 0; i < N; ++i) {
@@ -218,8 +231,9 @@ inline auto adjoint(const MatrixBase<T> &matrix)
 template <typename T>
 inline auto inverse(const MatrixBase<T> &matrix)
 {
-    if (!malg::utility::is_square(matrix))
+    if (!malg::utility::is_square(matrix)) {
         throw std::invalid_argument("The input matrix is not square.");
+    }
     // Select the right type.
     using data_type_t = std::remove_const_t<malg::extract_common_type_t<T, double>>;
     // Compute the determinant.
@@ -234,9 +248,11 @@ inline auto inverse(const MatrixBase<T> &matrix)
     // Create a matrix for the result.
     Matrix<data_type_t> inv(matrix.rows(), matrix.cols(), 0);
     // Find Inverse using formula "inv(A) = adj(A)/det(A)".
-    for (std::size_t r = 0; r < matrix.rows(); ++r)
-        for (std::size_t c = 0; c < matrix.cols(); ++c)
+    for (std::size_t r = 0; r < matrix.rows(); ++r) {
+        for (std::size_t c = 0; c < matrix.cols(); ++c) {
             inv(r, c) = adjoint(r, c) / det;
+        }
+    }
     return inv;
 }
 
@@ -268,9 +284,11 @@ inline auto qr_decomposition(const Matrix<T> &A)
     // Compute Q and R.
     for (std::size_t i = 0; i < (R.cols() - (R.cols() == R.rows())); ++i) {
         // Initialize holder.
-        for (std::size_t r = 0; r < H.rows(); ++r)
-            for (std::size_t c = 0; c < H.cols(); ++c)
+        for (std::size_t r = 0; r < H.rows(); ++r) {
+            for (std::size_t c = 0; c < H.cols(); ++c) {
                 H(r, c) = (r == c) ? 1 : 0;
+            }
+        }
         // Calculate Householder matrix i: rows and i: columns from R i: rows and ith column
         View(H, i, -1, i, -1) = make_householder(utility::extract_column(R, i, i, -1));
         // Update Q and R.
@@ -278,9 +296,11 @@ inline auto qr_decomposition(const Matrix<T> &A)
         R = H * R;
     }
     // Clean up the lower triangular elements of R.
-    for (std::size_t r = 1; r < R.rows(); ++r)
-        for (std::size_t c = 0; c < std::min(r, R.cols()); ++c)
+    for (std::size_t r = 1; r < R.rows(); ++r) {
+        for (std::size_t c = 0; c < std::min(r, R.cols()); ++c) {
             R(r, c) = 0;
+        }
+    }
     return std::make_pair(std::move(Q), std::move(R));
 }
 
@@ -290,8 +310,9 @@ inline auto qr_decomposition(const Matrix<T> &A)
 template <typename T>
 inline auto lu_decomposition(const MatrixBase<T> &A)
 {
-    if (!malg::utility::is_square(A))
+    if (!malg::utility::is_square(A)) {
         throw std::invalid_argument("The input matrix is not square.");
+    }
     std::size_t N = A.rows();
     Matrix<T> l(N, N, 0);
     Matrix<T> u(N, N, 0);
@@ -299,9 +320,9 @@ inline auto lu_decomposition(const MatrixBase<T> &A)
     std::size_t i, j, k;
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
-            if (j < i)
+            if (j < i) {
                 l(j, i) = 0;
-            else {
+            } else {
                 l(j, i) = A(j, i);
                 for (k = 0; k < i; k++) {
                     l(j, i) = l(j, i) - l(j, k) * u(k, i);
@@ -309,11 +330,11 @@ inline auto lu_decomposition(const MatrixBase<T> &A)
             }
         }
         for (j = 0; j < N; j++) {
-            if (j < i)
+            if (j < i) {
                 u(i, j) = 0;
-            else if (j == i)
+            } else if (j == i) {
                 u(i, j) = 1;
-            else {
+            } else {
                 u(i, j) = A(i, j) / l(i, i);
                 for (k = 0; k < i; k++) {
                     u(i, j) = u(i, j) - ((l(i, k) * u(k, j)) / l(i, i));
@@ -366,22 +387,24 @@ template <typename T>
 inline auto exp(const MatrixBase<T> &A)
 {
     Matrix<std::remove_const_t<T>> result(A.cols(), A.rows(), 0.0);
-    for (std::size_t r = 0, c = 0; r < A.rows(); ++r)
-        for (c = 0; c < A.cols(); ++c)
+    for (std::size_t r = 0, c = 0; r < A.rows(); ++r) {
+        for (c = 0; c < A.cols(); ++c) {
             result(c, r) = std::exp(A(r, c));
+        }
+    }
     return result;
 }
 
 /// @brief Copmutes the exponenation of the input matrix.
 /// @param A the input matrix.
-/// @param accuracy the desired accuracy.
+/// @param accuracy the desired accuracy (e.g., 1e-05).
 /// @returns the result of the exponential.
 template <typename T>
-inline auto expm(const MatrixBase<T> &A, double accuracy = 0.00001)
+inline auto expm(const MatrixBase<T> &A, double accuracy)
 {
-    // NOTE: use simplified form of "scale and square"
-    // Trade faster coversion in power series for a couple of additional square operations
-    // TODO: better/faster algorithm than power series?
+    // TODO(enrico): use simplified form of "scale and square". Trade faster
+    // coversion in power series for a couple of additional square operations.
+    // TODO(enrico): better/faster algorithm than power series?
 
     // Scale down matrix A by a power of 2, such that norm(A) < 1.
     const auto [iterations, scale] = malg::log2_ceil(A);
@@ -392,9 +415,9 @@ inline auto expm(const MatrixBase<T> &A, double accuracy = 0.00001)
     // init (k = 0)
     const auto batch_size      = A.rows() * A.rows();
     const auto square_accuracy = accuracy * accuracy * scale * scale;
-    auto mtk                   = malg::utility::eye<T>(A.rows(), A.cols()); // scaled_a to the power k
-    auto ret                   = malg::utility::eye<T>(A.rows(), A.cols()); // sum of power seriees
-    auto fac_inv               = double{ 1.0 };                             // inverse faculty
+    auto mtk                   = malg::utility::eye<T>(A.rows(), A.cols(), 1); // scaled_a to the power k
+    auto ret                   = malg::utility::eye<T>(A.rows(), A.cols(), 1); // sum of power seriees
+    auto fac_inv               = double{ 1.0 };                                // inverse faculty
     auto rel_square_diff       = square_accuracy + 1.0;
 
     for (std::size_t batch_start_idx = 1; (rel_square_diff > square_accuracy && fac_inv != 0.0); batch_start_idx += batch_size) {
@@ -402,15 +425,15 @@ inline auto expm(const MatrixBase<T> &A, double accuracy = 0.00001)
         for (std::size_t i = 0; i < batch_size; ++i) {
             const double k = static_cast<double>(batch_start_idx + i);
             fac_inv        = fac_inv * (1.0 / k);
-            if (feq::approximately_equal(fac_inv, 0.0)) {
+            if (malg::feq::approximately_equal(fac_inv, 0.0)) {
                 break;
             }
             mtk = mtk * scaled_a;
             local_accum += mtk * fac_inv;
         }
         ret += local_accum;
-        // Caclulate relative change in this iteration
-        // TODO: properly guard against division by zero
+        // Caclulate relative change in this iteration.
+        // TODO(enrico): properly guard against division by zero
         const malg::Matrix<T> rel_error = malg::linalg::div(local_accum * local_accum, ret * ret + accuracy);
         rel_square_diff                 = malg::square_norm(rel_error);
     };

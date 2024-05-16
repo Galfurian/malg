@@ -90,18 +90,16 @@ public:
 };
 
 /// @brief The dc motor itself.
-struct ObserverPrint {
-    void operator()(const State &x, Time t)
+struct ObserverPrint : public chainsaw::detail::Observer<State, Time> {
+    inline void operator()(const State &x, const Time &t) override
     {
         std::cout << std::fixed << std::setprecision(4) << t << " " << x[0] << " " << x[1] << "\n";
     }
 };
 
 template <std::size_t DECIMATION = 0>
-struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
-    std::vector<Variable> time, x0, x1;
-    ObserverSave() = default;
-    inline void operator()(const State &x, const Time &t)
+struct ObserverSave : public chainsaw::detail::DecimationObserver<State, Time, DECIMATION> {
+    inline void operator()(const State &x, const Time &t) override
     {
         if (this->observe()) {
             time.emplace_back(t);
@@ -109,6 +107,7 @@ struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
             x1.emplace_back(x[1]);
         }
     }
+    std::vector<Variable> time, x0, x1;
 };
 
 template <typename T>
@@ -156,16 +155,14 @@ int main(int, char *[])
     Rk4 rk4;
 
 #ifdef MALG_ENABLE_PLOT
-    ObserverSave obs_adaptive_euler;
-    ObserverSave obs_adaptive_rk4;
-    ObserverSave obs_euler;
-    ObserverSave obs_rk4;
+    using Observer = ObserverSave;
 #else
-    chainsaw::detail::NoObserver obs_adaptive_euler;
-    chainsaw::detail::NoObserver obs_adaptive_rk4;
-    chainsaw::detail::NoObserver obs_euler;
-    chainsaw::detail::NoObserver obs_rk4;
+    using Observer = chainsaw::detail::Observer<State, Time>;
 #endif
+    Observer obs_adaptive_euler;
+    Observer obs_adaptive_rk4;
+    Observer obs_euler;
+    Observer obs_rk4;
 
     stopwatch::Stopwatch sw;
 

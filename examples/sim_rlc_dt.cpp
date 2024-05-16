@@ -8,7 +8,7 @@
 
 #include <stopwatch/stopwatch.hpp>
 
-#ifdef MALG_ENABLE_PLOT
+#ifdef ENABLE_PLOT
 #include <matplot/matplot.h>
 #endif
 
@@ -58,7 +58,7 @@ int main(int, char *[])
     // Discretize the systme.
     auto dsys = malg::control::c2d(sys, time_delta);
 
-#ifdef MALG_ENABLE_PLOT
+#ifdef ENABLE_PLOT
     std::vector<Variable> time, u0, x0, x1;
 #endif
 
@@ -81,7 +81,7 @@ int main(int, char *[])
         x = malg::dot(dsys.A, x) + malg::dot(dsys.B, u);
         y = malg::dot(dsys.C, x) + malg::dot(dsys.D, u);
 
-#ifdef MALG_ENABLE_PLOT
+#ifdef ENABLE_PLOT
         time.emplace_back(t);
         u0.emplace_back(u[0]);
         x0.emplace_back(x[0]);
@@ -94,7 +94,7 @@ int main(int, char *[])
     std::cout << "Elapsed time " << sw << "\n";
     std::cout << "Integration steps " << steps << "\n\n";
 
-#ifdef MALG_ENABLE_PLOT
+#ifdef ENABLE_PLOT
     auto colors      = matplot::palette::accent(3);
     auto color_index = 0u;
     matplot::line_handle lh;

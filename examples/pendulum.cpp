@@ -12,7 +12,7 @@
 #include <chainsaw/stepper/stepper_euler.hpp>
 #include <chainsaw/stepper/stepper_rk4.hpp>
 
-#ifdef MALG_ENABLE_PLOT
+#ifdef ENABLE_PLOT
 #include <matplot/matplot.h>
 #endif
 
@@ -102,13 +102,9 @@ struct Model : public Parameter {
     }
 };
 
-} // namespace pendulum
-
 template <std::size_t DECIMATION = 0>
-struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
-    std::vector<pendulum::Variable> time, angle, velocity;
-    ObserverSave() = default;
-    inline void operator()(const pendulum::State &x, const pendulum::Time &t)
+struct ObserverSave : public chainsaw::detail::ObserverDecimate<State, Time, DECIMATION> {
+    inline void operator()(const State &x, const Time &t) noexcept override
     {
         if (this->observe()) {
             time.emplace_back(t);
@@ -116,24 +112,29 @@ struct ObserverSave : public chainsaw::detail::DecimationObserver<DECIMATION> {
             velocity.emplace_back(x[1]);
         }
     }
+
+    std::vector<Variable> time, angle, velocity;
 };
+
+} // namespace pendulum
 
 int main(int, char *[])
 {
+    using namespace pendulum;
     // Instantiate the parameters.
-    pendulum::Parameter parameters;
+    Parameter parameters;
     // Instantiate the model.
-    pendulum::Model system(parameters);
+    Model system(parameters);
     // Runtime state.
-    pendulum::State x, dx;
+    State x, dx;
     // Initial and runtime states.
-    const pendulum::State x0{ .0, .0 };
+    const State x0{ .0, .0 };
     // Simulation parameters.
-    const pendulum::Time time_start = 0.0;
-    const pendulum::Time time_end   = 40.0;
-    const pendulum::Time time_delta = 0.01;
+    const Time time_start = 0.0;
+    const Time time_end   = 40.0;
+    const Time time_delta = 0.01;
     // Setup the adaptive solver.
-    using FStepper        = chainsaw::stepper_rk4<pendulum::State, pendulum::Time>;
+    using FStepper        = chainsaw::stepper_rk4<State, Time>;
     const auto Iterations = 2;
     const auto Error      = chainsaw::ErrorFormula::Mixed;
     using AStepper        = chainsaw::stepper_adaptive<FStepper, Iterations, Error>;
@@ -143,14 +144,16 @@ int main(int, char *[])
     astepper.set_tollerance(1e-03);
     astepper.set_min_delta(0.0001);
     astepper.set_max_delta(0.1);
+
     // Instantiate the observers.
-#ifdef MALG_ENABLE_PLOT
-    ObserverSave<0> fobserver;
-    ObserverSave<0> aobserver;
-#elif 1
-    chainsaw::detail::ObserverPrint<0> fobserver;
-    chainsaw::detail::ObserverPrint<0> aobserver;
+#ifdef ENABLE_PLOT
+    using Observer = ObserverSave<0>;
+#else
+    using Observer = chainsaw::detail::ObserverPrint<State, Time, 0>;
 #endif
+
+    Observer fobserver;
+    Observer aobserver;
 
     // Instantiate the stopwatch.
     stopwatch::Stopwatch sw;
@@ -169,7 +172,7 @@ int main(int, char *[])
     std::cout << "    Fixed stepper computed    " << std::setw(12) << fstepper.steps() << " steps, for a total of " << sw[0] << "\n";
     std::cout << "    Adaptive stepper computed " << std::setw(12) << astepper.steps() << " steps, for a total of " << sw[1] << "\n";
 
-#ifdef MALG_ENABLE_PLOT
+#ifdef ENABLE_PLOT
     auto figure = matplot::figure(true);
     matplot::grid(matplot::on);
     matplot::hold(matplot::on);

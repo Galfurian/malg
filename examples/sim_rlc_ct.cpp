@@ -14,7 +14,7 @@
 #include <chainsaw/stepper/stepper_euler.hpp>
 #include <chainsaw/stepper/stepper_rk4.hpp>
 
-#ifdef MALG_ENABLE_PLOT
+#ifdef ENABLE_PLOT
 #include <matplot/matplot.h>
 #endif
 
@@ -89,16 +89,8 @@ public:
     }
 };
 
-/// @brief The dc motor itself.
-struct ObserverPrint : public chainsaw::detail::Observer<State, Time> {
-    inline void operator()(const State &x, const Time &t) override
-    {
-        std::cout << std::fixed << std::setprecision(4) << t << " " << x[0] << " " << x[1] << "\n";
-    }
-};
-
 template <std::size_t DECIMATION = 0>
-struct ObserverSave : public chainsaw::detail::DecimationObserver<State, Time, DECIMATION> {
+struct ObserverSave : public chainsaw::detail::ObserverDecimate<State, Time, DECIMATION> {
     inline void operator()(const State &x, const Time &t) override
     {
         if (this->observe()) {
@@ -154,10 +146,10 @@ int main(int, char *[])
     Euler euler;
     Rk4 rk4;
 
-#ifdef MALG_ENABLE_PLOT
-    using Observer = ObserverSave;
+#ifdef ENABLE_PLOT
+    using Observer = ObserverSave<0>;
 #else
-    using Observer = chainsaw::detail::Observer<State, Time>;
+    using Observer = chainsaw::detail::ObserverPrint<State, Time, 0>;
 #endif
     Observer obs_adaptive_euler;
     Observer obs_adaptive_rk4;
@@ -200,7 +192,7 @@ int main(int, char *[])
     std::cout << "    Euler          took " << std::setw(12) << euler.steps() << " steps, for a total of " << sw[2] << "\n";
     std::cout << "    RK4            took " << std::setw(12) << rk4.steps() << " steps, for a total of " << sw[3] << "\n";
 
-#ifdef MALG_ENABLE_PLOT
+#ifdef ENABLE_PLOT
     auto colors = matplot::palette::accent(4);
     auto color  = colors.begin();
 

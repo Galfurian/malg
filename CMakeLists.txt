@@ -141,32 +141,22 @@ if(BUILD_EXAMPLES)
     endif()
 
     # = TARGETS ===============================================================
-
     # Add the example.
     add_executable(${PROJECT_NAME}_sim_rlc_ct examples/sim_rlc_ct.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${COMPILE_OPTIONS})
-    # Inlcude header directories.
     target_include_directories(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
-    # Set the linked libraries.
     target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${PROJECT_NAME} stopwatch chainsaw)
     
     # Add the example.
     add_executable(${PROJECT_NAME}_sim_rlc_dt examples/sim_rlc_dt.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${COMPILE_OPTIONS})
-    # Inlcude header directories.
     target_include_directories(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${stopwatch_SOURCE_DIR}/include)
-    # Set the linked libraries.
     target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${PROJECT_NAME} stopwatch)
     
     # Add the example.
     add_executable(${PROJECT_NAME}_pendulum examples/pendulum.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_pendulum PUBLIC ${COMPILE_OPTIONS})
-    # Inlcude header directories.
     target_include_directories(${PROJECT_NAME}_pendulum PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
-    # Set the linked libraries.
     target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC ${PROJECT_NAME} stopwatch chainsaw)
     
     # Add matplot++ if required.
@@ -199,106 +189,74 @@ if(BUILD_TESTS)
     # -------------------------------------
     # TEST
     # -------------------------------------
-    
-    # Add the test.
     add_executable(${PROJECT_NAME}_test_math ${PROJECT_SOURCE_DIR}/tests/test_math.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_test_math PUBLIC ${COMPILE_OPTIONS})
-    # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_math ${PROJECT_NAME})
-    # Add the test.
     add_test(${PROJECT_NAME}_test_math_run ${PROJECT_NAME}_test_math)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    
-    # Add the test.
     add_executable(${PROJECT_NAME}_test_linalg ${PROJECT_SOURCE_DIR}/tests/test_linalg.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_test_linalg PUBLIC ${COMPILE_OPTIONS})
-    # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_linalg ${PROJECT_NAME})
-    # Add the test.
     add_test(${PROJECT_NAME}_test_linalg_run ${PROJECT_NAME}_test_linalg)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    
-    # Add the test.
     add_executable(${PROJECT_NAME}_test_view ${PROJECT_SOURCE_DIR}/tests/test_view.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_test_view PUBLIC ${COMPILE_OPTIONS})
-    # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_view ${PROJECT_NAME})
-    # Add the test.
     add_test(${PROJECT_NAME}_test_view_run ${PROJECT_NAME}_test_view)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    
-    # Add the test.
     add_executable(${PROJECT_NAME}_test_read_write_file ${PROJECT_SOURCE_DIR}/tests/test_read_write_file.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_test_read_write_file PUBLIC ${COMPILE_OPTIONS})
-    # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_read_write_file ${PROJECT_NAME})
-    # Add the test.
     add_test(${PROJECT_NAME}_test_read_write_file_run ${PROJECT_NAME}_test_read_write_file)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    
-    # Add the test.
     add_executable(${PROJECT_NAME}_test_control ${PROJECT_SOURCE_DIR}/tests/test_control.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_test_control PUBLIC ${COMPILE_OPTIONS})
-    # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_control ${PROJECT_NAME})
-    # Add the test.
     add_test(${PROJECT_NAME}_test_control_run ${PROJECT_NAME}_test_control)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    
-    # Add the test.
     add_executable(${PROJECT_NAME}_test_complex ${PROJECT_SOURCE_DIR}/tests/test_complex.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_test_complex PUBLIC ${COMPILE_OPTIONS})
-    # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_complex ${PROJECT_NAME})
-    # Add the test.
     add_test(${PROJECT_NAME}_test_complex_run ${PROJECT_NAME}_test_complex)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    
-    # Add the test.
     add_executable(${PROJECT_NAME}_test_find ${PROJECT_SOURCE_DIR}/tests/test_find.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_test_find PUBLIC ${COMPILE_OPTIONS})
-    # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_find ${PROJECT_NAME})
-    # Add the test.
     add_test(${PROJECT_NAME}_test_find_run ${PROJECT_NAME}_test_find)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    
-    # Add the test.
     add_executable(${PROJECT_NAME}_test_memory ${PROJECT_SOURCE_DIR}/tests/test_memory.cpp)
-    # Set compilation flags.
     target_compile_options(${PROJECT_NAME}_test_memory PUBLIC ${COMPILE_OPTIONS})
-    # Liking for the test.
     target_link_libraries(${PROJECT_NAME}_test_memory ${PROJECT_NAME})
-    # Add the test.
     add_test(${PROJECT_NAME}_test_memory_run ${PROJECT_NAME}_test_memory)
+
+    # -------------------------------------
+    # TEST
+    # -------------------------------------
+    add_executable(${PROJECT_NAME}_test_fixed_size ${PROJECT_SOURCE_DIR}/tests/test_fixed_size.cpp)
+    target_compile_options(${PROJECT_NAME}_test_fixed_size PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(${PROJECT_NAME}_test_fixed_size ${PROJECT_NAME})
+    add_test(${PROJECT_NAME}_test_fixed_size_run ${PROJECT_NAME}_test_fixed_size)
 
 endif()
 

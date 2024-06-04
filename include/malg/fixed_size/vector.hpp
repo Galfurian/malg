@@ -248,7 +248,7 @@ struct Vector : public VectorBase<T, N> {
         return &_data;
     }
 
-private:
+protected:
     T _data[N];
 };
 

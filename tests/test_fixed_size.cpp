@@ -34,19 +34,9 @@ int main(int, char *[])
     std::cout << (1.5 + m1) << "\n";
     std::cout << (m1 == m2) << "\n";
 
-    // malg::Vector<double, 2> v3 = { 1, 2 };
-    // auto w3                    = malg::view<0, 2>(v2);
+    for (std::size_t i = 0; i < (3 + 3); ++i) {
+        std::cout << m1[i] << "\n";
+    }
 
-    // std::cout << (v3 + w3) << "\n";
-
-    auto w1 = malg::view<1, 3, 1, 3>(m1);
-
-    std::cout << "\n";
-    std::cout << w1 << "\n\n";
-
-    // auto w1 = malg::view<0, 2>(_w1);
-    // (void) w1;
-    
-    // std::cout << w1 << "\n";
-
+    // auto w1 = malg::view<0, 2, 0, 2>(m1);
 }

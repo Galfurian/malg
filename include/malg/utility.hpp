@@ -759,6 +759,46 @@ inline T accumulate(T *first, T *last, T init)
     return init;
 }
 
+/// @brief Generates num points between min and max and return as vector.
+/// @tparam T The type of the vector.
+/// @param min The minimum value.
+/// @param max The maximum value.
+/// @param num The number of elements.
+/// @return The generated vector.
+template <typename T>
+[[nodiscard]] inline auto linspace(T min, T max, std::size_t num = 100)
+{
+    malg::Vector<T> result(num, 0);
+    if (num > 0) {
+        if (num >= 2) {
+            for (std::size_t i = 0; i < num - 1UL; ++i) {
+                result[i] = min + (i * (max - min)) / std::floor(num - 1);
+            }
+        }
+        result[num - 1] = max;
+    }
+    return result;
+}
+
+/// @brief Return a row vector with 'num' elements logarithmically spaced from 10^first to 10^last.
+/// @tparam T The type of the vector.
+/// @param first The first exponent.
+/// @param last The last exponent.
+/// @param num The number of elements.
+/// @param base The base.
+/// @return The generated vector.
+template <typename T>
+inline std::vector<T> logspace(T first, T last, std::size_t num = 50, T base = 10)
+{
+    T current_value = first, step = (last - first) / (num - 1);
+    malg::Vector<T> result(num, 1);
+    for (std::size_t i = 0L; i < num; ++i) {
+        result[i] = std::pow(base, current_value);
+        current_value += step;
+    }
+    return result;
+}
+
 /// @brief Generates a **view** for the given matrix **A**.
 /// @param A the matrix.
 /// @param start_row the starating row.

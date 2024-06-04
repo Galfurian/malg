@@ -766,13 +766,13 @@ inline T accumulate(T *first, T *last, T init)
 /// @param num The number of elements.
 /// @return The generated vector.
 template <typename T>
-[[nodiscard]] inline auto linspace(T min, T max, std::size_t num = 100)
+[[nodiscard]] inline auto linspace(T min, T max, unsigned num = 100)
 {
     malg::Vector<T> result(num, 0);
     if (num > 0) {
         if (num >= 2) {
-            for (std::size_t i = 0; i < num - 1UL; ++i) {
-                result[i] = min + (i * (max - min)) / std::floor(num - 1);
+            for (unsigned i = 0; i < num - 1UL; ++i) {
+                result[i] = min + static_cast<T>((static_cast<T>(i) * (max - min)) / std::floor(num - 1));
             }
         }
         result[num - 1] = max;

@@ -1,0 +1,29 @@
+#include "malg/control/control.hpp"
+#include "malg/io.hpp"
+
+int test_linspace()
+{
+    {
+        auto result    = malg::utility::linspace<int>(0, 40, 5);
+        auto reference = malg::Vector<int>({ 0, 10, 20, 30, 40 });
+        if (!malg::all(result == reference)) {
+            std::cerr << result << " != " << reference << "\n";
+        }
+    }
+    {
+        auto result    = malg::utility::linspace<double>(0, 1, 5);
+        auto reference = malg::Vector<double>({ 0, 0.25, 0.5, 0.75, 1 });
+        if (!malg::all(result == reference)) {
+            std::cerr << result << " != " << reference << "\n";
+        }
+    }
+    return 0;
+}
+
+int main(int, char *[])
+{
+    if (test_linspace()) {
+        return 1;
+    }
+    return 0;
+}

@@ -199,10 +199,14 @@ inline auto vstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
     using T = malg::extract_common_type_t<T1, T2>;
     // Create the output matrix.
     Matrix<T> C(A.rows() + B.rows(), A.cols());
-    // Append B to C.
+    // Build the matrix.
+    for (std::size_t r = 0, c = 0; r < A.rows(); ++r) {
+        for (c = 0; c < A.cols(); ++c) {
+            C(r, c) = A(r, c);
+        }
+    }
     for (std::size_t r = 0, c = 0; r < B.rows(); ++r) {
         for (c = 0; c < B.cols(); ++c) {
-            C(r, c)            = A(r, c);
             C(r + A.rows(), c) = B(r, c);
         }
     }
@@ -246,10 +250,14 @@ inline auto hstack(const MatrixBase<T1> &A, const MatrixBase<T2> &B)
     using T = malg::extract_common_type_t<T1, T2>;
     // Create the output matrix.
     Matrix<T> C(A.rows(), A.cols() + B.cols());
-    // Append B to C.
+    // Build the matrix.
+    for (std::size_t c = 0, r = 0; c < A.cols(); ++c) {
+        for (r = 0; r < A.rows(); ++r) {
+            C(r, c) = A(r, c);
+        }
+    }
     for (std::size_t c = 0, r = 0; c < B.cols(); ++c) {
         for (r = 0; r < B.rows(); ++r) {
-            C(r, c)            = A(r, c);
             C(r, c + A.cols()) = B(r, c);
         }
     }

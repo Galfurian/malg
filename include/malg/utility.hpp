@@ -161,14 +161,27 @@ inline auto diag(const Vector<T> &a)
 /// @param row_matrix if the output matrix should be a row matrix (true), or a column matrix (false).
 /// @returns the generated matrix.
 template <typename T>
-inline auto to_matrix(const Vector<T> &a, bool row_matrix)
+inline auto to_matrix(const Vector<T> &vector, bool row_matrix)
 {
     using data_type = std::remove_const_t<T>;
-    Matrix<data_type> matrix(row_matrix ? 1u : a.size(), row_matrix ? a.size() : 1u, data_type(0));
-    for (std::size_t i = 0; i < a.size(); ++i) {
-        matrix[i] = a[i];
+    Matrix<data_type> matrix(row_matrix ? 1u : vector.size(), row_matrix ? vector.size() : 1u, data_type(0));
+    for (std::size_t i = 0; i < vector.size(); ++i) {
+        matrix[i] = vector[i];
     }
     return matrix;
+}
+
+/// @brief Transforms a matrix into a vector.
+/// @param a the input matrix.
+/// @returns the generated matrix.
+template <typename T>
+inline auto to_vector(const Matrix<T> &matrix)
+{
+    Vector<std::remove_const_t<T>> vector(matrix.size());
+    for (std::size_t i = 0; i < matrix.size(); ++i) {
+        vector[i] = matrix[i];
+    }
+    return vector;
 }
 
 /// @brief Transforms a matrix into a vector.

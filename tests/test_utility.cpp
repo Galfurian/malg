@@ -8,6 +8,7 @@ int test_linspace()
         auto reference = malg::Vector<int>({ 0, 10, 20, 30, 40 });
         if (!malg::all(result == reference)) {
             std::cerr << result << " != " << reference << "\n";
+            return 1;
         }
     }
     {
@@ -15,6 +16,7 @@ int test_linspace()
         auto reference = malg::Vector<double>({ 0, 0.25, 0.5, 0.75, 1 });
         if (!malg::all(result == reference)) {
             std::cerr << result << " != " << reference << "\n";
+            return 1;
         }
     }
     return 0;
@@ -40,6 +42,7 @@ int test_stack()
         malg::Matrix<int> result = malg::utility::vstack(a, b);
         if (!malg::all(result == reference)) {
             std::cerr << result << " != " << reference << "\n";
+            return 1;
         }
     }
     {
@@ -52,6 +55,7 @@ int test_stack()
         malg::Matrix<int> result = malg::utility::vstack(a, malg::utility::zeros<int>(2, 2));
         if (!malg::all(result == reference)) {
             std::cerr << result << " != " << reference << "\n";
+            return 1;
         }
     }
     {
@@ -62,6 +66,7 @@ int test_stack()
         malg::Matrix<int> result = malg::utility::hstack(a, b);
         if (!malg::all(result == reference)) {
             std::cerr << result << " != " << reference << "\n";
+            return 1;
         }
     }
     {
@@ -72,6 +77,48 @@ int test_stack()
         malg::Matrix<int> result = malg::utility::hstack(a, malg::utility::zeros<int>(2, 2));
         if (!malg::all(result == reference)) {
             std::cerr << result << " != " << reference << "\n";
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int test_transform()
+{
+    {
+        const auto input     = malg::Matrix<int>{ { 10 }, { -4 }, { 9 }, { -1 } };
+        const auto reference = malg::Vector<int>{ 10, -4, 9, -1 };
+        const auto result    = malg::utility::to_vector(input);
+        if (!malg::all(result == reference)) {
+            std::cerr << result << " != " << reference << "\n";
+            return 1;
+        }
+    }
+    {
+        const auto input     = malg::Matrix<int>{ { 10, -4, 9, -1 } };
+        const auto reference = malg::Vector<int>{ 10, -4, 9, -1 };
+        const auto result    = malg::utility::to_vector(input);
+        if (!malg::all(result == reference)) {
+            std::cerr << result << " != " << reference << "\n";
+            return 1;
+        }
+    }
+    {
+        const auto input     = malg::Vector<int>{ 10, -4, 9, -1 };
+        const auto reference = malg::Matrix<int>{ { 10 }, { -4 }, { 9 }, { -1 } };
+        const auto result    = malg::utility::to_matrix(input, false);
+        if (!malg::all(result == reference)) {
+            std::cerr << result << " != " << reference << "\n";
+            return 1;
+        }
+    }
+    {
+        const auto input     = malg::Vector<int>{ 10, -4, 9, -1 };
+        const auto reference = malg::Matrix<int>{ { 10, -4, 9, -1 } };
+        const auto result    = malg::utility::to_matrix(input, true);
+        if (!malg::all(result == reference)) {
+            std::cerr << result << " != " << reference << "\n";
+            return 1;
         }
     }
     return 0;
@@ -83,6 +130,9 @@ int main(int, char *[])
         return 1;
     }
     if (test_stack()) {
+        return 1;
+    }
+    if (test_transform()) {
         return 1;
     }
     return 0;

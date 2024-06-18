@@ -918,6 +918,26 @@ inline auto operator/=(const malg::Vector<T1> &a, const T2 &b)
 // SPECIFIC FUNCTIONS
 // ========================================================
 
+/// @brief Computes the dot product between a matrix and a vector.
+/// @param A the matrix.
+/// @param b the vector.
+/// @returns a vector with the same **rows** of *A*, resulting from the dot product.
+template <typename T1, typename T2>
+inline auto operator*(const malg::MatrixBase<T1> &A, const malg::Vector<T2> &b)
+{
+    // Select the right type.
+    using data_type_t = std::remove_const_t<malg::extract_common_type_t<T1, T2>>;
+    // Create the result vector.
+    malg::Vector<data_type_t> result(A.rows());
+    // Perform the computation.
+    for (std::size_t r = 0; r < A.rows(); ++r) {
+        for (std::size_t c = 0; c < A.cols(); ++c) {
+            result[r] += A(r, c) * b[c];
+        }
+    }
+    return result;
+}
+
 namespace malg
 {
 

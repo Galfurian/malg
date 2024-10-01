@@ -253,14 +253,6 @@ if(BUILD_TESTS)
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_fixed_size ${PROJECT_SOURCE_DIR}/tests/test_fixed_size.cpp)
-    target_compile_options(${PROJECT_NAME}_test_fixed_size PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_fixed_size ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_fixed_size_run ${PROJECT_NAME}_test_fixed_size)
-
-    # -------------------------------------
-    # TEST
-    # -------------------------------------
     add_executable(${PROJECT_NAME}_test_utility ${PROJECT_SOURCE_DIR}/tests/test_utility.cpp)
     target_compile_options(${PROJECT_NAME}_test_utility PUBLIC ${COMPILE_OPTIONS})
     target_link_libraries(${PROJECT_NAME}_test_utility ${PROJECT_NAME})

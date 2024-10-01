@@ -16,19 +16,19 @@
 namespace malg::details
 {
 
-/// @brief Returns the longhest value inside the data.
-/// @param data the input data.
-/// @param precision the desired precision.
-/// @returns the number of characters for the longhest value.
-template <typename T>
-inline auto get_longhest_value(T &data, std::streamsize precision)
+/// @brief Returns the length of the longest value inside the vector.
+/// @param rhs The input vector.
+/// @param precision The desired precision for floating-point values.
+/// @returns The number of characters in the longest value.
+template <typename T, std::size_t N, typename = typename std::enable_if_t<std::is_arithmetic<T>::value, T>>
+inline auto get_longhest_value(const malg::Vector<T, N> &rhs, std::streamsize precision)
 {
     std::stringstream ss;
     ss.precision(precision);
     int longhest = 0, length;
-    for (std::size_t i = 0; i < data.size(); ++i) {
+    for (std::size_t i = 0; i < rhs.size(); ++i) {
         ss.str("");
-        ss << data[i];
+        ss << rhs[i];
         length = static_cast<int>(ss.str().length());
         if (longhest < length) {
             longhest = length;
@@ -37,17 +37,39 @@ inline auto get_longhest_value(T &data, std::streamsize precision)
     return longhest;
 }
 
+/// @brief Returns the length of the longest value inside the matrix.
+/// @param rhs The input matrix.
+/// @param precision The desired precision for floating-point values.
+/// @returns The number of characters in the longest value.
+template <typename T, std::size_t N1, std::size_t N2, typename = typename std::enable_if_t<std::is_arithmetic<T>::value, T>>
+inline auto get_longhest_value(const malg::Matrix<T, N1, N2> &rhs, std::streamsize precision)
+{
+    std::stringstream ss;
+    ss.precision(precision);
+    int longhest = 0, length;
+    for (std::size_t r = 0; r < N1; ++r) {
+        for (std::size_t c = 0; c < N2; ++c) {
+            ss.str("");
+            ss << rhs[r][c];
+            length = static_cast<int>(ss.str().length());
+            if (longhest < length) {
+                longhest = length;
+            }
+        }
+    }
+    return longhest;
+}
+
 } // namespace malg::details
 
 /// @brief Stream operator for Vector.
-template <typename T, std::size_t N>
+template <typename T, std::size_t N, typename = typename std::enable_if_t<std::is_arithmetic<T>::value, T>>
 std::ostream &operator<<(std::ostream &lhs, const malg::Vector<T, N> &rhs)
 {
-    std::size_t i;
     // Get the longhest value.
     auto length = malg::details::get_longhest_value(rhs, lhs.precision());
     // Print the vector.
-    for (i = 0; i < rhs.size(); ++i) {
+    for (std::size_t i = 0; i < rhs.size(); ++i) {
         lhs << std::setw(length) << rhs[i];
         if (i < (rhs.size() - 1)) {
             lhs << " ";
@@ -57,7 +79,7 @@ std::ostream &operator<<(std::ostream &lhs, const malg::Vector<T, N> &rhs)
 }
 
 /// @brief Stream operator for MatrixBase.
-template <typename T, std::size_t N1, std::size_t N2>
+template <typename T, std::size_t N1, std::size_t N2, typename = typename std::enable_if_t<std::is_arithmetic<T>::value, T>>
 std::ostream &operator<<(std::ostream &lhs, const malg::Matrix<T, N1, N2> &rhs)
 {
     std::size_t r = 0, c = 0;

@@ -11,6 +11,7 @@
 #include "malg/vector.hpp"
 #include "malg/view.hpp"
 
+#include <type_traits>
 #include <algorithm>
 #include <complex>
 #include <cstdint>
@@ -778,42 +779,87 @@ inline T accumulate(T *first, T *last, T init)
     return init;
 }
 
-/// @brief Generates num points between min and max and return as vector.
+/// @brief Generates num points between start and max and return as vector.
 /// @tparam T The type of the vector.
-/// @param min The minimum value.
-/// @param max The maximum value.
+/// @param start The minimum value.
+/// @param stop The maximum value.
 /// @param num The number of elements.
 /// @return The generated vector.
 template <typename T>
-[[nodiscard]] inline auto linspace(T min, T max, unsigned num = 100)
+[[nodiscard]] inline auto linspace(T start, T stop, unsigned num = 100)
 {
-    malg::Vector<T> result(num, 0);
-    if (num > 0) {
-        if (num >= 2) {
-            for (unsigned i = 0; i < num - 1UL; ++i) {
-                result[i] = min + static_cast<T>((static_cast<T>(i) * (max - min)) / std::floor(num - 1));
-            }
+    malg::Vector<T> result(num, 1);
+    if (num == 0) {
+        return result;
+    }
+    bool are_the_same;
+    if constexpr (std::is_floating_point<T>::value) {
+        are_the_same = malg::feq::approximately_equal(start, stop);
+    } else {
+        are_the_same = start == stop;
+    }
+    if (num == 1) {
+        result[0] = stop;
+        return result;
+    }
+    if (are_the_same) {
+        for (unsigned i = 0; i < num; ++i) {
+            result[i] = stop;
         }
-        result[num - 1] = max;
+    } else if (start < stop) {
+        T step = (stop - start) / static_cast<T>(num - 1);
+        for (unsigned i = 0; i < num; ++i) {
+            result[i] = start + i * step;
+        }
+    } else {
+        // When start > stop, generate a decreasing sequence
+        T step = (start - stop) / static_cast<T>(num - 1);
+        for (unsigned i = 0; i < num; ++i) {
+            result[i] = start - i * step;
+        }
     }
     return result;
 }
 
 /// @brief Return a row vector with 'num' elements logarithmically spaced from 10^first to 10^last.
 /// @tparam T The type of the vector.
-/// @param first The first exponent.
-/// @param last The last exponent.
+/// @param start The first exponent.
+/// @param stop The last exponent.
 /// @param num The number of elements.
 /// @param base The base.
 /// @return The generated vector.
 template <typename T>
-inline std::vector<T> logspace(T first, T last, std::size_t num = 50, T base = 10)
+[[nodiscard]] inline auto logspace(T start, T stop, std::size_t num = 50, T base = 10)
 {
-    T current_value = first, step = (last - first) / (num - 1);
     malg::Vector<T> result(num, 1);
-    for (std::size_t i = 0L; i < num; ++i) {
-        result[i] = std::pow(base, current_value);
-        current_value += step;
+    if (num == 0) {
+        return result;
+    }
+    bool are_the_same;
+    if constexpr (std::is_floating_point<T>::value) {
+        are_the_same = malg::feq::approximately_equal(start, stop);
+    } else {
+        are_the_same = start == stop;
+    }
+    if (num == 1) {
+        result[0] = std::pow(base, stop);
+        return result;
+    }
+    if (are_the_same) {
+        for (unsigned i = 0; i < num; ++i) {
+            result[i] = std::pow(base, stop);
+        }
+    } else if (start < stop) {
+        T step = (stop - start) / static_cast<T>(num - 1);
+        for (unsigned i = 0; i < num; ++i) {
+            result[i] = std::pow(base, start + i * step);
+        }
+    } else {
+        // When start > stop, generate a decreasing sequence
+        T step = (start - stop) / static_cast<T>(num - 1);
+        for (unsigned i = 0; i < num; ++i) {
+            result[i] = std::pow(base, start - i * step);
+        }
     }
     return result;
 }

@@ -809,13 +809,13 @@ template <typename T>
     } else if (start < stop) {
         T step = (stop - start) / static_cast<T>(num - 1);
         for (unsigned i = 0; i < num; ++i) {
-            result[i] = start + i * step;
+            result[i] = start + step * static_cast<T>(i);
         }
     } else {
         // When start > stop, generate a decreasing sequence
         T step = (start - stop) / static_cast<T>(num - 1);
         for (unsigned i = 0; i < num; ++i) {
-            result[i] = start - i * step;
+            result[i] = start - step * static_cast<T>(i);
         }
     }
     return result;
@@ -852,13 +852,13 @@ template <typename T>
     } else if (start < stop) {
         T step = (stop - start) / static_cast<T>(num - 1);
         for (unsigned i = 0; i < num; ++i) {
-            result[i] = std::pow(base, start + i * step);
+            result[i] = std::pow(base, start + step * static_cast<T>(i));
         }
     } else {
         // When start > stop, generate a decreasing sequence
         T step = (start - stop) / static_cast<T>(num - 1);
         for (unsigned i = 0; i < num; ++i) {
-            result[i] = std::pow(base, start - i * step);
+            result[i] = std::pow(base, start - step * static_cast<T>(i));
         }
     }
     return result;

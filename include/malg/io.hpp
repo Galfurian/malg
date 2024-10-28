@@ -14,7 +14,10 @@
 #include <iostream>
 #include <sstream>
 
-namespace malg::details
+namespace malg
+{
+
+namespace details
 {
 
 /// @brief Returns the longhest value inside the data.
@@ -38,7 +41,7 @@ inline auto get_longhest_value(T &data, std::streamsize precision)
     return longhest;
 }
 
-} // namespace malg::details
+} // namespace details
 
 /// @brief Stream operator for Vector.
 template <typename T>
@@ -218,9 +221,6 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::control::Discrete
         << "Discrete-time state-space model.\n";
     return lhs;
 }
-
-namespace malg
-{
 
 /// @brief Prepares a string for printing the vector.
 /// @param name the name to show.

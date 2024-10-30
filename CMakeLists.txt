@@ -100,23 +100,23 @@ endif()
 if(BUILD_EXAMPLES)
 
     # Record the options that describe how to populate the specified content.
-    FetchContent_Declare(stopwatch
-        GIT_REPOSITORY "https://github.com/Galfurian/stopwatch.git"
+    FetchContent_Declare(timelib
+        GIT_REPOSITORY "https://github.com/Galfurian/timelib.git"
         GIT_TAG main
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
     )
     # Retrieve the properties related to the content.
-    FetchContent_GetProperties(stopwatch)
+    FetchContent_GetProperties(timelib)
     # If not populated, make the content available.
     if(NOT stopwatch_POPULATED)
-        message(STATUS "Retrieving `stopwatch`...")
+        message(STATUS "Retrieving `timelib`...")
         # Ensures the named dependencies have been populated.
-        FetchContent_MakeAvailable(stopwatch)
+        FetchContent_MakeAvailable(timelib)
         # Hide fetchcontent variables, otherwise with ccmake it's a mess.
         mark_as_advanced(FORCE
-            FETCHCONTENT_UPDATES_DISCONNECTED_STOPWATCH
-            FETCHCONTENT_SOURCE_DIR_STOPWATCH
+            FETCHCONTENT_UPDATES_DISCONNECTED_TIMELIB
+            FETCHCONTENT_SOURCE_DIR_TIMELIB
         )
     endif()
     # Record the options that describe how to populate the specified content.
@@ -145,19 +145,19 @@ if(BUILD_EXAMPLES)
     add_executable(${PROJECT_NAME}_sim_rlc_ct examples/sim_rlc_ct.cpp)
     target_compile_options(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${COMPILE_OPTIONS})
     target_include_directories(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
-    target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${PROJECT_NAME} stopwatch chainsaw)
+    target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${PROJECT_NAME} timelib chainsaw)
     
     # Add the example.
     add_executable(${PROJECT_NAME}_sim_rlc_dt examples/sim_rlc_dt.cpp)
     target_compile_options(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${COMPILE_OPTIONS})
     target_include_directories(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${stopwatch_SOURCE_DIR}/include)
-    target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${PROJECT_NAME} stopwatch)
+    target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${PROJECT_NAME} timelib)
     
     # Add the example.
     add_executable(${PROJECT_NAME}_pendulum examples/pendulum.cpp)
     target_compile_options(${PROJECT_NAME}_pendulum PUBLIC ${COMPILE_OPTIONS})
     target_include_directories(${PROJECT_NAME}_pendulum PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
-    target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC ${PROJECT_NAME} stopwatch chainsaw)
+    target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC ${PROJECT_NAME} timelib chainsaw)
     
     # Add matplot++ if required.
     if(ENABLE_PLOT)

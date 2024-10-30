@@ -4,7 +4,7 @@
 #include <malg/control/control.hpp>
 #include <malg/io.hpp>
 
-#include <stopwatch/stopwatch.hpp>
+#include <timelib/stopwatch.hpp>
 
 #include <chainsaw/detail/observer.hpp>
 #include <chainsaw/solver.hpp>
@@ -155,8 +155,7 @@ int main(int, char *[])
     Observer fobserver;
     Observer aobserver;
 
-    // Instantiate the stopwatch.
-    stopwatch::Stopwatch sw;
+    timelib::Stopwatch sw;
     std::cout << std::fixed;
     std::cout << "Simulating...\n";
 

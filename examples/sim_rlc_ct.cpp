@@ -6,7 +6,7 @@
 #include "malg/control/control.hpp"
 #include "malg/io.hpp"
 
-#include <stopwatch/stopwatch.hpp>
+#include <timelib/stopwatch.hpp>
 
 #include <chainsaw/detail/observer.hpp>
 #include <chainsaw/solver.hpp>
@@ -156,7 +156,7 @@ int main(int, char *[])
     Observer obs_euler;
     Observer obs_rk4;
 
-    stopwatch::Stopwatch sw;
+    timelib::Stopwatch sw;
 
     std::cout << std::fixed;
     std::cout << "Total time points with fixed integration step " << samples << "\n\n";

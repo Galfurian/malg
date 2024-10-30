@@ -6,7 +6,7 @@
 #include "malg/control/control.hpp"
 #include "malg/io.hpp"
 
-#include <stopwatch/stopwatch.hpp>
+#include <timelib/stopwatch.hpp>
 
 #ifdef ENABLE_PLOT
 #include <matplot/matplot.h>
@@ -67,7 +67,7 @@ int main(int, char *[])
     State x{ .0, .0 }; // State matrix.
     Output y{ .0 };    // Output matrix.
 
-    stopwatch::Stopwatch sw;
+    timelib::Stopwatch sw;
 
     std::cout << std::fixed << std::setprecision(5);
     std::cout << "Total time points " << samples << "\n";

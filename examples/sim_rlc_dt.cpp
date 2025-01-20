@@ -9,7 +9,7 @@
 #include <timelib/stopwatch.hpp>
 
 #ifdef ENABLE_PLOT
-#include <matplot/matplot.h>
+#include <gpcpp/gnuplot.hpp>
 #endif
 
 using Time     = double;
@@ -95,25 +95,35 @@ int main(int, char *[])
     std::cout << "Integration steps " << steps << "\n\n";
 
 #ifdef ENABLE_PLOT
-    auto colors      = matplot::palette::accent(3);
-    auto color_index = 0u;
-    matplot::line_handle lh;
-    matplot::hold(matplot::on);
+    // Create a Gnuplot instance.
+    gpcpp::Gnuplot gnuplot;
 
-    lh = matplot::plot(time, u0);
-    lh->line_width(3);
-    lh->color(matplot::to_array(colors[color_index++]));
+    // Set up the plot with grid, labels, and line widths
+    gnuplot.set_title("Plot of u0, x0, x1")
+        .set_xlabel("Time (s)") // X-axis label
+        .set_ylabel("Values")   // Y-axis label
+        .set_grid()
+        .set_legend();
 
-    lh = matplot::plot(time, x0);
-    lh->line_width(3);
-    lh->color(matplot::to_array(colors[color_index++]));
+    // Plot u0 with line width 3
+    gnuplot.set_line_width(3)                       // Line width
+        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
+        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+        .plot_xy(time, u0, "u0");
 
-    lh = matplot::plot(time, x1);
-    lh->line_width(3);
-    lh->color(matplot::to_array(colors[color_index++]));
+    // Plot x0 with line width 3
+    gnuplot.set_line_width(3)                       // Line width
+        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
+        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+        .plot_xy(time, x0, "x0");
 
-    matplot::legend({ "u0", "x0", "x1" });
-    matplot::show();
+    // Plot x1 with line width 3
+    gnuplot.set_line_width(3)                       // Line width
+        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
+        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+        .plot_xy(time, x1, "x1");
+
+    gnuplot.show();
 #endif
     return 0;
 }

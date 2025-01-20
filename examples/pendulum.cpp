@@ -13,7 +13,7 @@
 #include <chainsaw/stepper/stepper_rk4.hpp>
 
 #ifdef ENABLE_PLOT
-#include <matplot/matplot.h>
+#include <gpcpp/gnuplot.hpp>
 #endif
 
 namespace pendulum
@@ -172,16 +172,42 @@ int main(int, char *[])
     std::cout << "    Adaptive stepper computed " << std::setw(12) << astepper.steps() << " steps, for a total of " << sw[1] << "\n";
 
 #ifdef ENABLE_PLOT
-    auto figure = matplot::figure(true);
-    matplot::grid(matplot::on);
-    matplot::hold(matplot::on);
-    matplot::plot(fobserver.time, fobserver.angle)->line_width(2).display_name("[F] Angle A (rad)");
-    matplot::plot(aobserver.time, aobserver.angle)->line_width(2).display_name("[A] Angle A (rad)");
-    matplot::plot(fobserver.time, fobserver.velocity, "--")->line_width(1).display_name("[F] Angular Speed A (rad/s)");
-    matplot::plot(aobserver.time, aobserver.velocity, "--")->line_width(1).display_name("[A] Angular Speed A (rad/s)");
-    matplot::xlabel("Time (s)");
-    matplot::legend(matplot::on)->location(matplot::legend::general_alignment::top);
-    matplot::show();
+    // Create a Gnuplot instance.
+    gpcpp::Gnuplot gnuplot;
+
+    // Set up the plot with grid, labels, and line widths
+    gnuplot.set_title("Comparison of Angles and Angular Speeds")
+        .set_xlabel("Time (s)") // X-axis label
+        .set_ylabel("Values")   // Y-axis label
+        .set_grid()             // Show grid.
+        .set_legend();          // Enable legend.
+
+    // Plot [F] Angle A with line width 2
+    gnuplot.set_line_width(2)                       // Line width
+        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
+        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+        .plot_xy(fobserver.time, fobserver.angle, "[F] Angle A (rad)");
+
+    // Plot [A] Angle A with line width 2
+    gnuplot.set_line_width(2)                       // Line width
+        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
+        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+        .plot_xy(aobserver.time, aobserver.angle, "[A] Angle A (rad)");
+
+    // Plot [F] Angular Speed A with dashed line
+    gnuplot.set_line_width(1)                        // Line width
+        .set_plot_style(gpcpp::plot_style_t::lines)  // Line style
+        .set_line_style(gpcpp::line_style_t::dashed) // Dashed line style
+        .plot_xy(fobserver.time, fobserver.velocity, "[F] Angular Speed A (rad/s)");
+
+    // Plot [A] Angular Speed A with dashed line
+    gnuplot.set_line_width(1)                        // Line width
+        .set_plot_style(gpcpp::plot_style_t::lines)  // Line style
+        .set_line_style(gpcpp::line_style_t::dashed) // Dashed line style
+        .plot_xy(aobserver.time, aobserver.velocity, "[A] Angular Speed A (rad/s)");
+
+    // Show the plot
+    gnuplot.show();
 #endif
     return 0;
 }

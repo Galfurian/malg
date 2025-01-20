@@ -162,12 +162,25 @@ if(BUILD_EXAMPLES)
     # Add matplot++ if required.
     if(ENABLE_PLOT)
 
-        # Find matplot++ library.
-        find_package(Matplot++ CONFIG REQUIRED)
+        FetchContent_Declare(
+            gpcpp
+            GIT_REPOSITORY "https://github.com/Galfurian/gpcpp.git"
+            GIT_SHALLOW    TRUE
+            GIT_PROGRESS   TRUE
+            GIT_TAG        main
+        )
+        FetchContent_GetProperties(gpcpp)
+        if(NOT gpcpp_POPULATED)
+            message(STATUS "Retrieving `gpcpp`...")
+            FetchContent_MakeAvailable(gpcpp)
+            # Hide fetchcontent variables.
+            mark_as_advanced(FORCE FETCHCONTENT_UPDATES_DISCONNECTED_GPCPP FETCHCONTENT_SOURCE_DIR_GPCPP)
+        endif()
+
         # Link libraries.
-        target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC Matplot++::matplot)
-        target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC Matplot++::matplot)
-        target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC Matplot++::matplot)
+        target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC gpcpp)
+        target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC gpcpp)
+        target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC gpcpp)
         # Set the definition
         target_compile_definitions(${PROJECT_NAME}_sim_rlc_ct PUBLIC ENABLE_PLOT)
         target_compile_definitions(${PROJECT_NAME}_sim_rlc_dt PUBLIC ENABLE_PLOT)

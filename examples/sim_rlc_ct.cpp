@@ -205,55 +205,55 @@ int main(int, char *[])
         .set_legend();          // Enable legend.
 
     // Plot Adaptive Euler x0 with marker size 16
-    gnuplot.set_plot_style(gpcpp::plot_style_t::points) // Points style for scatter plot
-        .set_line_style(gpcpp::line_style_t::solid)     // Solid line style (if needed)
-        .set_line_width(3)                              // Line width
-        .set_point_size(1)                              // Marker size
+    gnuplot.set_plot_type(gpcpp::plot_type_t::points) // Points style for scatter plot
+        .set_line_type(gpcpp::line_type_t::solid)     // Solid line style (if needed)
+        .set_line_width(3)                            // Line width
+        .set_point_size(1)                            // Marker size
         .plot_xy(obs_adaptive_euler.time, obs_adaptive_euler.x0, "Adaptive Euler.x0");
 
     // Plot Adaptive RK4 x0 with marker size 32
-    gnuplot.set_plot_style(gpcpp::plot_style_t::points) // Points style for scatter plot
-        .set_line_style(gpcpp::line_style_t::solid)     // Solid line style (if needed)
-        .set_line_width(3)                              // Line width
-        .set_point_size(2)                              // Marker size
+    gnuplot.set_plot_type(gpcpp::plot_type_t::points) // Points style for scatter plot
+        .set_line_type(gpcpp::line_type_t::solid)     // Solid line style (if needed)
+        .set_line_width(3)                            // Line width
+        .set_point_size(2)                            // Marker size
         .plot_xy(obs_adaptive_rk4.time, obs_adaptive_rk4.x0, "Adaptive RK4.x0");
 
     // Plot Euler x0 with line style
-    gnuplot.set_plot_style(gpcpp::plot_style_t::lines) // Lines style
-        .set_line_style(gpcpp::line_style_t::solid)    // Solid line style
-        .set_line_width(3)                             // Line width
+    gnuplot.set_plot_type(gpcpp::plot_type_t::lines) // Lines style
+        .set_line_type(gpcpp::line_type_t::solid)    // Solid line style
+        .set_line_width(3)                           // Line width
         .plot_xy(obs_euler.time, obs_euler.x0, "Euler.x0");
 
     // Plot RK4 x0 with line style
-    gnuplot.set_plot_style(gpcpp::plot_style_t::lines) // Lines style
-        .set_line_style(gpcpp::line_style_t::solid)    // Solid line style
-        .set_line_width(3)                             // Line width
+    gnuplot.set_plot_type(gpcpp::plot_type_t::lines) // Lines style
+        .set_line_type(gpcpp::line_type_t::solid)    // Solid line style
+        .set_line_width(3)                           // Line width
         .plot_xy(obs_rk4.time, obs_rk4.x0, "RK4.x0");
 
     // Plot Adaptive Euler x1 with marker size 16
-    gnuplot.set_plot_style(gpcpp::plot_style_t::points) // Points style for scatter plot
-        .set_line_style(gpcpp::line_style_t::solid)     // Solid line style (if needed)
-        .set_line_width(3)                              // Line width
-        .set_point_size(1)                              // Marker size
+    gnuplot.set_plot_type(gpcpp::plot_type_t::points) // Points style for scatter plot
+        .set_line_type(gpcpp::line_type_t::solid)     // Solid line style (if needed)
+        .set_line_width(3)                            // Line width
+        .set_point_size(1)                            // Marker size
         .plot_xy(obs_adaptive_euler.time, obs_adaptive_euler.x1, "Adaptive Euler.x1");
 
     // Plot Adaptive RK4 x1 with marker size 32
-    gnuplot.set_plot_style(gpcpp::plot_style_t::points) // Points style for scatter plot
-        .set_line_style(gpcpp::line_style_t::solid)     // Solid line style (if needed)
-        .set_line_width(3)                              // Line width
-        .set_point_size(2)                              // Marker size
+    gnuplot.set_plot_type(gpcpp::plot_type_t::points) // Points style for scatter plot
+        .set_line_type(gpcpp::line_type_t::solid)     // Solid line style (if needed)
+        .set_line_width(3)                            // Line width
+        .set_point_size(2)                            // Marker size
         .plot_xy(obs_adaptive_rk4.time, obs_adaptive_rk4.x1, "Adaptive RK4.x1");
 
     // Plot Euler x1 with line style
-    gnuplot.set_plot_style(gpcpp::plot_style_t::lines) // Lines style
-        .set_line_style(gpcpp::line_style_t::solid)    // Solid line style
-        .set_line_width(3)                             // Line width
+    gnuplot.set_plot_type(gpcpp::plot_type_t::lines) // Lines style
+        .set_line_type(gpcpp::line_type_t::solid)    // Solid line style
+        .set_line_width(3)                           // Line width
         .plot_xy(obs_euler.time, obs_euler.x1, "Euler.x1");
 
     // Plot RK4 x1 with line style
-    gnuplot.set_plot_style(gpcpp::plot_style_t::lines) // Lines style
-        .set_line_style(gpcpp::line_style_t::solid)    // Solid line style
-        .set_line_width(3)                             // Line width
+    gnuplot.set_plot_type(gpcpp::plot_type_t::lines) // Lines style
+        .set_line_type(gpcpp::line_type_t::solid)    // Solid line style
+        .set_line_width(3)                           // Line width
         .plot_xy(obs_rk4.time, obs_rk4.x1, "RK4.x1");
 
     // Show the plot

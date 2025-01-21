@@ -183,27 +183,27 @@ int main(int, char *[])
         .set_legend();          // Enable legend.
 
     // Plot [F] Angle A with line width 2
-    gnuplot.set_line_width(2)                       // Line width
-        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
-        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+    gnuplot.set_line_width(2)                     // Line width
+        .set_plot_type(gpcpp::plot_type_t::lines) // Line style
+        .set_line_type(gpcpp::line_type_t::solid) // Solid line style
         .plot_xy(fobserver.time, fobserver.angle, "[F] Angle A (rad)");
 
     // Plot [A] Angle A with line width 2
-    gnuplot.set_line_width(2)                       // Line width
-        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
-        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+    gnuplot.set_line_width(2)                     // Line width
+        .set_plot_type(gpcpp::plot_type_t::lines) // Line style
+        .set_line_type(gpcpp::line_type_t::solid) // Solid line style
         .plot_xy(aobserver.time, aobserver.angle, "[A] Angle A (rad)");
 
     // Plot [F] Angular Speed A with dashed line
-    gnuplot.set_line_width(1)                        // Line width
-        .set_plot_style(gpcpp::plot_style_t::lines)  // Line style
-        .set_line_style(gpcpp::line_style_t::dashed) // Dashed line style
+    gnuplot.set_line_width(1)                      // Line width
+        .set_plot_type(gpcpp::plot_type_t::lines)  // Line style
+        .set_line_type(gpcpp::line_type_t::dashed) // Dashed line style
         .plot_xy(fobserver.time, fobserver.velocity, "[F] Angular Speed A (rad/s)");
 
     // Plot [A] Angular Speed A with dashed line
-    gnuplot.set_line_width(1)                        // Line width
-        .set_plot_style(gpcpp::plot_style_t::lines)  // Line style
-        .set_line_style(gpcpp::line_style_t::dashed) // Dashed line style
+    gnuplot.set_line_width(1)                      // Line width
+        .set_plot_type(gpcpp::plot_type_t::lines)  // Line style
+        .set_line_type(gpcpp::line_type_t::dashed) // Dashed line style
         .plot_xy(aobserver.time, aobserver.velocity, "[A] Angular Speed A (rad/s)");
 
     // Show the plot

@@ -106,21 +106,21 @@ int main(int, char *[])
         .set_legend();
 
     // Plot u0 with line width 3
-    gnuplot.set_line_width(3)                       // Line width
-        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
-        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+    gnuplot.set_line_width(3)                     // Line width
+        .set_plot_type(gpcpp::plot_type_t::lines) // Line style
+        .set_line_type(gpcpp::line_type_t::solid) // Solid line style
         .plot_xy(time, u0, "u0");
 
     // Plot x0 with line width 3
-    gnuplot.set_line_width(3)                       // Line width
-        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
-        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+    gnuplot.set_line_width(3)                     // Line width
+        .set_plot_type(gpcpp::plot_type_t::lines) // Line style
+        .set_line_type(gpcpp::line_type_t::solid) // Solid line style
         .plot_xy(time, x0, "x0");
 
     // Plot x1 with line width 3
-    gnuplot.set_line_width(3)                       // Line width
-        .set_plot_style(gpcpp::plot_style_t::lines) // Line style
-        .set_line_style(gpcpp::line_style_t::solid) // Solid line style
+    gnuplot.set_line_width(3)                     // Line width
+        .set_plot_type(gpcpp::plot_type_t::lines) // Line style
+        .set_line_type(gpcpp::line_type_t::solid) // Solid line style
         .plot_xy(time, x1, "x1");
 
     gnuplot.show();

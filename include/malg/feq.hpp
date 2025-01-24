@@ -6,6 +6,8 @@
 
 #include <cmath>
 #include <limits>
+#include <complex>
+#include <type_traits>
 
 namespace malg::feq
 {
@@ -24,7 +26,7 @@ static inline auto &tolerance()
 template <typename T1, typename T2>
 inline bool approximately_equal(T1 a, T2 b)
 {
-    return std::fabs(a - b) <= tolerance() * std::fmax(std::fabs(a), std::fabs(b));
+    return std::abs(a - b) <= tolerance() * std::fmax(std::fabs(a), std::fabs(b));
 }
 
 /// @brief Checks if the fir floating point value is lesser than or equal to the second one.
@@ -56,7 +58,7 @@ inline bool approximately_greater_than_equal(T1 a, T2 b)
 template <typename T>
 inline bool approximately_equal_to_zero(T a)
 {
-    return std::fabs(a) <= malg::feq::tolerance() * std::fabs(a);
+    return std::abs(a) <= malg::feq::tolerance() * std::fabs(a);
 }
 
 } // namespace malg::feq

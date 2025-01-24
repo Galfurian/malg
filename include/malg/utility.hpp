@@ -911,8 +911,16 @@ inline auto flatnonzero(const Matrix<T> &A)
 {
     std::vector<std::size_t> nonzero_indices{};
     for (std::size_t i = 0; i < A.size(); ++i) {
-        if (!malg::feq::approximately_equal_to_zero(A[i])) {
-            nonzero_indices.emplace_back(i);
+        if constexpr (std::is_floating_point_v<T>) {
+            // Use approximately_equal_to_zero for floating-point types.
+            if (!malg::feq::approximately_equal_to_zero(A[i])) {
+                nonzero_indices.emplace_back(i);
+            }
+        } else {
+            // Use a direct zero check for non-floating-point types.
+            if (A[i] != T(0)) {
+                nonzero_indices.emplace_back(i);
+            }
         }
     }
     return nonzero_indices;

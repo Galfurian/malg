@@ -6,11 +6,11 @@
 
 #include <timelib/stopwatch.hpp>
 
-#include <chainsaw/detail/observer.hpp>
-#include <chainsaw/solver.hpp>
-#include <chainsaw/stepper/stepper_adaptive.hpp>
-#include <chainsaw/stepper/stepper_euler.hpp>
-#include <chainsaw/stepper/stepper_rk4.hpp>
+#include <numint/detail/observer.hpp>
+#include <numint/solver.hpp>
+#include <numint/stepper/stepper_adaptive.hpp>
+#include <numint/stepper/stepper_euler.hpp>
+#include <numint/stepper/stepper_rk4.hpp>
 
 #ifdef ENABLE_PLOT
 #include <gpcpp/gnuplot.hpp>
@@ -103,7 +103,7 @@ struct Model : public Parameter {
 };
 
 template <std::size_t DECIMATION = 0>
-struct ObserverSave : public chainsaw::detail::ObserverDecimate<State, Time, DECIMATION> {
+struct ObserverSave : public numint::detail::ObserverDecimate<State, Time, DECIMATION> {
     inline void operator()(const State &x, const Time &t) noexcept override
     {
         if (this->observe()) {
@@ -134,10 +134,10 @@ int main(int, char *[])
     const Time time_end   = 40.0;
     const Time time_delta = 0.01;
     // Setup the adaptive solver.
-    using FStepper        = chainsaw::stepper_rk4<State, Time>;
+    using FStepper        = numint::stepper_rk4<State, Time>;
     const auto Iterations = 2;
-    const auto Error      = chainsaw::ErrorFormula::Mixed;
-    using AStepper        = chainsaw::stepper_adaptive<FStepper, Iterations, Error>;
+    const auto Error      = numint::ErrorFormula::Mixed;
+    using AStepper        = numint::stepper_adaptive<FStepper, Iterations, Error>;
     // Instantiate the solvers.
     FStepper fstepper;
     AStepper astepper;
@@ -149,7 +149,7 @@ int main(int, char *[])
 #ifdef ENABLE_PLOT
     using Observer = ObserverSave<0>;
 #else
-    using Observer = chainsaw::detail::ObserverPrint<State, Time, 0>;
+    using Observer = numint::detail::ObserverPrint<State, Time, 0>;
 #endif
 
     Observer fobserver;
@@ -161,9 +161,9 @@ int main(int, char *[])
 
     // Start the simulation.
     sw.start();
-    chainsaw::integrate_fixed(fstepper, fobserver, system, x = x0, time_start, time_end, time_delta);
+    numint::integrate_fixed(fstepper, fobserver, system, x = x0, time_start, time_end, time_delta);
     sw.round();
-    chainsaw::integrate_adaptive(astepper, aobserver, system, x = x0, time_start, time_end, time_delta);
+    numint::integrate_adaptive(astepper, aobserver, system, x = x0, time_start, time_end, time_delta);
     sw.round();
 
     std::cout << "\n";

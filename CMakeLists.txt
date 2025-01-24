@@ -55,41 +55,66 @@ find_package(Doxygen)
 # -----------------------------------------------------------------------------
 
 # Add the C++ Library.
-add_library(${PROJECT_NAME} INTERFACE)
-add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+add_library(malg INTERFACE)
+add_library(malg::malg ALIAS malg)
 # Inlcude header directories and set the library.
-target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(malg INTERFACE ${PROJECT_SOURCE_DIR}/include)
 # Set the library to use c++-17
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+target_compile_features(malg INTERFACE cxx_std_17)
 
 # -----------------------------------------------------------------------------
 # COMPILATION FLAGS
 # -----------------------------------------------------------------------------
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # Disable warnings that suggest using MSVC-specific safe functions
-    target_compile_definitions(${PROJECT_NAME} INTERFACE _CRT_SECURE_NO_WARNINGS)
+    # Disable warnings for MSVC-specific "safe" functions like strcpy_s, etc.,
+    # which are not portable and may clutter warning logs.
+    target_compile_definitions(malg INTERFACE _CRT_SECURE_NO_WARNINGS)
+
+    # Disable warning C4702: unreachable code.
+    add_compile_options(/wd4702)
+
     if(WARNINGS_AS_ERRORS)
-        target_compile_options(${PROJECT_NAME} INTERFACE /WX)
+        # Treat all warnings as errors to enforce stricter code quality.
+        target_compile_options(malg INTERFACE /WX)
     endif()
+
+    if(STRICT_WARNINGS)
+        # Enable external header management to suppress warnings in system and
+        # external headers, making it easier to focus on project-specific issues.
+        target_compile_options(malg INTERFACE /experimental:external)
+        target_compile_options(malg INTERFACE /external:I ${CMAKE_BINARY_DIR})
+        target_compile_options(malg INTERFACE /external:anglebrackets)
+        target_compile_options(malg INTERFACE /external:W0)
+
+        # Use a high warning level to catch as many potential issues as possible.
+        target_compile_options(malg INTERFACE /W4)
+
+        # Enforce standards-compliant behavior to avoid relying on MSVC-specific extensions.
+        target_compile_options(malg INTERFACE /permissive-)
+    endif()
+
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     if(WARNINGS_AS_ERRORS)
-        target_compile_options(${PROJECT_NAME} INTERFACE -Werror)
+        # Treat all warnings as errors to enforce stricter code quality.
+        target_compile_options(malg INTERFACE -Werror)
     endif()
-endif()
 
-if(STRICT_WARNINGS)
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        # Mark system headers as external for MSVC explicitly
-        # https://devblogs.microsoft.com/cppblog/broken-warnings-theory
-        target_compile_options(${PROJECT_NAME} INTERFACE /experimental:external)
-        target_compile_options(${PROJECT_NAME} INTERFACE /external:I ${CMAKE_BINARY_DIR})
-        target_compile_options(${PROJECT_NAME} INTERFACE /external:anglebrackets)
-        target_compile_options(${PROJECT_NAME} INTERFACE /external:W0)
+    if(STRICT_WARNINGS)
+        # Enable a broad set of warnings to catch common and subtle issues:
+        target_compile_options(malg INTERFACE
+            -Wall                # Enable most general-purpose warnings.
+            -Wextra              # Enable extra warnings not included in -Wall.
+            -Wconversion         # Warn about implicit type conversions that may lose data.
+            -pedantic            # Enforce strict compliance with the C++ standard.
+            -Wshadow             # Warn about variable shadowing, which can cause subtle bugs.
+            -Wnon-virtual-dtor   # Warn when a class with virtual functions lacks a virtual destructor.
+            -Wnull-dereference   # Warn about potential null pointer dereferences.
+            -Wformat=2           # Enable strict checks for printf/scanf format strings.
+            -Woverloaded-virtual # Warn when a derived class function hides a base class virtual function.
+            -Wfloat-equal        # Warn about direct comparisons of floating-point values, which can be imprecise.
+        )
 
-        target_compile_options(${PROJECT_NAME} INTERFACE /W4)
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        target_compile_options(${PROJECT_NAME} INTERFACE -Wall -Wextra -Wconversion -pedantic)
     endif()
 endif()
 
@@ -120,44 +145,44 @@ if(BUILD_EXAMPLES)
         )
     endif()
     # Record the options that describe how to populate the specified content.
-    FetchContent_Declare(chainsaw
-        GIT_REPOSITORY "https://github.com/Galfurian/chainsaw.git"
+    FetchContent_Declare(numint
+        GIT_REPOSITORY "https://github.com/Galfurian/numint.git"
         GIT_TAG main
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
     )
     # Retrieve the properties related to the content.
-    FetchContent_GetProperties(chainsaw)
+    FetchContent_GetProperties(numint)
     # If not populated, make the content available.
-    if(NOT chainsaw_POPULATED)
-        message(STATUS "Retrieving `chainsaw`...")
+    if(NOT numint_POPULATED)
+        message(STATUS "Retrieving `numint`...")
         # Ensures the named dependencies have been populated.
-        FetchContent_MakeAvailable(chainsaw)
+        FetchContent_MakeAvailable(numint)
         # Hide fetchcontent variables, otherwise with ccmake it's a mess.
         mark_as_advanced(FORCE
-            FETCHCONTENT_UPDATES_DISCONNECTED_CHAINSAW
-            FETCHCONTENT_SOURCE_DIR_CHAINSAW
+            FETCHCONTENT_UPDATES_DISCONNECTED_NUMINT
+            FETCHCONTENT_SOURCE_DIR_NUMINT
         )
     endif()
 
     # = TARGETS ===============================================================
     # Add the example.
-    add_executable(${PROJECT_NAME}_sim_rlc_ct examples/sim_rlc_ct.cpp)
-    target_compile_options(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${COMPILE_OPTIONS})
-    target_include_directories(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
-    target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC ${PROJECT_NAME} timelib chainsaw)
+    add_executable(malg_sim_rlc_ct examples/sim_rlc_ct.cpp)
+    target_compile_options(malg_sim_rlc_ct PUBLIC ${COMPILE_OPTIONS})
+    target_include_directories(malg_sim_rlc_ct PUBLIC ${stopwatch_SOURCE_DIR}/include ${numint_SOURCE_DIR}/include)
+    target_link_libraries(malg_sim_rlc_ct PUBLIC timelib malg numint)
     
     # Add the example.
-    add_executable(${PROJECT_NAME}_sim_rlc_dt examples/sim_rlc_dt.cpp)
-    target_compile_options(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${COMPILE_OPTIONS})
-    target_include_directories(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${stopwatch_SOURCE_DIR}/include)
-    target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC ${PROJECT_NAME} timelib)
+    add_executable(malg_sim_rlc_dt examples/sim_rlc_dt.cpp)
+    target_compile_options(malg_sim_rlc_dt PUBLIC ${COMPILE_OPTIONS})
+    target_include_directories(malg_sim_rlc_dt PUBLIC ${stopwatch_SOURCE_DIR}/include)
+    target_link_libraries(malg_sim_rlc_dt PUBLIC timelib malg)
     
     # Add the example.
-    add_executable(${PROJECT_NAME}_pendulum examples/pendulum.cpp)
-    target_compile_options(${PROJECT_NAME}_pendulum PUBLIC ${COMPILE_OPTIONS})
-    target_include_directories(${PROJECT_NAME}_pendulum PUBLIC ${stopwatch_SOURCE_DIR}/include ${chainsaw_SOURCE_DIR}/include)
-    target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC ${PROJECT_NAME} timelib chainsaw)
+    add_executable(malg_pendulum examples/pendulum.cpp)
+    target_compile_options(malg_pendulum PUBLIC ${COMPILE_OPTIONS})
+    target_include_directories(malg_pendulum PUBLIC ${stopwatch_SOURCE_DIR}/include ${numint_SOURCE_DIR}/include)
+    target_link_libraries(malg_pendulum PUBLIC timelib malg numint)
     
     # Add matplot++ if required.
     if(ENABLE_PLOT)
@@ -178,13 +203,13 @@ if(BUILD_EXAMPLES)
         endif()
 
         # Link libraries.
-        target_link_libraries(${PROJECT_NAME}_sim_rlc_ct PUBLIC gpcpp)
-        target_link_libraries(${PROJECT_NAME}_sim_rlc_dt PUBLIC gpcpp)
-        target_link_libraries(${PROJECT_NAME}_pendulum PUBLIC gpcpp)
+        target_link_libraries(malg_sim_rlc_ct PUBLIC gpcpp)
+        target_link_libraries(malg_sim_rlc_dt PUBLIC gpcpp)
+        target_link_libraries(malg_pendulum PUBLIC gpcpp)
         # Set the definition
-        target_compile_definitions(${PROJECT_NAME}_sim_rlc_ct PUBLIC ENABLE_PLOT)
-        target_compile_definitions(${PROJECT_NAME}_sim_rlc_dt PUBLIC ENABLE_PLOT)
-        target_compile_definitions(${PROJECT_NAME}_pendulum PUBLIC ENABLE_PLOT)
+        target_compile_definitions(malg_sim_rlc_ct PUBLIC ENABLE_PLOT)
+        target_compile_definitions(malg_sim_rlc_dt PUBLIC ENABLE_PLOT)
+        target_compile_definitions(malg_pendulum PUBLIC ENABLE_PLOT)
 
     endif()
 
@@ -202,74 +227,74 @@ if(BUILD_TESTS)
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_math ${PROJECT_SOURCE_DIR}/tests/test_math.cpp)
-    target_compile_options(${PROJECT_NAME}_test_math PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_math ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_math_run ${PROJECT_NAME}_test_math)
+    add_executable(malg_test_math ${PROJECT_SOURCE_DIR}/tests/test_math.cpp)
+    target_compile_options(malg_test_math PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_math malg)
+    add_test(malg_test_math_run malg_test_math)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_linalg ${PROJECT_SOURCE_DIR}/tests/test_linalg.cpp)
-    target_compile_options(${PROJECT_NAME}_test_linalg PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_linalg ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_linalg_run ${PROJECT_NAME}_test_linalg)
+    add_executable(malg_test_linalg ${PROJECT_SOURCE_DIR}/tests/test_linalg.cpp)
+    target_compile_options(malg_test_linalg PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_linalg malg)
+    add_test(malg_test_linalg_run malg_test_linalg)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_view ${PROJECT_SOURCE_DIR}/tests/test_view.cpp)
-    target_compile_options(${PROJECT_NAME}_test_view PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_view ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_view_run ${PROJECT_NAME}_test_view)
+    add_executable(malg_test_view ${PROJECT_SOURCE_DIR}/tests/test_view.cpp)
+    target_compile_options(malg_test_view PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_view malg)
+    add_test(malg_test_view_run malg_test_view)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_read_write_file ${PROJECT_SOURCE_DIR}/tests/test_read_write_file.cpp)
-    target_compile_options(${PROJECT_NAME}_test_read_write_file PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_read_write_file ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_read_write_file_run ${PROJECT_NAME}_test_read_write_file)
+    add_executable(malg_test_read_write_file ${PROJECT_SOURCE_DIR}/tests/test_read_write_file.cpp)
+    target_compile_options(malg_test_read_write_file PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_read_write_file malg)
+    add_test(malg_test_read_write_file_run malg_test_read_write_file)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_control ${PROJECT_SOURCE_DIR}/tests/test_control.cpp)
-    target_compile_options(${PROJECT_NAME}_test_control PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_control ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_control_run ${PROJECT_NAME}_test_control)
+    add_executable(malg_test_control ${PROJECT_SOURCE_DIR}/tests/test_control.cpp)
+    target_compile_options(malg_test_control PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_control malg)
+    add_test(malg_test_control_run malg_test_control)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_complex ${PROJECT_SOURCE_DIR}/tests/test_complex.cpp)
-    target_compile_options(${PROJECT_NAME}_test_complex PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_complex ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_complex_run ${PROJECT_NAME}_test_complex)
+    add_executable(malg_test_complex ${PROJECT_SOURCE_DIR}/tests/test_complex.cpp)
+    target_compile_options(malg_test_complex PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_complex malg)
+    add_test(malg_test_complex_run malg_test_complex)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_find ${PROJECT_SOURCE_DIR}/tests/test_find.cpp)
-    target_compile_options(${PROJECT_NAME}_test_find PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_find ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_find_run ${PROJECT_NAME}_test_find)
+    add_executable(malg_test_find ${PROJECT_SOURCE_DIR}/tests/test_find.cpp)
+    target_compile_options(malg_test_find PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_find malg)
+    add_test(malg_test_find_run malg_test_find)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_memory ${PROJECT_SOURCE_DIR}/tests/test_memory.cpp)
-    target_compile_options(${PROJECT_NAME}_test_memory PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_memory ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_memory_run ${PROJECT_NAME}_test_memory)
+    add_executable(malg_test_memory ${PROJECT_SOURCE_DIR}/tests/test_memory.cpp)
+    target_compile_options(malg_test_memory PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_memory malg)
+    add_test(malg_test_memory_run malg_test_memory)
 
     # -------------------------------------
     # TEST
     # -------------------------------------
-    add_executable(${PROJECT_NAME}_test_utility ${PROJECT_SOURCE_DIR}/tests/test_utility.cpp)
-    target_compile_options(${PROJECT_NAME}_test_utility PUBLIC ${COMPILE_OPTIONS})
-    target_link_libraries(${PROJECT_NAME}_test_utility ${PROJECT_NAME})
-    add_test(${PROJECT_NAME}_test_utility_run ${PROJECT_NAME}_test_utility)
+    add_executable(malg_test_utility ${PROJECT_SOURCE_DIR}/tests/test_utility.cpp)
+    target_compile_options(malg_test_utility PUBLIC ${COMPILE_OPTIONS})
+    target_link_libraries(malg_test_utility malg)
+    add_test(malg_test_utility_run malg_test_utility)
 
 endif()
 
@@ -277,35 +302,43 @@ endif()
 # DOCUMENTATION
 # -----------------------------------------------------------------------------
 
-find_package(Doxygen)
-
 if(DOXYGEN_FOUND)
     
-    # Record the options that describe how to populate the specified content.
-    FetchContent_Declare(
-        doxygenawesome
+    # FetchContent: Doxygen Awesome CSS
+    FetchContent_Declare(doxygenawesome
         GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css
         GIT_TAG main
     )
-    # Retrieve the properties related to the content.
-    FetchContent_GetProperties(doxygenawesome)
-    # If not populated, make the content available.
-    if(NOT doxygenawesome_POPULATED)
-        message(STATUS "Retrieving `doxygen-awesome-css`...")
-        # Ensures the named dependencies have been populated.
-        FetchContent_MakeAvailable(doxygenawesome)
-        # Hide fetchcontent variables, otherwise with ccmake it's a mess.
-        mark_as_advanced(FORCE
-            FETCHCONTENT_QUIET FETCHCONTENT_BASE_DIR FETCHCONTENT_FULLY_DISCONNECTED FETCHCONTENT_UPDATES_DISCONNECTED
-            FETCHCONTENT_UPDATES_DISCONNECTED_DOXYGENAWESOME FETCHCONTENT_SOURCE_DIR_DOXYGENAWESOME
-        )
-    endif()
+    FetchContent_MakeAvailable(doxygenawesome)
 
-    # = CUSTOMIZATION =========================================================
+    # Hide FetchContent variables to avoid clutter in ccmake.
+    mark_as_advanced(FORCE
+        FETCHCONTENT_UPDATES_DISCONNECTED_DOXYGENAWESOME
+        FETCHCONTENT_SOURCE_DIR_DOXYGENAWESOME
+    )
+
+    # Read the file with the version.
+    file(READ ${PROJECT_SOURCE_DIR}/include/malg/version.hpp version_file)
+    # Extract the version.
+    string(REGEX MATCH "TIMELIB_MAJOR_VERSION ([0-9]*)" _ ${version_file})
+    set(TIMELIB_MAJOR_VERSION ${CMAKE_MATCH_1})
+    string(REGEX MATCH "TIMELIB_MINOR_VERSION ([0-9]*)" _ ${version_file})
+    set(TIMELIB_MINOR_VERSION ${CMAKE_MATCH_1})
+    string(REGEX MATCH "TIMELIB_MICRO_VERSION ([0-9]*)" _ ${version_file})
+    set(TIMELIB_MICRO_VERSION ${CMAKE_MATCH_1})
+
+    # Customization: Doxygen Configuration
+    set(DOXYGEN_WARN_FORMAT "$file:$line: $text")
     set(DOXYGEN_PROJECT_NAME "Matrix ALGebra library (MALG)")
-    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
+    set(DOXYGEN_PROJECT_BRIEF "A simple matrix algebra library for C++")
+    set(DOXYGEN_PROJECT_NUMBER "${TIMELIB_MAJOR_VERSION}.${TIMELIB_MINOR_VERSION}.${TIMELIB_MICRO_VERSION}")
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE ${PROJECT_SOURCE_DIR}/README.md)
     set(DOXYGEN_SHOW_INCLUDE_FILES NO)
     set(DOXYGEN_GENERATE_TREEVIEW YES)
+    set(DOXYGEN_GENERATE_LATEX NO)
+    set(DOXYGEN_GENERATE_MAN NO)
+
+    # Styling and UX enhancements using Doxygen Awesome
     set(DOXYGEN_HTML_HEADER ${doxygenawesome_SOURCE_DIR}/doxygen-custom/header.html)
     set(DOXYGEN_HTML_EXTRA_STYLESHEET ${doxygenawesome_SOURCE_DIR}/doxygen-awesome.css)
     set(DOXYGEN_HTML_EXTRA_FILES
@@ -313,8 +346,22 @@ if(DOXYGEN_FOUND)
         ${doxygenawesome_SOURCE_DIR}/doxygen-awesome-paragraph-link.js
         ${doxygenawesome_SOURCE_DIR}/doxygen-awesome-darkmode-toggle.js
     )
+
+    # Set stricter warnings for better documentation quality
+    set(DOXYGEN_WARN_IF_UNDOCUMENTED YES)
+    set(DOXYGEN_WARN_IF_DOC_ERROR YES)
+    set(DOXYGEN_WARN_NO_PARAMDOC YES)
+    set(DOXYGEN_WARN_AS_ERROR YES) # Treat warnings as errors for CI
+
+    # Exclude certain files or directories from documentation (if needed)
+    set(DOXYGEN_EXCLUDE_PATTERNS
+        "${PROJECT_SOURCE_DIR}/tests/*"
+        "${PROJECT_SOURCE_DIR}/examples/*"
+    )
+
+    # Add Doxygen documentation target
     doxygen_add_docs(
-        ${PROJECT_NAME}_documentation
+        malg_documentation
         ${PROJECT_SOURCE_DIR}/include/malg/control/control.hpp
         ${PROJECT_SOURCE_DIR}/include/malg/complex_math.hpp
         ${PROJECT_SOURCE_DIR}/include/malg/eigen.hpp
@@ -327,8 +374,11 @@ if(DOXYGEN_FOUND)
         ${PROJECT_SOURCE_DIR}/include/malg/type_traits.hpp
         ${PROJECT_SOURCE_DIR}/include/malg/utility.hpp
         ${PROJECT_SOURCE_DIR}/include/malg/vector.hpp
+        ${PROJECT_SOURCE_DIR}/include/malg/version.hpp
         ${PROJECT_SOURCE_DIR}/include/malg/view.hpp
         ${PROJECT_SOURCE_DIR}/LICENSE.md
         ${PROJECT_SOURCE_DIR}/README.md
-    )
+        COMMENT "Generating Doxygen documentation for the library"
+    )    
+
 endif()

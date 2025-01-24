@@ -165,10 +165,10 @@ inline auto determinant(const MatrixBase<CT> &matrix)
     for (c = 0; c < N; ++c) {
         // If we have a negative value on the diagonal, we need to move it
         // somewhere else.
-        if (A(c, c) == 0.) {
+        if (malg::feq::approximately_equal_to_zero(A(c, c))) {
             // Right now, I'm trying to find a place below the current
             k = c + 1;
-            while ((k < A.rows()) && (A(k, c) == 0.)) {
+            while ((k < A.rows()) && malg::feq::approximately_equal_to_zero(A(k, c))) {
                 k++;
             }
             // If we did not find a non-zero value, we have a singular matrix.
@@ -239,7 +239,7 @@ inline auto inverse(const MatrixBase<T> &matrix)
     // Compute the determinant.
     data_type_t det = linalg::determinant(matrix);
     // If determinant is zero, the matrix is singular.
-    if (det == 0.) {
+    if (malg::feq::approximately_equal_to_zero(det)) {
         std::cerr << "Matrix is singular.\n";
         return Matrix<data_type_t>();
     }
@@ -420,7 +420,7 @@ inline auto expm(const MatrixBase<T> &A, double accuracy)
     auto fac_inv               = double{ 1.0 };                                // inverse faculty
     auto rel_square_diff       = square_accuracy + 1.0;
 
-    for (std::size_t batch_start_idx = 1; (rel_square_diff > square_accuracy && fac_inv != 0.0); batch_start_idx += batch_size) {
+    for (std::size_t batch_start_idx = 1; (rel_square_diff > square_accuracy && !malg::feq::approximately_equal_to_zero(fac_inv)); batch_start_idx += batch_size) {
         auto local_accum = malg::Matrix<T>(A.rows(), A.cols());
         for (std::size_t i = 0; i < batch_size; ++i) {
             const double k = static_cast<double>(batch_start_idx + i);

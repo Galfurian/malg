@@ -44,6 +44,10 @@ inline auto get_longhest_value(T &data, std::streamsize precision)
 } // namespace details
 
 /// @brief Stream operator for Vector.
+/// @tparam T the type of the vector.
+/// @param lhs the stream.
+/// @param rhs the vector.
+/// @return a reference to the stream.
 template <typename T>
 inline std::ostream &operator<<(std::ostream &lhs, const malg::Vector<T> &rhs)
 {
@@ -60,7 +64,11 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::Vector<T> &rhs)
     return lhs;
 }
 
-/// @brief Stream operator for MatrixBase.
+/// @brief Stream operator for Matrix.
+/// @tparam T the type of the matrix.
+/// @param lhs the stream.
+/// @param rhs the matrix.
+/// @return a reference to the stream.
 template <typename T>
 inline std::ostream &operator<<(std::ostream &lhs, const malg::MatrixBase<T> &rhs)
 {
@@ -82,7 +90,11 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::MatrixBase<T> &rh
     return lhs;
 }
 
-/// @brief Stream operator for writing Vector on file.
+/// @brief File stream operator for Vector.
+/// @tparam T the type of the vector.
+/// @param lhs the stream.
+/// @param rhs the vector.
+/// @return a reference to the stream.
 template <typename T>
 inline std::ofstream &operator<<(std::ofstream &lhs, const malg::Vector<T> &rhs)
 {
@@ -102,7 +114,11 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::Vector<T> &rhs)
     return lhs;
 }
 
-/// @brief Stream operator for writing MatrixBase on file.
+/// @brief File stream operator for Matrix.
+/// @tparam T the type of the matrix.
+/// @param lhs the stream.
+/// @param rhs the matrix.
+/// @return a reference to the stream.
 template <typename T>
 inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &rhs)
 {
@@ -128,6 +144,9 @@ inline std::ofstream &operator<<(std::ofstream &lhs, const malg::MatrixBase<T> &
 }
 
 /// @brief Stream operator for Range.
+/// @param lhs the stream.
+/// @param rhs the range.
+/// @return a reference to the stream.
 inline std::ostream &operator<<(std::ostream &lhs, const malg::Range &rhs)
 {
     lhs << "[" << rhs.start << ", " << rhs.stop << "]";
@@ -135,6 +154,10 @@ inline std::ostream &operator<<(std::ostream &lhs, const malg::Range &rhs)
 }
 
 /// @brief Stream operator for reading a Vector from file.
+/// @tparam T the type of the vector.
+/// @param lhs the stream.
+/// @param rhs the vector.
+/// @return a reference to the stream.
 template <typename T>
 inline std::ifstream &operator>>(std::ifstream &lhs, malg::Vector<T> &rhs)
 {
@@ -157,7 +180,11 @@ inline std::ifstream &operator>>(std::ifstream &lhs, malg::Vector<T> &rhs)
     return lhs;
 }
 
-/// @brief Stream operator for reading a Matrix from file.
+/// @brief Stream operator for reading a Vector from file.
+/// @tparam T the type of the matrix.
+/// @param lhs the stream.
+/// @param rhs the matrix.
+/// @return a reference to the stream.
 template <typename T>
 inline std::ifstream &operator>>(std::ifstream &lhs, malg::Matrix<T> &rhs)
 {

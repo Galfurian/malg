@@ -6,6 +6,7 @@
 
 #include "malg/matrix.hpp"
 #include "malg/linalg.hpp"
+#include "malg/feq.hpp"
 
 #include <tuple>
 
@@ -36,6 +37,10 @@ public:
     }
 
     /// @brief Construct a new State Space object, with the given matrices.
+    /// @param _A the system matrix.
+    /// @param _B the input matrix.
+    /// @param _C the output matrix.
+    /// @param _D the feedforward matrix.
     StateSpace(const Matrix<T> &_A, const Matrix<T> &_B, const Matrix<T> &_C, const Matrix<T> &_D)
         : A(_A),
           B(_B),
@@ -62,6 +67,11 @@ public:
     }
 
     /// @brief Construct a new Discrete State Space object, with the given matrices.
+    /// @param _A the system matrix.
+    /// @param _B the input matrix.
+    /// @param _C the output matrix.
+    /// @param _D the feedforward matrix.
+    /// @param _sample_time the sample time.
     DiscreteStateSpace(const Matrix<T> &_A, const Matrix<T> &_B, const Matrix<T> &_C, const Matrix<T> &_D, T _sample_time)
         : StateSpace<T>(_A, _B, _C, _D),
           sample_time(_sample_time)
@@ -291,7 +301,7 @@ inline auto acker(const MatrixBase<T> &A, const MatrixBase<T> &B, const MatrixBa
     }
     // Make sure the system is controllable.
     auto ct = ctrb<T>(A, B);
-    if (linalg::determinant(ct) == 0) {
+    if (malg::feq::approximately_equal_to_zero(linalg::determinant(ct))) {
         std::cerr << "acker: system not reachable, pole placement invalid.\n";
         exit(1);
     }

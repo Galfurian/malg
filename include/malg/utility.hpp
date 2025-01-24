@@ -158,7 +158,7 @@ inline auto diag(const Vector<T> &a)
 }
 
 /// @brief Transforms a vector into a matrix.
-/// @param a the input vector.
+/// @param vector the input vector.
 /// @param row_matrix if the output matrix should be a row matrix (true), or a column matrix (false).
 /// @returns the generated matrix.
 template <typename T>
@@ -173,7 +173,7 @@ inline auto to_matrix(const Vector<T> &vector, bool row_matrix)
 }
 
 /// @brief Transforms a matrix into a vector.
-/// @param a the input matrix.
+/// @param matrix the input matrix.
 /// @returns the generated matrix.
 template <typename T>
 inline auto to_vector(const Matrix<T> &matrix)
@@ -301,10 +301,12 @@ inline auto hstack(const MatrixBase<T1> &A, const Vector<T2> &b)
     return C;
 }
 
-/// @brief Horizontally stacks a matrix and a vector.
-/// @param A the matrix of size (Mx*).
-/// @param b the vector of size A.
-/// @returns the result of the stacking.
+/// @brief Concatenates two vectors.
+/// @tparam T1 the type of the first vector.
+/// @tparam T2 the type of the second vector.
+/// @param a the first vector.
+/// @param b the second vector.
+/// @return the concatenated vector.
 template <typename T1, typename T2>
 inline auto concatenate(const Vector<T1> &a, const Vector<T2> &b)
 {

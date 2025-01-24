@@ -132,6 +132,7 @@ public:
     }
 
     /// @brief Construct a new Matrix object.
+    /// @param rhs the other matrix.
     template <typename T2>
     explicit Matrix(const MatrixBase<T2> &rhs)
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
@@ -143,7 +144,7 @@ public:
     }
 
     /// @brief Construct a new Matrix object.
-    /// @param rhs
+    /// @param rhs the other matrix.
     Matrix(const Matrix<T> &rhs)
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
           _data(rhs.rows() * rhs.cols())
@@ -154,6 +155,8 @@ public:
     }
 
     /// @brief Construct a new Matrix object.
+    /// @tparam T2 the type of the other matrix.
+    /// @param rhs the other matrix.
     template <typename T2>
     explicit Matrix(const Matrix<T2> &rhs)
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
@@ -174,6 +177,8 @@ public:
     }
 
     /// @brief Construct a new Matrix object.
+    /// @tparam T2 the type of the other matrix.
+    /// @param rhs the other matrix.
     template <typename T2>
     explicit Matrix(Matrix<T2> &&rhs)
         : MatrixBase<T>(rhs.rows(), rhs.cols()),
@@ -359,8 +364,9 @@ public:
         return *this;
     }
 
-    /// @brief Construct a new Matrix object.
-    /// @param data
+    /// @brief Assign operator.
+    /// @param data the data to use.
+    /// @return a reference to this.
     auto &operator=(const std::initializer_list<std::initializer_list<T>> &data)
     {
         // Check the number of rows.

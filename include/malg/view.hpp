@@ -20,6 +20,7 @@ struct Range {
     std::size_t stop;
 
     /// @brief Returns the [0, inf] index.
+    /// @return the built range.
     static inline Range all()
     {
         return { 0, static_cast<std::size_t>(-1) };
@@ -131,7 +132,8 @@ public:
     }
 
     /// @brief Construct a new Matrix object.
-    /// @param data
+    /// @param data the data to use.
+    /// @return a reference to this.
     auto &operator=(const std::initializer_list<std::initializer_list<T>> &data)
     {
         // Check the number of rows.
@@ -266,6 +268,9 @@ public:
 
 public:
     /// @brief Creates a new cofactor view.
+    /// @param matrix the matrix of which to create the view.
+    /// @param excluded_row the row to exclude.
+    /// @param excluded_col the column to exclude.
     CofactorView(MatrixType *matrix,
                  std::size_t excluded_row,
                  std::size_t excluded_col)

@@ -26,7 +26,7 @@ static inline auto &tolerance()
 template <typename T1, typename T2>
 inline bool approximately_equal(T1 a, T2 b)
 {
-    return std::abs(a - b) <= tolerance() * std::fmax(std::abs(a), std::abs(b));
+    return std::abs(a - b) <= tolerance() * std::max(std::abs(a), std::abs(b));
 }
 
 /// @brief Checks if the fir floating point value is lesser than or equal to the second one.

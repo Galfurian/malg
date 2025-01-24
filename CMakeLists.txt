@@ -113,6 +113,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Cl
             -Wformat=2           # Enable strict checks for printf/scanf format strings.
             -Woverloaded-virtual # Warn when a derived class function hides a base class virtual function.
             -Wfloat-equal        # Warn about direct comparisons of floating-point values, which can be imprecise.
+            -Wno-absolute-value  # Disable warnings about the use of the 'abs' function.
         )
 
     endif()

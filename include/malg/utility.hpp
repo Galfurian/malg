@@ -911,7 +911,7 @@ inline auto flatnonzero(const Matrix<T> &A)
 {
     std::vector<std::size_t> nonzero_indices{};
     for (std::size_t i = 0; i < A.size(); ++i) {
-        if (!malg::feq::approximately_equal(A[i], 0.)) {
+        if (!malg::feq::approximately_equal_to_zero(A[i])) {
             nonzero_indices.emplace_back(i);
         }
     }

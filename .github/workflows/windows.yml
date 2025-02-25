@@ -52,4 +52,4 @@ jobs:
     # Step: Run Tests.
     - name: Run Tests
       run: |
-        ctest --test-dir build --build-config Debug --verbose
+          ctest --test-dir build --build-config Debug --verbose
